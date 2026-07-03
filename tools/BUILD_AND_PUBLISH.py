@@ -14,6 +14,13 @@ from common import CLR_GREEN, CLR_RED, print_labeled
 TOOLS_DIR = Path(__file__).resolve().parent
 
 
+def empty_root_index(dist: Path) -> None:
+    """Keep the generated public root index compatible with publish.py."""
+    root_index = dist / "index.html"
+    root_index.parent.mkdir(parents=True, exist_ok=True)
+    root_index.write_text("", encoding="utf-8")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Validate locales, format hyperlinks, build the site, then publish the output."
@@ -43,28 +50,33 @@ def main() -> None:
         print_labeled("ERROR", CLR_RED, "Python executable not found.")
         sys.exit(1)
 
-    steps = [
+    build_steps = [
         ("Validation", [python_bin, str(scripts["Validation"]), "--root", str(root)]),
         ("Format Hyperlinks", [python_bin, str(scripts["Format Hyperlinks"]), "--root", str(root)]),
         ("Build", [python_bin, str(scripts["Build"]), "--root", str(root)]),
-        (
-            "Publish",
-            [
-                python_bin,
-                str(scripts["Publish"]),
-                "--dist",
-                str(dist),
-                "--dest",
-                str(dest),
-            ],
-        ),
     ]
 
-    for label, command in steps:
+    for label, command in build_steps:
         rc = subprocess.run(command)
         if rc.returncode != 0:
             print_labeled("ERROR", CLR_RED, f"{label} failed (see output).")
             sys.exit(1)
+
+    empty_root_index(dist)
+
+    publish_command = [
+        python_bin,
+        str(scripts["Publish"]),
+        "--dist",
+        str(dist),
+        "--dest",
+        str(dest),
+    ]
+
+    rc = subprocess.run(publish_command)
+    if rc.returncode != 0:
+        print_labeled("ERROR", CLR_RED, "Publish failed (see output).")
+        sys.exit(1)
 
     print()
     print_labeled("OK", CLR_GREEN, "validation, hyperlink formatting, build, and publish completed successfully.")

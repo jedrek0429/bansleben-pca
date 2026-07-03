@@ -34,11 +34,19 @@ def normalize_url_prefix(value: str) -> str:
     return value
 
 
-def write_preview_index(dist: Path, url_prefix: str) -> None:
+def empty_root_index(dist: Path) -> None:
+    """Keep the generated public root index compatible with publish.py."""
+    root_index = dist / "index.html"
+    root_index.parent.mkdir(parents=True, exist_ok=True)
+    root_index.write_text("", encoding="utf-8")
+
+
+def write_preview_index(dest: Path, url_prefix: str) -> None:
     """Write a root index.html that redirects to the English preview root."""
     url_prefix = normalize_url_prefix(url_prefix)
     target = f"{url_prefix}/en/" if url_prefix else "/en/"
-    (dist / "index.html").write_text(
+    dest.mkdir(parents=True, exist_ok=True)
+    (dest / "index.html").write_text(
         "\n".join(
             [
                 "<!doctype html>",
@@ -78,7 +86,7 @@ def main() -> None:
     parser.add_argument(
         "--write-preview-index",
         action="store_true",
-        help="Write a root index.html redirecting to the English preview root.",
+        help="Write a root index.html redirecting to the English preview root after publishing.",
     )
     args = parser.parse_args()
 
@@ -117,8 +125,7 @@ def main() -> None:
             print_labeled("ERROR", CLR_RED, f"{label} failed (see output).")
             sys.exit(1)
 
-    if args.write_preview_index:
-        write_preview_index(dist, os.environ["SITE_URL_PREFIX"])
+    empty_root_index(dist)
 
     rc = subprocess.run(
         [
@@ -133,6 +140,9 @@ def main() -> None:
     if rc.returncode != 0:
         print_labeled("ERROR", CLR_RED, "Publish failed (see output).")
         sys.exit(1)
+
+    if args.write_preview_index:
+        write_preview_index(dest, os.environ["SITE_URL_PREFIX"])
 
     print()
     print_labeled("OK", CLR_GREEN, "validation, hyperlink formatting, build, and publish completed successfully.")
