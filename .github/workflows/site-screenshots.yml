@@ -1,0 +1,65 @@
+name: Site screenshots
+
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      path:
+        description: Site path to capture
+        required: false
+        default: /en/
+        type: string
+
+jobs:
+  screenshots:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python build dependencies
+        run: python -m pip install --upgrade pip markdown pymdown-extensions imagesize
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install Node dependencies
+        run: npm install
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Build static site
+        run: python tools/build.py
+
+      - name: Expose root assets for local screenshots
+        run: python tools/pages_preview_root_assets.py --preview-dir ../site-dist
+
+      - name: Capture desktop and mobile screenshots
+        env:
+          SCREENSHOT_PATH: ${{ inputs.path || '/en/' }}
+        run: |
+          set -euo pipefail
+          mkdir -p screenshots
+          python -m http.server 4173 --directory ../site-dist > /tmp/pca-site-server.log 2>&1 &
+          echo $! > /tmp/pca-site-server.pid
+          curl --retry 20 --retry-connrefused --retry-delay 1 --fail "http://127.0.0.1:4173${SCREENSHOT_PATH}" >/dev/null
+          npx playwright screenshot --browser=chromium --viewport-size=1440,1000 --full-page "http://127.0.0.1:4173${SCREENSHOT_PATH}" screenshots/desktop.png
+          npx playwright screenshot --browser=chromium --viewport-size=390,844 --full-page "http://127.0.0.1:4173${SCREENSHOT_PATH}" screenshots/mobile.png
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-screenshots
+          path: screenshots
+          if-no-files-found: ignore
