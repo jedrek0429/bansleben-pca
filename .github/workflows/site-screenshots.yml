@@ -4,11 +4,20 @@ on:
   pull_request:
   workflow_dispatch:
     inputs:
+      pr_number:
+        description: Pull request number to comment on
+        required: false
+        type: string
       path:
         description: Site path to capture
         required: false
         default: /en/
         type: string
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
 
 jobs:
   screenshots:
@@ -57,9 +66,42 @@ jobs:
           npx playwright screenshot --browser=chromium --viewport-size=390,844 --full-page "http://127.0.0.1:4173${SCREENSHOT_PATH}" screenshots/mobile.png
 
       - name: Upload screenshots
+        id: upload
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: site-screenshots
           path: screenshots
           if-no-files-found: ignore
+
+      - name: Comment screenshot artifact on PR
+        if: always() && (github.event_name == 'pull_request' || inputs.pr_number != '')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
+          SCREENSHOT_PATH: ${{ inputs.path || '/en/' }}
+          ARTIFACT_URL: ${{ steps.upload.outputs.artifact-url }}
+        run: |
+          set -euo pipefail
+          marker='<!-- pca-site-screenshots -->'
+          run_url="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          artifact_url="${ARTIFACT_URL:-${run_url}}"
+          body="${marker}
+          Site screenshots for \`${SCREENSHOT_PATH}\` are ready.
+
+          - [Download desktop/mobile screenshots artifact](${artifact_url})
+          - [Open workflow run](${run_url})
+
+          Artifact contents:
+          - \`desktop.png\`
+          - \`mobile.png\`"
+
+          existing_id=$(gh api "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" --paginate \
+            --jq ".[] | select(.user.login == \"github-actions[bot]\" and (.body | contains(\"${marker}\"))) | .id" \
+            | tail -n 1)
+
+          if [ -n "$existing_id" ]; then
+            gh api -X PATCH "repos/${GITHUB_REPOSITORY}/issues/comments/${existing_id}" -f body="$body" >/dev/null
+          else
+            gh pr comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body "$body"
+          fi
