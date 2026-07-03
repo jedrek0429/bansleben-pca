@@ -1,14 +1,17 @@
-"""Finalize a GitHub Pages PR preview directory."""
+"""Finalize a GitHub Pages/SSH PR preview directory."""
 
 from __future__ import annotations
 
 import argparse
+import re
 import shutil
 from pathlib import Path
 
 
 ROOT_ITEMS = ("assets", "wp-content", "wp-includes")
 ROOT_PREFIXES = tuple(f"/{item}/" for item in ROOT_ITEMS)
+ROBOTS_META_RE = re.compile(r'<meta\s+name=["\']robots["\']\s+content=["\'][^"\']*["\']\s*/?>', re.IGNORECASE)
+NOINDEX_META = '<meta name="robots" content="noindex">'
 
 
 def normalize_url_prefix(value: str) -> str:
@@ -41,25 +44,30 @@ def expose_root_assets(preview_dir: Path, source_lang: str) -> None:
         copy_item(source_dir / item, preview_dir / item)
 
 
+def add_noindex_meta(text: str) -> str:
+    if ROBOTS_META_RE.search(text):
+        return ROBOTS_META_RE.sub(NOINDEX_META, text, count=1)
+    return text.replace("<head>", f"<head>\n  {NOINDEX_META}", 1)
+
+
 def rewrite_html_urls(preview_dir: Path, url_prefix: str) -> None:
     url_prefix = normalize_url_prefix(url_prefix)
-    if not url_prefix:
-        return
 
     for path in preview_dir.rglob("*.html"):
         text = path.read_text(encoding="utf-8")
-        updated = text
+        updated = add_noindex_meta(text)
 
-        for root_prefix in ROOT_PREFIXES:
-            replacement = url_prefix + root_prefix
+        if url_prefix:
+            for root_prefix in ROOT_PREFIXES:
+                replacement = url_prefix + root_prefix
 
-            for attr in ("href", "src", "srcset", "content"):
-                updated = updated.replace(f'{attr}="{root_prefix}', f'{attr}="{replacement}')
-                updated = updated.replace(f"{attr}='{root_prefix}", f"{attr}='{replacement}")
+                for attr in ("href", "src", "srcset", "content"):
+                    updated = updated.replace(f'{attr}="{root_prefix}', f'{attr}="{replacement}')
+                    updated = updated.replace(f"{attr}='{root_prefix}", f"{attr}='{replacement}")
 
-            updated = updated.replace(f"url({root_prefix}", f"url({replacement}")
-            updated = updated.replace(f"url('{root_prefix}", f"url('{replacement}")
-            updated = updated.replace(f'url("{root_prefix}', f'url("{replacement}')
+                updated = updated.replace(f"url({root_prefix}", f"url({replacement}")
+                updated = updated.replace(f"url('{root_prefix}", f"url('{replacement}")
+                updated = updated.replace(f'url("{root_prefix}', f'url("{replacement}')
 
         if updated != text:
             path.write_text(updated, encoding="utf-8")
@@ -75,6 +83,7 @@ def write_index(preview_dir: Path, url_prefix: str) -> None:
                 '<html lang="en">',
                 "<head>",
                 '  <meta charset="utf-8">',
+                f"  {NOINDEX_META}",
                 f'  <meta http-equiv="refresh" content="0; url={target}">',
                 f'  <link rel="canonical" href="{target}">',
                 "  <title>Preview redirect</title>",
