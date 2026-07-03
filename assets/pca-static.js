@@ -1,7 +1,7 @@
-/*! PCA static runtime: small first-party replacement for WordPress/Divi JavaScript behavior. */
+/*! PCA static runtime: small first-party behavior for navigation, reveal effects, and contact messages. */
 (function () {
-  var PHONE_MAX_WIDTH = 767;
-  var REVEAL_SELECTOR = '.et_animated,.et_had_animation,.et_pb_animation_top,.et_pb_animation_bottom,.et_pb_animation_left,.et_pb_animation_right,.et_pb_animation_fade_in';
+  var PHONE_MAX_WIDTH = 900;
+  var REVEAL_SELECTOR = '.pca-reveal';
 
   function ready(callback) {
     if (document.readyState === 'loading') {
@@ -34,6 +34,8 @@
     root.querySelectorAll('.mobile_nav.opened').forEach(function (nav) {
       nav.classList.remove('opened');
       nav.classList.add('closed');
+      var toggle = nav.querySelector('.mobile_menu_bar_toggle, .mobile_menu_bar');
+      if (toggle) toggle.setAttribute('aria-expanded', 'false');
     });
   }
 
@@ -54,7 +56,11 @@
   function updateFixedHeader() {
     var root = header();
     if (!root) return;
-    root.classList.toggle('et-fixed-header', window.scrollY > 10);
+    root.classList.toggle('pca-header-compact', window.scrollY > 10);
+
+    document.querySelectorAll('.pca-scroll-top').forEach(function (button) {
+      button.classList.toggle('is-visible', window.scrollY > 400);
+    });
   }
 
   function initMobileMenu() {
@@ -73,13 +79,23 @@
         var shouldOpen = !nav.classList.contains('opened');
         nav.classList.toggle('opened', shouldOpen);
         nav.classList.toggle('closed', !shouldOpen);
+        toggle.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
       }, true);
+    });
+  }
+
+  function initScrollTop() {
+    document.querySelectorAll('.pca-scroll-top').forEach(function (button) {
+      if (button.dataset.pcaBound === '1') return;
+      button.dataset.pcaBound = '1';
+      button.addEventListener('click', function () {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
     });
   }
 
   function revealNow(node) {
     node.classList.add('pca-in-view');
-    node.classList.remove('et-waypoint');
   }
 
   function initReveals() {
@@ -132,6 +148,7 @@
 
   function init() {
     initMobileMenu();
+    initScrollTop();
     initContactMessages();
     initReveals();
     refresh();
