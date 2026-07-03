@@ -42,8 +42,8 @@ test.describe('visual regression baselines', () => {
   test('mobile menu open state matches baseline', async ({ page }, testInfo) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await stabilize(page, '/hr/');
-    await page.locator('.mobile_menu_bar').click();
-    await expect(page.locator('.mobile_nav')).toHaveClass(/opened/);
+    await page.locator('.pca-mobile-menu-toggle').click();
+    await expect(page.locator('.pca-mobile-nav')).toHaveClass(/opened/);
 
     await expect(page).toHaveScreenshot(`hr-home-${testInfo.project.name}-mobile-menu-open.png`, {
       fullPage: true,
