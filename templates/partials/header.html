@@ -1,6 +1,6 @@
 <header id="main-header" class="site-header">
   <div class="container site-header__inner">
-    <div class="logo_container site-logo">
+    <div class="site-logo">
       <a href="{{lang_prefix}}/" class="site-logo__link" aria-label="{{site_name}}">
         <picture>
           <source srcset="{{url_prefix}}{{brand.logo_webp_src}}" type="image/webp">
@@ -17,10 +17,10 @@
     </nav>
 
     <div id="site-mobile-nav" class="site-mobile-nav">
-      <div class="mobile_nav closed">
+      <div class="pca-mobile-nav closed">
         <span class="select_page">{{common.select_page}}</span>
-        <button class="mobile_menu_bar mobile_menu_bar_toggle" type="button" aria-label="{{common.select_page}}" aria-expanded="false"></button>
-        <ul id="mobile_menu" class="mobile-menu">
+        <button class="pca-mobile-menu-toggle" type="button" aria-label="{{common.select_page}}" aria-expanded="false"></button>
+        <ul id="pca-mobile-menu" class="pca-mobile-menu">
 {{mobile_menu}}
         </ul>
       </div>
