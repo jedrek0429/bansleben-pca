@@ -1,14 +1,16 @@
-name: GitHub Pages PR preview fixed
+name: SSH PR preview
 
 on:
   pull_request:
     types: [opened, synchronize, reopened]
 
 permissions:
-  contents: write
+  contents: read
+  pull-requests: write
+  issues: write
 
 concurrency:
-  group: pages-preview-fixed-pr-${{ github.event.pull_request.number }}
+  group: ssh-pr-preview-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
@@ -32,16 +34,22 @@ jobs:
 
       - name: Resolve preview URL
         id: preview
+        env:
+          PREVIEW_BASE_URL: ${{ secrets.PREVIEW_BASE_URL }}
         run: |
+          set -euo pipefail
           preview_path="pr-${{ github.event.pull_request.number }}"
-          preview_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${preview_path}/"
-          url_prefix="/${{ github.event.repository.name }}/${preview_path}"
+          base_url="${PREVIEW_BASE_URL:-https://preview.polandchildabduction.pl}"
+          base_url="${base_url%/}"
+          preview_url="${base_url}/${preview_path}/"
+          url_prefix="/${preview_path}"
           echo "path=$preview_path" >> "$GITHUB_OUTPUT"
           echo "url=$preview_url" >> "$GITHUB_OUTPUT"
           echo "url_prefix=$url_prefix" >> "$GITHUB_OUTPUT"
 
       - name: Build PR preview path
         run: |
+          set -euo pipefail
           rm -rf pages-preview
           python tools/dev_build_and_publish.py \
             --root . \
@@ -52,46 +60,81 @@ jobs:
       - name: Finalize preview assets
         run: python tools/pages_preview_finalize.py --preview-dir "pages-preview/${{ steps.preview.outputs.path }}" --url-prefix "${{ steps.preview.outputs.url_prefix }}"
 
-      - name: Publish preview to gh-pages branch
+      - name: Deploy preview over SSH
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PREVIEW_SSH_HOST: ${{ secrets.PREVIEW_SSH_HOST }}
+          PREVIEW_SSH_PORT: ${{ secrets.PREVIEW_SSH_PORT }}
+          PREVIEW_SSH_USERNAME: ${{ secrets.PREVIEW_SSH_USERNAME }}
+          PREVIEW_SSH_KEY: ${{ secrets.PREVIEW_SSH_KEY }}
+          PREVIEW_TARGET_ROOT: ${{ secrets.PREVIEW_TARGET_ROOT }}
         run: |
           set -euo pipefail
 
-          preview_path="${{ steps.preview.outputs.path }}"
-          repo_url="https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          rm -rf gh-pages-worktree
-          if git clone --depth 1 --branch gh-pages "$repo_url" gh-pages-worktree; then
-            echo "Updating existing gh-pages branch"
-          else
-            echo "Creating gh-pages branch"
-            git init gh-pages-worktree
-            git -C gh-pages-worktree checkout -b gh-pages
-            git -C gh-pages-worktree remote add origin "$repo_url"
+          required_missing=0
+          for name in PREVIEW_SSH_HOST PREVIEW_SSH_USERNAME PREVIEW_SSH_KEY; do
+            if [ -z "${!name:-}" ]; then
+              echo "Missing required secret: ${name}" >&2
+              required_missing=1
+            fi
+          done
+          if [ "$required_missing" -ne 0 ]; then
+            exit 1
           fi
 
-          rm -rf "gh-pages-worktree/${preview_path}"
-          mkdir -p "gh-pages-worktree/${preview_path}"
-          cp -a "pages-preview/${preview_path}/." "gh-pages-worktree/${preview_path}/"
-          touch gh-pages-worktree/.nojekyll
+          preview_path="${{ steps.preview.outputs.path }}"
+          local_dir="pages-preview/${preview_path}"
+          ssh_port="${PREVIEW_SSH_PORT:-22}"
+          remote_base="${PREVIEW_TARGET_ROOT:-public_html/preview}"
+          if [[ "$remote_base" == ~/* ]]; then
+            remote_base="\$HOME/${remote_base#~/}"
+          fi
 
-          git -C gh-pages-worktree add -A
-          if git -C gh-pages-worktree diff --cached --quiet; then
-            echo "No preview changes to publish."
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "$PREVIEW_SSH_KEY" > ~/.ssh/pca-preview-key
+          chmod 600 ~/.ssh/pca-preview-key
+          ssh-keyscan -p "$ssh_port" "$PREVIEW_SSH_HOST" >> ~/.ssh/known_hosts
+
+          ssh_cmd=(ssh -i ~/.ssh/pca-preview-key -p "$ssh_port" -o IdentitiesOnly=yes)
+          rsync_ssh="ssh -i ~/.ssh/pca-preview-key -p ${ssh_port} -o IdentitiesOnly=yes"
+
+          remote_base_resolved=$("${ssh_cmd[@]}" "${PREVIEW_SSH_USERNAME}@${PREVIEW_SSH_HOST}" "mkdir -p \"${remote_base}\" && cd \"${remote_base}\" && pwd")
+          remote_dir="${remote_base_resolved%/}/${preview_path}"
+
+          "${ssh_cmd[@]}" "${PREVIEW_SSH_USERNAME}@${PREVIEW_SSH_HOST}" "mkdir -p \"${remote_dir}\""
+          rsync -az --delete -e "$rsync_ssh" "${local_dir}/" "${PREVIEW_SSH_USERNAME}@${PREVIEW_SSH_HOST}:${remote_dir}/"
+
+      - name: Comment preview URL
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PREVIEW_URL: ${{ steps.preview.outputs.url }}
+        run: |
+          set -euo pipefail
+          marker='<!-- pca-pr-preview -->'
+          body="${marker}
+          Preview URL: ${PREVIEW_URL}
+
+          Localized roots:
+          - ${PREVIEW_URL}en/
+          - ${PREVIEW_URL}fr/
+          - ${PREVIEW_URL}hr/"
+
+          existing_id=$(gh api "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" --paginate \
+            --jq ".[] | select(.user.login == \"github-actions[bot]\" and (.body | contains(\"${marker}\"))) | .id" \
+            | tail -n 1)
+
+          if [ -n "$existing_id" ]; then
+            gh api -X PATCH "repos/${GITHUB_REPOSITORY}/issues/comments/${existing_id}" -f body="$body" >/dev/null
           else
-            git -C gh-pages-worktree commit -m "Publish preview ${preview_path} for ${GITHUB_SHA}"
-            git -C gh-pages-worktree push origin gh-pages
+            gh pr comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body "$body"
           fi
 
       - name: Summarize preview
         run: |
           preview_url="${{ steps.preview.outputs.url }}"
           {
-            echo '## Live GitHub Pages PR preview'
+            echo '## SSH PR preview'
             echo ''
             echo "Preview URL: $preview_url"
             echo ''
