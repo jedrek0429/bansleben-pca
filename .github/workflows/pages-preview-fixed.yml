@@ -5,9 +5,7 @@ on:
     types: [opened, synchronize, reopened]
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
   group: pages-preview-fixed-pr-${{ github.event.pull_request.number }}
@@ -17,9 +15,6 @@ jobs:
   deploy:
     if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.preview.outputs.url }}
 
     steps:
       - name: Check out PR commit
@@ -57,22 +52,51 @@ jobs:
       - name: Finalize preview assets
         run: python tools/pages_preview_finalize.py --preview-dir "pages-preview/${{ steps.preview.outputs.path }}" --url-prefix "${{ steps.preview.outputs.url_prefix }}"
 
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v6
+      - name: Publish preview to gh-pages branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
 
-      - name: Upload GitHub Pages artifact
-        uses: actions/upload-pages-artifact@v5
-        with:
-          path: pages-preview
+          preview_path="${{ steps.preview.outputs.path }}"
+          repo_url="https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
 
-      - name: Deploy GitHub Pages preview
-        id: deployment
-        uses: actions/deploy-pages@v5
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          rm -rf gh-pages-worktree
+          if git clone --depth 1 --branch gh-pages "$repo_url" gh-pages-worktree; then
+            echo "Updating existing gh-pages branch"
+          else
+            echo "Creating gh-pages branch"
+            git init gh-pages-worktree
+            git -C gh-pages-worktree checkout -b gh-pages
+            git -C gh-pages-worktree remote add origin "$repo_url"
+          fi
+
+          rm -rf "gh-pages-worktree/${preview_path}"
+          mkdir -p "gh-pages-worktree/${preview_path}"
+          cp -a "pages-preview/${preview_path}/." "gh-pages-worktree/${preview_path}/"
+          touch gh-pages-worktree/.nojekyll
+
+          git -C gh-pages-worktree add -A
+          if git -C gh-pages-worktree diff --cached --quiet; then
+            echo "No preview changes to publish."
+          else
+            git -C gh-pages-worktree commit -m "Publish preview ${preview_path} for ${GITHUB_SHA}"
+            git -C gh-pages-worktree push origin gh-pages
+          fi
 
       - name: Summarize preview
         run: |
           preview_url="${{ steps.preview.outputs.url }}"
-          echo "Preview URL: $preview_url" >> "$GITHUB_STEP_SUMMARY"
-          echo "- ${preview_url}en/" >> "$GITHUB_STEP_SUMMARY"
-          echo "- ${preview_url}fr/" >> "$GITHUB_STEP_SUMMARY"
-          echo "- ${preview_url}hr/" >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo '## Live GitHub Pages PR preview'
+            echo ''
+            echo "Preview URL: $preview_url"
+            echo ''
+            echo 'Localized roots:'
+            echo "- ${preview_url}en/"
+            echo "- ${preview_url}fr/"
+            echo "- ${preview_url}hr/"
+          } >> "$GITHUB_STEP_SUMMARY"
