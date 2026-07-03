@@ -15,13 +15,17 @@
   border: 0 !important;
 }
 
-html.js .pca-reveal {
+html.js .pca-reveal,
+html.js .pca-button {
   opacity: 0;
   transform: translateY(30px);
   transition: opacity 1.15s cubic-bezier(.2, .78, .18, 1), transform 1.15s cubic-bezier(.2, .78, .18, 1);
 }
 
-html.js .pca-in-view {
+html.js .pca-in-view,
+html.js .pca-in-view .pca-button,
+html.js .pca-card.pca-in-view .pca-button,
+html.js .pca-contact.pca-in-view .pca-button {
   opacity: 1;
   transform: none;
 }
@@ -72,8 +76,11 @@ html.js .pca-in-view {
 .pca-button {
   position: relative;
   overflow: hidden;
+  min-width: 132px;
   gap: 0;
-  transition: background var(--pca-motion), color var(--pca-motion), border-color var(--pca-motion), transform var(--pca-motion), box-shadow var(--pca-motion), padding var(--pca-motion);
+  text-align: center;
+  justify-content: center;
+  transition: opacity 1.15s cubic-bezier(.2, .78, .18, 1), background var(--pca-motion), color var(--pca-motion), border-color var(--pca-motion), transform var(--pca-motion), box-shadow var(--pca-motion), padding var(--pca-motion);
 }
 
 .pca-button::after {
@@ -102,7 +109,7 @@ html.js .pca-in-view {
 }
 
 .pca-scroll-top {
-  bottom: 96px;
+  bottom: 128px;
   transition: opacity var(--pca-motion), transform var(--pca-motion), background var(--pca-motion), box-shadow var(--pca-motion);
 }
 
@@ -111,11 +118,11 @@ html.js .pca-in-view {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 16px;
-  height: 16px;
-  border-top: 3px solid currentColor;
-  border-left: 3px solid currentColor;
-  transform: translate(-50%, -36%) rotate(45deg);
+  width: 12px;
+  height: 12px;
+  border-top: 2px solid currentColor;
+  border-left: 2px solid currentColor;
+  transform: translate(-50%, -42%) rotate(45deg);
 }
 
 .pca-scroll-top:hover,
@@ -155,14 +162,29 @@ html.js .pca-in-view {
 }
 
 .site-footer .pca-social-link__icon {
-  width: auto;
-  height: auto;
+  position: relative;
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: transparent;
   color: transparent;
+  font-size: 0;
+  overflow: hidden;
 }
 
 .site-footer .pca-social-link__icon::before {
+  content: 'f';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -47%);
   color: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 25px;
+  font-weight: 700;
+  line-height: 1;
 }
 
 @media (max-width: 700px) {
