@@ -15,17 +15,13 @@
   border: 0 !important;
 }
 
-html.js .pca-reveal,
-html.js .pca-button {
+html.js .pca-reveal {
   opacity: 0;
   transform: translateY(30px);
   transition: opacity 1.15s cubic-bezier(.2, .78, .18, 1), transform 1.15s cubic-bezier(.2, .78, .18, 1);
 }
 
-html.js .pca-in-view,
-html.js .pca-in-view .pca-button,
-html.js .pca-card.pca-in-view .pca-button,
-html.js .pca-contact.pca-in-view .pca-button {
+html.js .pca-in-view {
   opacity: 1;
   transform: none;
 }
@@ -80,7 +76,9 @@ html.js .pca-contact.pca-in-view .pca-button {
   gap: 0;
   text-align: center;
   justify-content: center;
-  transition: opacity 1.15s cubic-bezier(.2, .78, .18, 1), background var(--pca-motion), color var(--pca-motion), border-color var(--pca-motion), transform var(--pca-motion), box-shadow var(--pca-motion), padding var(--pca-motion);
+  opacity: 1;
+  transform: none;
+  transition: background var(--pca-motion), color var(--pca-motion), border-color var(--pca-motion), transform var(--pca-motion), box-shadow var(--pca-motion), padding var(--pca-motion);
 }
 
 .pca-button::after {
@@ -117,12 +115,12 @@ html.js .pca-contact.pca-in-view .pca-button {
   content: '';
   position: absolute;
   left: 50%;
-  top: 50%;
+  top: 55%;
   width: 12px;
   height: 12px;
   border-top: 2px solid currentColor;
   border-left: 2px solid currentColor;
-  transform: translate(-50%, -42%) rotate(45deg);
+  transform: translate(-50%, -50%) rotate(45deg);
 }
 
 .pca-scroll-top:hover,
