@@ -234,8 +234,11 @@ body.custom-background {
 
   #main-header #logo,
   #main-header.et-fixed-header #logo {
+    width: auto !important;
+    height: auto !important;
     max-width: 100% !important;
     max-height: 68px !important;
+    object-fit: contain !important;
   }
 
   #top-menu-nav {
