@@ -14,37 +14,22 @@
     document.documentElement.className = 'js';
   </script>
 
-  <link rel="stylesheet" id="divi-fonts-css"
-    href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800&#038;subset=latin,latin-ext&#038;display=swap"
-    type="text/css" media="all">
-  <link rel="stylesheet" id="et-builder-googlefonts-cached-css"
-    href="https://fonts.googleapis.com/css?family=Cormorant+Garamond:300,300italic,regular,italic,500,500italic,600,600italic,700italic|Muli:200,300,regular,500,600,700,800,900,200italic,300italic,italic,500italic,600italic,700italic,800italic,900italic&#038;subset=latin-ext,vietnamese,cyrillic,latin,cyrillic-ext&#038;display=swap"
-    type="text/css" media="all">
-  <link rel="stylesheet" id="divi-style-css" href="{{url_prefix}}/wp-content/themes/Divi/style.css?ver=4.9.1" type="text/css" media="all">
-
-  {{page.cache_css}}
-
   <link rel="stylesheet" id="pca-static-css" href="{{url_prefix}}/assets/pca-static.css?ver=20260703" type="text/css" media="all">
 </head>
 
-<body
-  class="page-template-default page custom-background et_pb_button_helper_class et_fixed_nav et_show_nav et_secondary_nav_enabled et_secondary_nav_only_menu et_primary_nav_dropdown_animation_fade et_secondary_nav_dropdown_animation_fade et_header_style_left et_pb_footer_columns3 et_cover_background et_pb_gutter et_pb_gutters3 et_pb_pagebuilder_layout et_smooth_scroll et_no_sidebar et_divi_theme et-db et_minified_js et_minified_css">
-  <div id="page-container">
+<body class="pca-site">
+  <div id="page-container" class="site-shell">
 
     {{partial.header}}
 
-    <div id="et-main-area">
+    <div id="site-main-area">
       <div id="main-content">
-        <article class="page type-page status-publish hentry">
-          <div class="entry-content">
-            <div id="et-boc" class="et-boc">
-              {{content}}
-            </div>
-          </div>
+        <article class="pca-page">
+          {{content}}
         </article>
       </div>
 
-      <span class="et_pb_scroll_top et-pb-icon"></span>
+      <button class="pca-scroll-top" type="button" aria-label="Back to top"></button>
 
       {{partial.hague_block}}
       {{partial.facebook}}
