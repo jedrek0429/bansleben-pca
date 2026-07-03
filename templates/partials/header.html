@@ -1,31 +1,28 @@
-<header id="main-header" data-height-onload="96" data-fixed-height-onload="0">
-  <div class="container clearfix et_menu_container">
-    <div class="logo_container">
-      <span class="logo_helper"></span>
-      <a href="{{lang_prefix}}/">
+<header id="main-header" class="site-header">
+  <div class="container site-header__inner">
+    <div class="logo_container site-logo">
+      <a href="{{lang_prefix}}/" class="site-logo__link" aria-label="{{site_name}}">
         <picture>
           <source srcset="{{url_prefix}}{{brand.logo_webp_src}}" type="image/webp">
-          <img src="{{brand.logo_src}}" alt="{{brand.logo_alt}}" width="{{brand.logo_width}}" 
-             height="{{brand.logo_height}}" id="logo" data-height-percentage="79" data-actual-width="360" data-actual-height="150">
+          <img src="{{brand.logo_src}}" alt="{{brand.logo_alt}}" width="{{brand.logo_width}}"
+            height="{{brand.logo_height}}" id="logo" class="site-logo__image">
         </picture>
       </a>
     </div>
 
-    <div id="et-top-navigation" data-height="81" data-fixed-height="40" style="padding-left: 212px;">
-      <nav id="top-menu-nav">
-        <ul id="top-menu" class="nav">
+    <nav id="top-menu-nav" class="site-nav" aria-label="Primary navigation">
+      <ul id="top-menu" class="nav-menu">
 {{main_menu}}
-        </ul>
-      </nav>
+      </ul>
+    </nav>
 
-      <div id="et_mobile_nav_menu">
-        <div class="mobile_nav closed">
-          <span class="select_page">{{common.select_page}}</span>
-          <span class="mobile_menu_bar mobile_menu_bar_toggle"></span>
-          <ul id="mobile_menu" class="et_mobile_menu">
+    <div id="site-mobile-nav" class="site-mobile-nav">
+      <div class="mobile_nav closed">
+        <span class="select_page">{{common.select_page}}</span>
+        <button class="mobile_menu_bar mobile_menu_bar_toggle" type="button" aria-label="{{common.select_page}}" aria-expanded="false"></button>
+        <ul id="mobile_menu" class="mobile-menu">
 {{mobile_menu}}
-          </ul>
-        </div>
+        </ul>
       </div>
     </div>
   </div>
