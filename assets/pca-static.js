@@ -1,7 +1,7 @@
 /*! PCA static runtime: small first-party behavior for navigation, reveal effects, and contact messages. */
 (function () {
   var PHONE_MAX_WIDTH = 900;
-  var REVEAL_SELECTOR = '.pca-reveal';
+  var REVEAL_SELECTOR = '.pca-reveal, .pca-card, .pca-contact';
 
   function ready(callback) {
     if (document.readyState === 'loading') {
