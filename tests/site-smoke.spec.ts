@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, Page, test } from '@playwright/test';
 
 const routes = [
   { lang: 'en', home: '/en/', contact: '/en/contact/' },
@@ -6,7 +6,7 @@ const routes = [
   { lang: 'hr', home: '/hr/', contact: '/hr/kontakt/' },
 ];
 
-async function gotoOk(page: Parameters<typeof test>[0]['page'], path: string) {
+async function gotoOk(page: Page, path: string) {
   const response = await page.goto(path, { waitUntil: 'domcontentloaded' });
   expect(response, `Expected ${path} to return a response`).not.toBeNull();
   expect(response!.status(), `Expected ${path} to load successfully`).toBeLessThan(400);
@@ -21,7 +21,9 @@ test.describe('static PCA site smoke tests', () => {
       await expect(page.locator('#page-container')).toBeVisible();
       await expect(page.locator('#main-content')).toBeVisible();
       await expect(page.locator('#main-footer')).toBeVisible();
-      await expect(page.locator('#top-menu a')).toHaveCountGreaterThan(1);
+
+      const menuLinkCount = await page.locator('#top-menu a').count();
+      expect(menuLinkCount).toBeGreaterThan(1);
     });
 
     test(`${route.lang} contact form keeps static POST behavior`, async ({ page }) => {
