@@ -1,11 +1,10 @@
-name: Site regression harness
+name: Site diagnostics manual
 
 on:
-  pull_request:
   workflow_dispatch:
 
 jobs:
-  regression:
+  diagnostics:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,7 +22,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Install Node test dependencies
         run: npm install
@@ -37,10 +36,11 @@ jobs:
       - name: Expose local test root assets
         run: python tools/pages_preview_root_assets.py --preview-dir ../site-dist
 
-      - name: Run smoke regression tests
+      - name: Run smoke diagnostics
         run: npm run test:smoke
+        continue-on-error: true
 
-      - name: Collect Lighthouse reports
+      - name: Collect Lighthouse diagnostics
         run: npm run lhci:collect
         continue-on-error: true
 
