@@ -34,6 +34,9 @@ jobs:
       - name: Build static site
         run: python tools/build.py
 
+      - name: Expose local test root assets
+        run: python tools/pages_preview_root_assets.py --preview-dir ../site-dist
+
       - name: Run smoke regression tests
         run: npm run test:smoke
 
