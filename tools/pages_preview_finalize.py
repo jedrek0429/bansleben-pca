@@ -8,6 +8,7 @@ from pathlib import Path
 
 
 ROOT_ITEMS = ("assets", "wp-content", "wp-includes")
+ROOT_PREFIXES = tuple(f"/{item}/" for item in ROOT_ITEMS)
 
 
 def normalize_url_prefix(value: str) -> str:
@@ -38,6 +39,30 @@ def expose_root_assets(preview_dir: Path, source_lang: str) -> None:
         raise SystemExit(f"Missing preview source language directory: {source_dir}")
     for item in ROOT_ITEMS:
         copy_item(source_dir / item, preview_dir / item)
+
+
+def rewrite_html_urls(preview_dir: Path, url_prefix: str) -> None:
+    url_prefix = normalize_url_prefix(url_prefix)
+    if not url_prefix:
+        return
+
+    for path in preview_dir.rglob("*.html"):
+        text = path.read_text(encoding="utf-8")
+        updated = text
+
+        for root_prefix in ROOT_PREFIXES:
+            replacement = url_prefix + root_prefix
+
+            for attr in ("href", "src", "srcset", "content"):
+                updated = updated.replace(f'{attr}="{root_prefix}', f'{attr}="{replacement}')
+                updated = updated.replace(f"{attr}='{root_prefix}", f"{attr}='{replacement}")
+
+            updated = updated.replace(f"url({root_prefix}", f"url({replacement}")
+            updated = updated.replace(f"url('{root_prefix}", f"url('{replacement}")
+            updated = updated.replace(f'url("{root_prefix}', f'url("{replacement}')
+
+        if updated != text:
+            path.write_text(updated, encoding="utf-8")
 
 
 def write_index(preview_dir: Path, url_prefix: str) -> None:
@@ -74,6 +99,7 @@ def main() -> None:
 
     preview_dir = Path(args.preview_dir).resolve()
     expose_root_assets(preview_dir, args.source_lang)
+    rewrite_html_urls(preview_dir, args.url_prefix)
     write_index(preview_dir, args.url_prefix)
 
 
