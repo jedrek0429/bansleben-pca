@@ -1,0 +1,61 @@
+name: Preview comment trigger
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  actions: write
+  contents: read
+  issues: read
+  pull-requests: read
+
+jobs:
+  dispatch-preview:
+    if: contains(github.event.comment.html_url, '/pull/') && contains(github.event.comment.body, '/preview')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Resolve pull request ref
+        id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          set -euo pipefail
+          pr_json=$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}")
+          head_repo=$(printf '%s' "$pr_json" | jq -r '.head.repo.full_name')
+          head_ref=$(printf '%s' "$pr_json" | jq -r '.head.ref')
+          base_repo=$(printf '%s' "$pr_json" | jq -r '.base.repo.full_name')
+
+          if [ "$head_repo" = "$base_repo" ]; then
+            dispatch_ref="$head_ref"
+          else
+            dispatch_ref="main"
+          fi
+
+          echo "number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+          echo "ref=$dispatch_ref" >> "$GITHUB_OUTPUT"
+
+      - name: Dispatch SSH preview workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+          DISPATCH_REF: ${{ steps.pr.outputs.ref }}
+        run: |
+          gh workflow run ssh-pr-preview.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref "$DISPATCH_REF" \
+            -f pr_number="$PR_NUMBER"
+
+      - name: Dispatch screenshot workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+          DISPATCH_REF: ${{ steps.pr.outputs.ref }}
+        run: |
+          gh workflow run site-screenshots.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref "$DISPATCH_REF" \
+            -f pr_number="$PR_NUMBER" \
+            -f path="/en/"
