@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       pr_number:
-        description: Pull request number to comment on
+        description: Pull request number
         required: false
         type: string
       path:
