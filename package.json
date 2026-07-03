@@ -4,7 +4,7 @@
   "private": true,
   "description": "Regression harness for the static PCA site build.",
   "scripts": {
-    "build:site": "python tools/build.py && python tools/clean_static_output.py --dist ../site-dist",
+    "build:site": "python tools/build.py && python tools/clean_static_output_v2.py --dist ../site-dist",
     "test:smoke": "playwright test tests/site-smoke.spec.ts",
     "test:visual": "PCA_VISUAL_REGRESSION=1 playwright test tests/site-visual.spec.ts",
     "snapshots:update": "PCA_VISUAL_REGRESSION=1 playwright test tests/site-visual.spec.ts --update-snapshots",
