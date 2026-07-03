@@ -9,7 +9,8 @@ The rule for cleanup work is simple: AI or humans may propose smaller CSS/JS, bu
 - Playwright smoke tests for core page structure and key behavior.
 - Opt-in Playwright visual regression tests for page screenshots and UI states.
 - Lighthouse CI configuration for collecting performance reports and warning-level budgets.
-- A GitHub Actions workflow that builds the static site, uploads a website preview artifact, and runs smoke checks on pull requests.
+- A GitHub Actions workflow that builds the static site and runs smoke checks on pull requests.
+- An automatic GitHub Pages PR preview workflow that publishes the latest PR commit under a `pr-number` preview path.
 
 No generated site output, templates, content, locale data, or legacy assets are changed by this harness.
 
@@ -29,22 +30,47 @@ npm run build:site
 
 The current Python build writes output to `../site-dist/`.
 
-## Preview from GitHub Actions
+## Live GitHub Pages PR preview
 
-Every workflow run uploads the built static site as a `site-preview` artifact. Download and unzip it, then serve it locally:
+On each pull request open, reopen, or update, the `GitHub Pages PR preview` workflow deploys the latest PR commit to a path based on the pull request number.
 
-```sh
-unzip site-preview.zip -d site-preview
-python -m http.server 8080 --directory site-preview
+For pull request 1, the preview path is:
+
+```text
+/bansleben-pca/pr-1/
 ```
 
-Then open one of the localized roots:
+Localized roots are:
 
-- `http://127.0.0.1:8080/en/`
-- `http://127.0.0.1:8080/fr/`
-- `http://127.0.0.1:8080/hr/`
+```text
+/bansleben-pca/pr-1/en/
+/bansleben-pca/pr-1/fr/
+/bansleben-pca/pr-1/hr/
+```
 
-The artifact is a downloadable preview bundle, not a public live deployment. A hosted preview URL can be added later with GitHub Pages, Cloudflare Pages, Netlify, or another deployment target.
+For GitHub Pages to work, repository settings must enable Pages with GitHub Actions as the deployment source.
+
+## Development preview publish script
+
+`tools/dev_build_and_publish.py` supports both the existing `/v2` preview flow and GitHub Pages-style preview paths.
+
+Existing default behavior:
+
+```sh
+python tools/dev_build_and_publish.py
+```
+
+GitHub Pages-style preview build:
+
+```sh
+python tools/dev_build_and_publish.py \
+  --url-prefix /bansleben-pca/pr-1 \
+  --dest pages-preview/pr-1 \
+  --rewrite-root-assets \
+  --write-preview-index
+```
+
+`--rewrite-root-assets` is preview-only. It rewrites remaining root-relative legacy asset URLs under the preview path so old `/wp-content/...` and `/wp-includes/...` links still resolve on the GitHub Pages project site.
 
 ## Run smoke checks
 
