@@ -43,11 +43,8 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Install Node dependencies
-        run: npm install
-
       - name: Install Playwright Chromium
-        run: npx playwright install --with-deps chromium
+        run: npx --yes playwright@latest install --with-deps chromium
 
       - name: Build static site
         run: python tools/build.py
@@ -64,8 +61,8 @@ jobs:
           python -m http.server 4173 --directory ../site-dist > /tmp/pca-site-server.log 2>&1 &
           echo $! > /tmp/pca-site-server.pid
           curl --retry 20 --retry-connrefused --retry-delay 1 --fail "http://127.0.0.1:4173${SCREENSHOT_PATH}" >/dev/null
-          npx playwright screenshot --browser=chromium --viewport-size=1440,1000 --full-page "http://127.0.0.1:4173${SCREENSHOT_PATH}" screenshots/desktop.png
-          npx playwright screenshot --browser=chromium --viewport-size=390,844 --full-page "http://127.0.0.1:4173${SCREENSHOT_PATH}" screenshots/mobile.png
+          npx --yes playwright@latest screenshot --browser=chromium --viewport-size=1440,1000 --full-page "http://127.0.0.1:4173${SCREENSHOT_PATH}" screenshots/desktop.png
+          npx --yes playwright@latest screenshot --browser=chromium --viewport-size=390,844 --full-page "http://127.0.0.1:4173${SCREENSHOT_PATH}" screenshots/mobile.png
 
       - name: Upload screenshots artifact
         id: upload
