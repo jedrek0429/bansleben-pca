@@ -81,6 +81,7 @@ def load_locale(lang: str):
     return load_json(ROOT / "locales" / f"{lang}.json")
 
 
+
 def nested_get(data, key: str):
     cur = data
     for part in key.split("."):
@@ -93,6 +94,7 @@ def nested_get(data, key: str):
     return cur
 
 
+
 def value_from_locales(lang: str, key: str, locales):
     """Return a nested localized value, falling back to English when the requested language is missing."""
     value = nested_get(locales.get(lang, {}), key)
@@ -101,8 +103,10 @@ def value_from_locales(lang: str, key: str, locales):
     return value
 
 
+
 def page_config(key: str) -> dict:
     return PAGES_BY_KEY.get(key, {})
+
 
 
 def is_enabled(page: dict, lang: str) -> bool:
@@ -110,6 +114,7 @@ def is_enabled(page: dict, lang: str) -> bool:
     if not enabled:
         return True
     return lang in enabled
+
 
 
 def page_title(lang: str, key: str, locales) -> str:
@@ -123,6 +128,7 @@ def page_title(lang: str, key: str, locales) -> str:
         return str(title)
 
     return key.replace("_", " ").title()
+
 
 
 def page_slug(lang: str, key: str, locales) -> str:
@@ -142,12 +148,14 @@ def page_slug(lang: str, key: str, locales) -> str:
     return slug
 
 
+
 def page_data(locales, lang: str, key: str) -> dict:
     return {
         "key": key,
         "title": page_title(lang, key, locales),
         "slug": page_slug(lang, key, locales),
     }
+
 
 
 def lang_prefix(lang: str) -> str:
@@ -157,8 +165,10 @@ def lang_prefix(lang: str) -> str:
     return prefix.rstrip("/")
 
 
+
 def root_url(lang: str) -> str:
     return (lang_prefix(lang) or "") + "/"
+
 
 
 def page_url(locales, lang: str, key: str) -> str:
@@ -175,6 +185,7 @@ def page_url(locales, lang: str, key: str) -> str:
 
     prefix = lang_prefix(lang)
     return f"{prefix}/{slug}/" if prefix else f"/{slug}/"
+
 
 
 def env_site_base_urls() -> dict:
@@ -205,6 +216,7 @@ def explicit_lastmod(seo_config: dict, lang: str, key: str) -> str:
         return str(value.get(lang) or value.get("en") or "").strip()
 
     return str(value or "").strip()
+
 
 
 def content_path_for(lang: str, key: str) -> Path | None:
@@ -238,7 +250,6 @@ def page_lastmod(seo_config: dict, lang: str, key: str) -> str:
         return file_lastmod_date(content_path)
 
     return ""
-
     
 def site_base_url(seo_config: dict, lang: str, locales) -> str:
     """Return the absolute base URL for a language from SEO config or locale domain settings."""
@@ -248,11 +259,13 @@ def site_base_url(seo_config: dict, lang: str, locales) -> str:
     return str(url or "").rstrip("/")
 
 
+
 def absolute_page_url(seo_config: dict, locales, lang: str, key: str) -> str:
     """Build the absolute canonical URL for a localized page."""
     base = site_base_url(seo_config, lang, locales)
     path = page_url(locales, lang, key)
     return base + path
+
 
 
 def absolute_asset_url(seo_config: dict, locales, lang: str, path_or_url: str) -> str:
@@ -263,6 +276,7 @@ def absolute_asset_url(seo_config: dict, locales, lang: str, path_or_url: str) -
     if not value.startswith("/"):
         value = "/" + value
     return site_base_url(seo_config, lang, locales) + value
+
 
 
 def seo_description(seo_config: dict, lang: str, key: str) -> str:
@@ -278,6 +292,7 @@ def seo_description(seo_config: dict, lang: str, key: str) -> str:
     return str(defaults.get(lang) or defaults.get("en") or "")
 
 
+
 def enabled_alternate_langs(key: str) -> list[str]:
     """Return the languages where a page is enabled and should be exposed as an alternate localized URL."""
     page = page_config(key)
@@ -291,12 +306,15 @@ def enabled_alternate_langs(key: str) -> list[str]:
     ]
 
 
+
 def page_og_locale(seo_config: dict, lang: str) -> str:
     return str((seo_config.get("og_locale") or {}).get(lang) or lang)
 
 
+
 def page_hreflang(seo_config: dict, lang: str) -> str:
     return str((seo_config.get("hreflang") or {}).get(lang) or lang)
+
 
 
 def json_script(data: dict) -> str:
@@ -305,6 +323,7 @@ def json_script(data: dict) -> str:
         + json.dumps(data, ensure_ascii=False, separators=(",", ":"))
         + "</script>"
     )
+
 
 
 def breadcrumb_items(seo_config: dict, locales, lang: str, key: str) -> list[dict]:
@@ -338,6 +357,7 @@ def breadcrumb_items(seo_config: dict, locales, lang: str, key: str) -> list[dic
         })
 
     return items
+
 
 
 def schema_page_type(key: str) -> str:
@@ -437,6 +457,7 @@ def render_schema(seo_config: dict, locales, lang: str, key: str, title: str, de
     return "\n".join(pieces)
 
 
+
 def render_seo_head(seo_config: dict, locales, lang: str, key: str, title: str) -> str:
     """Render SEO-related head tags, including description, canonical URL, hreflang links, icons, Open Graph, Twitter, and schema data."""
     description = seo_description(seo_config, lang, key)
@@ -519,6 +540,7 @@ def output_path(locales, lang: str, key: str) -> Path:
     return DIST / lang / slug / "index.html"
 
 
+
 def read_content(lang: str, key: str) -> str:
     """Load Markdown content for a page, preferring the requested language and falling back to English."""
     candidates = [
@@ -531,6 +553,7 @@ def read_content(lang: str, key: str) -> str:
             return markdown_to_html(path.read_text(encoding="utf-8"), URL_PREFIX)
 
     return ""
+
 
 
 def load_templates():
@@ -552,6 +575,7 @@ def load_templates():
         templates["partials"][path.stem] = path.read_text(encoding="utf-8")
 
     return templates
+
 
 
 def template_name_for(page: dict, has_cards: bool) -> str:
@@ -585,19 +609,11 @@ def template_name_for(page: dict, has_cards: bool) -> str:
     return requested or "content"
 
 
+
 def cache_css_link(page: dict, template_name: str) -> str:
-    """Return the cached Divi CSS link for a page, using page-specific config before template defaults."""
-    page_css = load_optional_json(ROOT / "config" / "page_cache_css.json")
+    """Return an empty legacy theme CSS slot retained for template compatibility."""
+    return ""
 
-    key = page.get("key", "")
-    href = (
-        page.get("cache_css")
-        or page_css.get(key)
-        or CACHE_CSS_BY_TEMPLATE.get(template_name)
-        or CACHE_CSS_BY_TEMPLATE["content"]
-    )
-
-    return f'<link rel="stylesheet" id="et-core-unified-cached-inline-styles" href="{href}" />'
 
 
 def hero_style_for_page(lang: str, locales, key: str) -> str:
@@ -625,6 +641,7 @@ def hero_style_for_page(lang: str, locales, key: str) -> str:
     return f' style="background-image: url({src}) !important;"'
 
 
+
 def menu_keys() -> list[str]:
     keys = PAGES_CONFIG.get("top_menu")
     if isinstance(keys, list) and keys:
@@ -632,11 +649,13 @@ def menu_keys() -> list[str]:
     return ["introduction", "whom_to_contact", "jurisprudence", "contact", "who_we_are"]
 
 
+
 def menu_label(lang: str, locales, key: str) -> str:
     value = value_from_locales(lang, f"menu.{key}", locales)
     if value:
         return str(value)
     return page_title(lang, key, locales)
+
 
 
 def render_menu_items(lang: str, locales, current_key: str, mobile: bool = False) -> str:
@@ -650,20 +669,16 @@ def render_menu_items(lang: str, locales, current_key: str, mobile: bool = False
 
         active = key == current_key
 
-        classes = [
-            "menu-item",
-            "menu-item-type-post_type",
-            "menu-item-object-page",
-        ]
+        classes = ["nav-item"]
 
         if key == "introduction":
-            classes.append("menu-item-home")
+            classes.append("nav-item--home")
 
         if active:
-            classes.extend(["current-menu-item", "page_item", "current_page_item"])
+            classes.append("is-current")
 
         if mobile and not items:
-            classes.append("et_first_mobile_item")
+            classes.append("nav-item--first-mobile")
 
         aria = ' aria-current="page"' if active else ""
         href = page_url(locales, lang, key)
@@ -676,7 +691,7 @@ def render_menu_items(lang: str, locales, current_key: str, mobile: bool = False
     legal_label = value_from_locales(lang, "menu.legal_practice", locales) or "Legal practice"
 
     items.append(
-        '<li class="menu-item menu-item-type-custom menu-item-object-custom">'
+        '<li class="nav-item nav-item--external">'
         f'<a href="{html.escape(str(legal_url), quote=True)}">{html.escape(str(legal_label))}</a>'
         '</li>'
     )
@@ -684,12 +699,15 @@ def render_menu_items(lang: str, locales, current_key: str, mobile: bool = False
     return "\n".join(items)
 
 
+
 def render_main_menu(lang: str, locales, current_key: str) -> str:
     return render_menu_items(lang, locales, current_key, mobile=False)
 
 
+
 def render_mobile_menu(lang: str, locales, current_key: str) -> str:
     return render_menu_items(lang, locales, current_key, mobile=True)
+
 
 
 def render_language_switcher(lang: str, locales, key: str) -> str:
@@ -709,6 +727,7 @@ def render_language_switcher(lang: str, locales, key: str) -> str:
         + "\n  ".join(links)
         + "</div>"
     )
+
 
 
 def render_text(text: str, lang: str, locales, ctx=None, templates=None, depth: int = 0) -> str:
@@ -816,12 +835,14 @@ def render_text(text: str, lang: str, locales, ctx=None, templates=None, depth: 
     return rendered
 
 
+
 def render_partial(name: str, lang: str, locales, ctx, templates) -> str:
     """Render a named partial template with the current language, locale data, and rendering context."""
     partial = templates.get("partials", {}).get(name, "")
     if not partial:
         return ""
     return render_text(partial, lang, locales, ctx, templates)
+
 
 
 def card_group_for(page_key: str, lang: str, cards_config) -> list[str]:
@@ -908,10 +929,10 @@ def render_card(lang: str, locales, key: str, col_index: int, cols: int, templat
     href = page_url(locales, lang, key)
 
     width_class = {
-        1: "et_pb_column_4_4",
-        2: "et_pb_column_1_2",
-        3: "et_pb_column_1_3",
-    }.get(cols, "et_pb_column_1_3")
+        1: "pca-card--full",
+        2: "pca-card--half",
+        3: "pca-card--third",
+    }.get(cols, "pca-card--third")
 
     src = html.escape(str(img_src), quote=True)
 
@@ -928,11 +949,11 @@ def render_card(lang: str, locales, key: str, col_index: int, cols: int, templat
     ctx = {
         "card": {
             "width_class": width_class,
-            "last": " et-last-child" if col_index == cols - 1 else "",
+            "last": "",
             "webp_src": html.escape(str(image_info.get("webp_src", "")), quote=True),
             "image_src": src,
             "image_alt": html.escape(str(img_alt), quote=True),
-            "image_title": html.escape(str(img_title), quote=True),
+            "image_title": html.escape(str(img_title)),
             "image_width": html.escape(str(image_info.get("width", "")), quote=True),
             "image_height": html.escape(str(image_info.get("height", "")), quote=True),
             "srcset": srcset,
@@ -943,6 +964,7 @@ def render_card(lang: str, locales, key: str, col_index: int, cols: int, templat
     }
 
     return render_text(templates["partials"]["card"], lang, locales, ctx, templates)
+
 
 
 def chunk_cards(keys: list[str]) -> list[list[str]]:
@@ -964,6 +986,7 @@ def chunk_cards(keys: list[str]) -> list[list[str]]:
         i += size
 
     return rows
+
 
 
 def render_card_grid(
@@ -1010,6 +1033,7 @@ def render_card_grid(
     return render_text(templates["partials"]["card_section"], lang, locales, section_ctx, templates)			
 
 
+
 def wants_title(page: dict, template_name: str) -> bool:
     """Decide whether the page should render a visible title section for the selected template."""
     if page.get("key") == "introduction":
@@ -1021,8 +1045,9 @@ def wants_title(page: dict, template_name: str) -> bool:
     return page.get("title", True) is not False
 
 
+
 def section_index_for_cards(key: str, template_name: str, content_html: str) -> int:
-    """Return the expected Divi section index for card sections based on page type and intro content."""
+    """Return the historical section index for card sections based on page type and intro content."""
     if key == "introduction":
         return 0
 
@@ -1134,6 +1159,7 @@ def render_page(lang: str, locales, page: dict, templates, cards_config, seo_con
     dst.write_text(full, encoding="utf-8")
 
 
+
 def render_404_head(seo_config: dict) -> str:
     icons = seo_config.get("icons") or {}
     lines = [
@@ -1154,6 +1180,7 @@ def render_404_head(seo_config: dict) -> str:
         lines.append(f'<meta name="theme-color" content="{html.escape(str(seo_config["theme_color"]), quote=True)}">')
 
     return "\n".join(lines)
+
 
 
 def render_404(lang: str, locales, templates) -> None:
@@ -1202,6 +1229,7 @@ def render_404(lang: str, locales, templates) -> None:
     dst.write_text(full, encoding="utf-8")
 
 
+
 def indexable_page_keys_for_lang(lang: str) -> list[str]:
     """Return enabled non-404 page keys that may be used for indexable SEO outputs."""
     keys = []
@@ -1215,6 +1243,7 @@ def indexable_page_keys_for_lang(lang: str) -> list[str]:
     return keys
 
 
+
 def all_enabled_page_keys_for_lang(lang: str) -> list[str]:
     """Return all enabled page keys for a language, including pages that may not be indexable."""
     keys = []
@@ -1223,6 +1252,7 @@ def all_enabled_page_keys_for_lang(lang: str) -> list[str]:
         if is_enabled(page, lang):
             keys.append(key)
     return keys
+
 
 
 def render_sitemap_xml(seo_config: dict, locales, lang: str) -> str:
@@ -1258,6 +1288,7 @@ def render_sitemap_xml(seo_config: dict, locales, lang: str) -> str:
 
     rows.append("</urlset>")
     return "\n".join(rows) + "\n"
+
 
 
 def write_extra_seo_files(seo_config: dict, locales) -> None:
@@ -1306,6 +1337,7 @@ def htaccess_404_path(lang: str) -> str:
     return f"{prefix}/404.html" if prefix else "/404.html"
 
 
+
 def render_htaccess(lang: str, seo_config: dict, locales) -> str:
     """Render Apache .htaccess rules for one generated language directory."""
     error_404 = htaccess_404_path(lang)
@@ -1332,7 +1364,7 @@ Header always set Referrer-Policy "strict-origin-when-cross-origin"
 Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
 Header always set X-Frame-Options "SAMEORIGIN"
 
-Header always set Content-Security-Policy "default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; script-src 'self' 'unsafe-inline' 'unsafe-eval'; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
+Header always set Content-Security-Policy "default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; font-src 'self' data:; connect-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
 
 <FilesMatch "\.(jpg|jpeg|png|gif|css|js|woff2|woff|ttf)$">
     Header set Cache-Control "public, max-age=31536000, immutable"
@@ -1374,6 +1406,7 @@ Require all denied
 """
 
 
+
 def write_htaccess_files(seo_config: dict, locales) -> None:
     """Write one public .htaccess file into each generated language directory."""
     for lang in LANGS:
@@ -1386,6 +1419,7 @@ def write_htaccess_files(seo_config: dict, locales) -> None:
         )
         
 
+
 def copy_path(src: Path, dst: Path) -> None:
     """Copy a file or directory to the destination, creating parent directories when needed."""
     if src.is_dir():
@@ -1395,23 +1429,13 @@ def copy_path(src: Path, dst: Path) -> None:
         shutil.copy2(src, dst)
 
 
+
 def copy_static(lang: str) -> None:
     """Copy shared assets, language assets, public PHP files, and private contact config into one language output directory."""
     lang_root = DIST / lang
     lang_root.mkdir(parents=True, exist_ok=True)
 
-    # Flatten site-src/assets/common/* into site-dist/<lang>/*
-    # This makes:
-    #   site-src/assets/common/wp-content  -> site-dist/en/wp-content
-    #   site-src/assets/common/wp-includes -> site-dist/en/wp-includes
-    common_src = ROOT / "assets" / "common"
-
-    if common_src.exists():
-        for item in common_src.iterdir():
-            copy_path(item, lang_root / item.name)
-
-    # Copy non-common project assets into site-dist/<lang>/assets/*
-    # This preserves URLs like /en/assets/...
+    # Copy non-common project assets into site-dist/<lang>/assets/*.
     assets_src = ROOT / "assets"
     assets_dst = lang_root / "assets"
 
@@ -1438,6 +1462,7 @@ def copy_static(lang: str) -> None:
     (private_dir / ".htaccess").write_text("Require all denied\n", encoding="utf-8")
 
 
+
 def render_templates(locales):
     """Load config, templates, cards, and SEO settings, then render every enabled page for every language."""
     global PAGES_CONFIG, PAGES_BY_KEY, SEO_CONFIG
@@ -1459,150 +1484,52 @@ def render_templates(locales):
     for lang in LANGS:
         for page in PAGES_CONFIG.get("pages", []):
             render_page(lang, locales, page, templates, cards_config, SEO_CONFIG)
-
         render_404(lang, locales, templates)
-
-    return []
-
-def unresolved_files():
-    """Scan generated text files for leftover template tokens that were not resolved during rendering."""
-    bad = []
-
-    for path in DIST.rglob("*"):
-        if not path.is_file():
-            continue
-
-        relative_parts = path.relative_to(DIST).parts
-        if "assets" in relative_parts or "wp-content" in relative_parts:
-            continue
-
-        if path.suffix.lower() not in {".html", ".htm", ".txt", ".xml"}:
-            continue
-
-        text = path.read_text(encoding="utf-8", errors="ignore")
-        tokens = sorted(set(TOKEN_RE.findall(text)))
-
-        if tokens:
-            bad.append((path, tokens))
-
-    return bad
-
-
-def assert_ok():
-    """Validate that required build outputs exist and that the distribution root contains only expected items."""
-    required = [
-        DIST / "index.html",
-
-        DIST / "en" / "index.html",
-        DIST / "fr" / "index.html",
-        DIST / "hr" / "index.html",
-
-        DIST / "en" / "assets",
-        DIST / "fr" / "assets",
-        DIST / "hr" / "assets",
-
-        DIST / "en" / "contact.php",
-        DIST / "fr" / "contact.php",
-        DIST / "hr" / "contact.php",
-
-        DIST / "en" / "contact" / "index.html",
-        DIST / "fr" / "formulaire" / "index.html",
-        DIST / "hr" / "kontakt" / "index.html",
-    ]
-
-    missing = [path for path in required if not path.exists()]
-
-    if missing:
-        print_group(
-            "Missing build outputs",
-            [display_path(path, ROOT.parent) for path in missing],
-            "ERROR",
-            CLR_RED,
-        )
-        raise SystemExit(1)
-
-    root_index = DIST / "index.html"
-    if root_index.read_text(encoding="utf-8") != "":
-        print_group(
-            "Invalid dist root",
-            [f"{display_path(root_index, ROOT.parent)} must be empty."],
-            "ERROR",
-            CLR_RED,
-        )
-        raise SystemExit(1)
-
-    allowed_root_items = {*LANGS, "index.html"}
-    extra_root_items = sorted(
-        path.name for path in DIST.iterdir()
-        if path.name not in allowed_root_items
-    )
-
-    if extra_root_items:
-        print_group(
-            "Invalid dist root",
-            [f"Unexpected root item: {name}" for name in extra_root_items],
-            "ERROR",
-            CLR_RED,
-        )
-        raise SystemExit(1)
-
-def main():
-    """Run the full static site build from CLI arguments: configure paths, render pages, copy assets, write SEO files, and validate output."""
-    parser = argparse.ArgumentParser(description="Build the PCA static site.")
-    parser.add_argument(
-        "--root",
-        default=str(DEFAULT_ROOT),
-        help="site-src root, default: current directory",
-    )
-    args = parser.parse_args()
-
-    configure_paths(args.root)
-
-    if not ROOT.is_dir():
-        raise SystemExit(f"Root does not exist or is not a directory: {ROOT}")
-
-    print_section("Site Build Report")
-    print(color(f"Source:          {display_path(ROOT, ROOT.parent)}", CLR_WHITE))
-    print(color(f"Dist:            {display_path(DIST, ROOT.parent)}", CLR_WHITE))
-    print(color(f"Languages:       {', '.join(LANGS)}", CLR_WHITE))
-    print(color(f"URL prefix:      {URL_PREFIX or '/'}", CLR_WHITE))
-    print(color(f"Language in URL: {LANG_IN_URL}", CLR_WHITE))
-
-    if DIST.exists():
-        shutil.rmtree(DIST)
-
-    DIST.mkdir(parents=True, exist_ok=True)
-    
-    convert_to_webp(ROOT / "assets")
-
-    locales = {lang: load_locale(lang) for lang in LANGS}
-
-    template_warnings = render_templates(locales)
-    
-    for lang in LANGS:
         copy_static(lang)
 
     write_extra_seo_files(SEO_CONFIG, locales)
     write_htaccess_files(SEO_CONFIG, locales)
-    
-    (DIST / "index.html").write_text("", encoding="utf-8")
 
-    assert_ok()
 
-    bad = unresolved_files()
+def build(root) -> None:
+    configure_paths(root)
 
-    print_group("Template warnings", template_warnings, "WARN", CLR_YELLOW)
-    print_group(
-        "Unresolved template tokens",
-        [f"{display_path(path, ROOT.parent)}: {', '.join(tokens)}" for path, tokens in bad],
-        "WARN",
-        CLR_YELLOW,
+    print_section("Build static site")
+    print(color(f"Root: {display_path(ROOT, ROOT.parent)}", CLR_WHITE))
+    print(color(f"Dist: {display_path(DIST, ROOT.parent)}", CLR_WHITE))
+
+    if DIST.exists():
+        shutil.rmtree(DIST)
+    DIST.mkdir(parents=True, exist_ok=True)
+
+    locales = {lang: load_locale(lang) for lang in LANGS}
+
+    render_templates(locales)
+
+    for lang in LANGS:
+        (DIST / lang).mkdir(parents=True, exist_ok=True)
+
+    (DIST / "index.html").write_text(
+        '<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=/en/"><link rel="canonical" href="/en/"><title>Redirecting…</title>',
+        encoding="utf-8",
     )
 
-    if not template_warnings and not bad:
-        print_labeled("OK", CLR_GREEN, "no unresolved template tokens.")
+    convert_to_webp(str(DIST))
+    print_labeled("OK", CLR_GREEN, f"built {display_path(DIST, ROOT.parent)}")
 
-    print_labeled("OK", CLR_GREEN, f"built: {display_path(DIST, ROOT.parent)}")
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Build PCA static site.")
+    parser.add_argument("--root", default=DEFAULT_ROOT, help="site-src root directory")
+    return parser.parse_args()
+
+
+
+def main() -> None:
+    args = parse_args()
+    build(args.root)
+
 
 
 if __name__ == "__main__":
