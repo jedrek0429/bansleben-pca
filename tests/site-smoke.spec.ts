@@ -57,12 +57,22 @@ test.describe('static PCA site smoke tests', () => {
     await expect(mobileNav).toHaveClass(/closed/);
   });
 
-  test('sticky header state activates after scrolling', async ({ page }) => {
+  test('header remains fixed while scrolling', async ({ page }) => {
     await gotoOk(page, '/en/');
-    await page.evaluate(() => window.scrollTo(0, 900));
 
-    await expect(page.locator('#main-header')).toHaveClass(/et-fixed-header/, {
-      timeout: 5_000,
-    });
+    const header = page.locator('#main-header');
+    await expect(header).toBeVisible();
+
+    await expect(header).toHaveCSS('position', 'fixed');
+
+    const before = await header.boundingBox();
+    expect(before, 'Expected header bounding box before scrolling').not.toBeNull();
+
+    await page.evaluate(() => window.scrollTo(0, 900));
+    await page.waitForFunction(() => window.scrollY > 0 || document.documentElement.scrollTop > 0);
+
+    const after = await header.boundingBox();
+    expect(after, 'Expected header bounding box after scrolling').not.toBeNull();
+    expect(Math.abs(after!.y - before!.y)).toBeLessThanOrEqual(1);
   });
 });
