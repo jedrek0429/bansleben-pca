@@ -137,6 +137,7 @@ body.custom-background {
   #main-header .logo_container {
     position: relative !important;
     inset: auto !important;
+    width: auto !important;
     height: 100% !important;
     flex: 0 0 auto !important;
     display: flex !important;
