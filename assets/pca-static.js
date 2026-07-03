@@ -31,10 +31,10 @@
   }
 
   function closeMobileMenu(root) {
-    root.querySelectorAll('.mobile_nav.opened').forEach(function (nav) {
+    root.querySelectorAll('.pca-mobile-nav.opened').forEach(function (nav) {
       nav.classList.remove('opened');
       nav.classList.add('closed');
-      var toggle = nav.querySelector('.mobile_menu_bar_toggle, .mobile_menu_bar');
+      var toggle = nav.querySelector('.pca-mobile-menu-toggle');
       if (toggle) toggle.setAttribute('aria-expanded', 'false');
     });
   }
@@ -64,12 +64,12 @@
   }
 
   function initMobileMenu() {
-    document.querySelectorAll('.mobile_menu_bar_toggle, .mobile_menu_bar').forEach(function (toggle) {
+    document.querySelectorAll('.pca-mobile-menu-toggle').forEach(function (toggle) {
       if (toggle.dataset.pcaBound === '1') return;
       toggle.dataset.pcaBound = '1';
 
       toggle.addEventListener('click', function (event) {
-        var nav = toggle.closest('.mobile_nav');
+        var nav = toggle.closest('.pca-mobile-nav');
         if (!nav) return;
 
         event.preventDefault();
