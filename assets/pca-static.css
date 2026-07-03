@@ -210,8 +210,32 @@ img { height: auto; }
 .pca-form__actions { display: flex; justify-content: flex-end; }
 .static-form-message, .pca-contact__message:not(:empty) { margin-bottom: 20px; padding: 14px 16px; background: var(--pca-soft-bg); border-left: 4px solid var(--pca-green); }
 
-.pca-hague-block { color: #fff; background: linear-gradient(135deg, #284c31, #3e7b4d); text-align: center; }
-.pca-hague-block h3 { max-width: 920px; margin: 0 auto 12px; color: #fff; font-size: clamp(22px, 3vw, 34px); font-weight: 500; }
+.pca-hague-block {
+  color: #fff;
+  background: var(--pca-bg);
+  text-align: center;
+  padding: 56px 0;
+}
+.pca-hague-block__inner {
+  width: min(var(--pca-container), calc(100% - 40px));
+  margin: 0 auto;
+  padding: clamp(30px, 5vw, 54px);
+  background: linear-gradient(135deg, var(--pca-green-dark), var(--pca-green));
+  border: 1px solid rgba(255, 255, 255, .22);
+  box-shadow: 0 14px 38px rgba(0, 0, 0, .12);
+}
+.pca-hague-block__content {
+  max-width: 920px;
+  margin: 0 auto;
+}
+.pca-hague-block h3 {
+  max-width: 920px;
+  margin: 0 auto 12px;
+  color: #fff;
+  font-size: clamp(22px, 3vw, 34px);
+  font-weight: 500;
+}
+.pca-hague-block h3:last-child { margin-bottom: 0; }
 .pca-social-section { padding: 34px 0; text-align: center; }
 .pca-social-link { display: inline-flex; align-items: center; justify-content: center; gap: 10px; color: var(--pca-green); font-weight: 700; }
 .pca-social-link__icon { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: #1877f2; color: #fff; font-family: Arial, sans-serif; font-size: 24px; font-weight: 700; }
@@ -275,8 +299,8 @@ html.js .pca-in-view { opacity: 1; transform: none; }
 }
 
 @media (max-width: 560px) {
-  .container, .pca-card-row { width: min(100% - 26px, var(--pca-container)); }
-  .pca-section { padding: 42px 0; }
+  .container, .pca-card-row, .pca-hague-block__inner { width: min(100% - 26px, var(--pca-container)); }
+  .pca-section, .pca-hague-block { padding: 42px 0; }
   .pca-title-section { min-height: 220px; }
   .pca-card__body { padding: 20px; }
 }
