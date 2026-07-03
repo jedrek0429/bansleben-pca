@@ -40,16 +40,19 @@ DIST = DEFAULT_DIST
 DEST = DEFAULT_DEST
 
 LANGS = ["en", "fr", "hr"]
+DEFAULT_PRESERVED_ROOT_ITEMS = ["preview"]
+PRESERVED_ROOT_ITEMS = set(DEFAULT_PRESERVED_ROOT_ITEMS)
 
 
-def configure_paths(dist: Path, dest: Path) -> None:
-    global DIST, DEST, ROOT, PUBLIC_HTML
+def configure_paths(dist: Path, dest: Path, preserved_root_items: list[str] | None = None) -> None:
+    global DIST, DEST, ROOT, PUBLIC_HTML, PRESERVED_ROOT_ITEMS
 
     DIST = Path(dist).expanduser().resolve()
     DEST = Path(dest).expanduser().resolve()
 
     ROOT = DEFAULT_ROOT
     PUBLIC_HTML = DEFAULT_PUBLIC_HTML
+    PRESERVED_ROOT_ITEMS = set(preserved_root_items or DEFAULT_PRESERVED_ROOT_ITEMS)
 
 
 def assert_safe_paths() -> None:
@@ -139,6 +142,36 @@ def assert_dist_ok() -> None:
         raise SystemExit(1)
 
 
+def rsync_exclude_args() -> list[str]:
+    args = []
+    for name in sorted(PRESERVED_ROOT_ITEMS):
+        if name:
+            args.extend(["--exclude", f"/{name}/"])
+    return args
+
+
+def remove_unpreserved_destination_items() -> None:
+    if not DEST.exists():
+        return
+
+    for item in DEST.iterdir():
+        if item.name in PRESERVED_ROOT_ITEMS:
+            continue
+        if item.is_dir():
+            shutil.rmtree(item)
+        else:
+            item.unlink()
+
+
+def copy_dist_contents() -> None:
+    for item in DIST.iterdir():
+        target = DEST / item.name
+        if item.is_dir():
+            shutil.copytree(item, target, dirs_exist_ok=True)
+        else:
+            shutil.copy2(item, target)
+
+
 def publish_dist() -> str:
     if DEST is None:
         raise SystemExit("Missing required destination path.")
@@ -149,15 +182,20 @@ def publish_dist() -> str:
 
     if shutil.which("rsync"):
         subprocess.run(
-            ["rsync", "-a", "--delete", str(DIST) + "/", str(DEST) + "/"],
+            [
+                "rsync",
+                "-a",
+                "--delete",
+                *rsync_exclude_args(),
+                str(DIST) + "/",
+                str(DEST) + "/",
+            ],
             check=True,
         )
         return "rsync"
 
-    if DEST.exists():
-        shutil.rmtree(DEST)
-
-    shutil.copytree(DIST, DEST)
+    remove_unpreserved_destination_items()
+    copy_dist_contents()
     return "copytree"
 
 
@@ -175,16 +213,28 @@ def parse_args() -> argparse.Namespace:
         default=str(DEFAULT_DEST),
         help=f"destination directory to publish into (default: {DEFAULT_DEST})",
     )
+    parser.add_argument(
+        "--preserve-root-item",
+        action="append",
+        default=DEFAULT_PRESERVED_ROOT_ITEMS,
+        help=(
+            "root-level destination item to preserve during --delete publishing. "
+            "May be passed multiple times. Defaults to preserving 'preview'."
+        ),
+    )
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
-    configure_paths(Path(args.dist), Path(args.dest))
+    configure_paths(Path(args.dist), Path(args.dest), args.preserve_root_item)
 
     print_section("Site Publish Report")
     print(color(f"Source:      {display_path(DIST, ROOT)}", CLR_WHITE))
     print(color(f"Destination: {display_path(DEST, ROOT)}", CLR_WHITE))
+    if PRESERVED_ROOT_ITEMS:
+        preserved = ", ".join(sorted(PRESERVED_ROOT_ITEMS))
+        print(color(f"Preserving:  {preserved}", CLR_WHITE))
 
     assert_dist_ok()
 
