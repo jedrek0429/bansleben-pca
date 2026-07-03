@@ -57,7 +57,9 @@ test.describe('static PCA site smoke tests', () => {
     await expect(mobileNav).toHaveClass(/closed/);
   });
 
-  test('header remains fixed while scrolling', async ({ page }) => {
+  test('desktop header remains fixed while scrolling', async ({ page, viewport }) => {
+    test.skip((viewport?.width ?? 0) < 981, 'Fixed desktop header behavior is only expected above the Divi mobile breakpoint.');
+
     await gotoOk(page, '/en/');
 
     const header = page.locator('#main-header');
