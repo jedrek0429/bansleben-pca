@@ -1,28 +1,18 @@
-<div
-  class="et_pb_column {{card.width_class}} et_pb_column_1 et_pb_css_mix_blend_mode_passthrough{{card.last}} pca-card">
-  <div class="et_pb_module et_pb_image et_pb_image_1 pca-card-image">
-    <span class="et_pb_image_wrap ">
-        <picture>
-          <source srcset="{{url_prefix}}{{card.webp_src}}" type="image/webp">
-          <img src="{{card.image_src}}" 
-              alt="{{card.image_alt}}" 
-              title="{{card.image_title}}"
-              width="{{card.image_width}}" 
-              height="{{card.image_height}}"
-              {{card.srcset}}
-              class="wp-image-453">
-        </picture>
-      </span>
+<article class="pca-card {{card.width_class}}{{card.last}}">
+  <a class="pca-card__image-link" href="{{card.href}}" aria-label="{{card.title}}">
+    <picture class="pca-card__picture">
+      <source srcset="{{url_prefix}}{{card.webp_src}}" type="image/webp">
+      <img src="{{card.image_src}}"
+        alt="{{card.image_alt}}"
+        title="{{card.image_title}}"
+        width="{{card.image_width}}"
+        height="{{card.image_height}}"
+        {{card.srcset}}
+        class="pca-card__image">
+    </picture>
+  </a>
+  <div class="pca-card__body">
+    <h3 class="pca-card__title"><strong>{{card.title}}</strong></h3>
+    <a class="pca-button pca-card__button" href="{{card.href}}">{{card.read_more}}</a>
   </div>
-  <div class="et_pb_module et_pb_text et_pb_text_1 et_pb_text_align_center et_pb_bg_layout_light pca-card-title">
-    <div class="et_pb_text_inner">
-      <h3><strong>{{card.title}}</strong></h3>
-    </div>
-  </div>
-  <div
-    class="et_pb_button_module_wrapper et_pb_button_1_wrapper et_pb_button_alignment_center et_pb_module et_had_animation pca-card-button"
-    style="">
-    <a class="et_pb_button et_pb_button_1 et_hover_enabled et_pb_bg_layout_light"
-      href="{{card.href}}">{{card.read_more}}</a>
-  </div>
-</div>
+</article>
