@@ -1,0 +1,386 @@
+{
+  "lang": "fr",
+  "site_name": "Enlèvement Parental Pologne",
+  "domain": "https://enlevementparentalpologne.pl",
+  "menu": {
+    "introduction": "ACCUEIL",
+    "whom_to_contact": "QUI CONTACTER ?",
+    "jurisprudence": "JURISPRUDENCE",
+    "contact": "CONTACT",
+    "who_we_are": "QUI SOMMES-NOUS ?",
+    "legal_practice": "PRATIQUE JURIDIQUE"
+  },
+  "form": {
+    "name": "Nom",
+    "email": "E-mail",
+    "message": "Message",
+    "send": "ENVOYER",
+    "success": "Merci. Votre message a été envoyé.",
+    "error": "Désolé, votre message n’a pas pu être envoyé. Vérifiez votre adresse e-mail et réessayez."
+  },
+  "common": {
+    "read_more": "Lire la suite",
+    "back": "Retour",
+    "home": "Accueil",
+    "content_placeholder": "Contenu temporaire. Cette page sera alimentée depuis Markdown à l’étape suivante."
+  },
+  "not_found": {
+    "title": "Page introuvable",
+    "text": "La page que vous recherchez n’existe pas ou a été déplacée.",
+    "button": "Retour à l’accueil"
+  },
+  "hague_footer": {
+    "title": "Convention de La Haye",
+    "text": "Ce site fait référence à la Convention de La Haye du 25 octobre 1980 sur les aspects civils de l’enlèvement international d’enfants.",
+    "link_label": "Lire la suite",
+    "page": "the_hague_convention"
+  },
+  "pages": {
+    "introduction": {
+      "enabled": true,
+      "title": "Accueil",
+      "slug": "",
+      "parent": null
+    },
+    "whom_to_contact": {
+      "enabled": true,
+      "title": "Qui contacter ?",
+      "slug": "qui-contacter",
+      "parent": null
+    },
+    "jurisprudence": {
+      "enabled": true,
+      "title": "Jurisprudence",
+      "slug": "jurisprudence",
+      "parent": null
+    },
+    "contact": {
+      "enabled": true,
+      "title": "Formulaire",
+      "slug": "formulaire",
+      "parent": null
+    },
+    "who_we_are": {
+      "enabled": true,
+      "title": "Qui sommes-nous ?",
+      "slug": "qui-sommes-nous",
+      "parent": null
+    },
+    "privacy_policy": {
+      "enabled": true,
+      "title": "Politique de confidentialité",
+      "slug": "politique-de-confidentialite",
+      "parent": null
+    },
+    "parental_child_abduction": {
+      "enabled": true,
+      "title": "Enlèvement parental",
+      "slug": "enlevement-parental",
+      "parent": null
+    },
+    "within_the_law": {
+      "enabled": true,
+      "title": "Que dit la loi ?",
+      "slug": "que-dit-la-loi",
+      "parent": null
+    },
+    "international_laws": {
+      "enabled": true,
+      "title": "Législation internationale",
+      "slug": "que-dit-la-loi/legislation-internationale",
+      "parent": "within_the_law"
+    },
+    "individual_national_laws": {
+      "enabled": true,
+      "title": "Législations nationales",
+      "slug": "que-dit-la-loi/legislations-nationales",
+      "parent": "within_the_law"
+    },
+    "national_law_uk": {
+      "enabled": false,
+      "title": "",
+      "slug": "",
+      "parent": "individual_national_laws"
+    },
+    "national_law_us": {
+      "enabled": false,
+      "title": "",
+      "slug": "",
+      "parent": "individual_national_laws"
+    },
+    "national_law_france": {
+      "enabled": true,
+      "title": "Française",
+      "slug": "que-dit-la-loi/legislations-nationales/francaise",
+      "parent": "individual_national_laws"
+    },
+    "national_law_belgium": {
+      "enabled": true,
+      "title": "Belge",
+      "slug": "que-dit-la-loi/legislations-nationales/belge",
+      "parent": "individual_national_laws"
+    },
+    "national_law_canada": {
+      "enabled": true,
+      "title": "Canadienne",
+      "slug": "que-dit-la-loi/legislations-nationales/canadienne",
+      "parent": "individual_national_laws"
+    },
+    "national_law_croatia": {
+      "enabled": false,
+      "title": "",
+      "slug": "",
+      "parent": "individual_national_laws"
+    },
+    "national_law_poland": {
+      "enabled": true,
+      "title": "Polonaise",
+      "slug": "que-dit-la-loi/legislations-nationales/polonaise",
+      "parent": "individual_national_laws"
+    },
+    "what_should_i_do": {
+      "enabled": true,
+      "title": "Que puis-je faire ?",
+      "slug": "que-puis-je-faire",
+      "parent": null
+    },
+    "steps_to_follow": {
+      "enabled": true,
+      "title": "Étapes à suivre",
+      "slug": "que-puis-je-faire/etapes-a-suivre",
+      "parent": "what_should_i_do"
+    },
+    "parents_in_contact": {
+      "enabled": true,
+      "title": "Si vous êtes en contact avec l’autre parent et que vous savez qu’il est en Pologne.",
+      "slug": "que-puis-je-faire/parents-en-contact",
+      "parent": "what_should_i_do"
+    },
+    "parental_non_cooperation": {
+      "enabled": true,
+      "title": "Si l’autre parent refuse la médiation",
+      "slug": "que-puis-je-faire/non-cooperation-parentale",
+      "parent": "what_should_i_do"
+    },
+    "conflict_with_the_other_parent": {
+      "enabled": true,
+      "title": "Conflit avec l’autre parent",
+      "slug": "conflit-avec-lautre-parent",
+      "parent": null
+    },
+    "criminal_consequences": {
+      "enabled": true,
+      "title": "Conséquences pénales de l’enlèvement international d’enfant",
+      "slug": "conflit-avec-lautre-parent/consequences-penales",
+      "parent": "going_abroad_with_my_child"
+    },
+    "why_remain_in_poland": {
+      "enabled": true,
+      "title": "Pourquoi votre enfant et son deuxième parent pourrait rester en Pologne ?",
+      "slug": "conflit-avec-lautre-parent/pourquoi-rester-en-pologne",
+      "parent": "conflict_with_the_other_parent"
+    },
+    "going_abroad_with_my_child": {
+      "enabled": true,
+      "title": "Je veux partir à l’étranger avec mon enfant",
+      "slug": "je-veux-partir-a-letranger-avec-mon-enfant",
+      "parent": null
+    },
+    "is_it_possible": {
+      "enabled": true,
+      "title": "Est-ce possible ?",
+      "slug": "je-veux-partir-a-letranger-avec-mon-enfant/est-ce-possible",
+      "parent": "going_abroad_with_my_child"
+    },
+    "filial_relationship": {
+      "enabled": true,
+      "title": "Rappel sur la filiation et l’autorité parentale.",
+      "slug": "je-veux-partir-a-letranger-avec-mon-enfant/la-filiation-et-lautorite-parentale",
+      "parent": "conflict_with_the_other_parent"
+    },
+    "the_hague_convention": {
+      "enabled": true,
+      "title": "Convention de La Haye",
+      "slug": "mieux-connaitre-la-convention-de-la-haye",
+      "parent": null
+    }
+  },
+  "shared_blocks": {
+    "un_crc_intro": {
+      "text": "En vertu de la Convention des Nations Unies relative aux droits de l’enfant de 1989, entrée en vigueur en 1990, ce qui suit a été approuvé :"
+    },
+    "hague_purpose": {
+      "title": "La présente Convention a pour objet :",
+      "items": [
+        "d’assurer le retour immédiat des enfants déplacés ou retenus illicitement dans tout État contractant ;",
+        "de faire respecter effectivement dans les autres États contractants les droits de garde et de visite existant dans un État contractant."
+      ],
+      "citation": "Article premier de la Convention de La Haye du 25 octobre 1980"
+    }
+  },
+  "cards": {
+    "read_more": "Lire la suite"
+  },
+  "brand": {
+    "logo_text": "Enlèvement Parental Pologne",
+    "logo_alt": "Enlèvement Parental Pologne",
+    "logo_src": "/assets/logos/logo-fr.png"
+  },
+  "footer": {
+    "privacy_policy": "Politique de confidentialité"
+  },
+  "social": {
+    "facebook_follow": "Suivre sur Facebook"
+  },
+  "card_items": {
+    "introduction": {
+      "title": "Accueil",
+      "image_alt": "Accueil",
+      "image_title": "Accueil"
+    },
+    "whom_to_contact": {
+      "title": "Qui contacter ?",
+      "image_alt": "Qui contacter ?",
+      "image_title": "Qui contacter ?"
+    },
+    "jurisprudence": {
+      "title": "Jurisprudence",
+      "image_alt": "Jurisprudence",
+      "image_title": "Jurisprudence"
+    },
+    "contact": {
+      "title": "Formulaire",
+      "image_alt": "Formulaire",
+      "image_title": "Formulaire"
+    },
+    "who_we_are": {
+      "title": "Qui sommes-nous ?",
+      "image_alt": "Qui sommes-nous ?",
+      "image_title": "Qui sommes-nous ?"
+    },
+    "privacy_policy": {
+      "title": "Politique de confidentialité",
+      "image_alt": "Politique de confidentialité",
+      "image_title": "Politique de confidentialité"
+    },
+    "parental_child_abduction": {
+      "title": "Enlèvement parental",
+      "image_alt": "Enlèvement parental",
+      "image_title": "Enlèvement parental",
+      "image_src": "/assets/uploads/2023/09/family.png"
+    },
+    "within_the_law": {
+      "title": "Que dit la loi ?",
+      "image_alt": "Que dit la loi ?",
+      "image_title": "Que dit la loi ?",
+      "image_src": "/assets/uploads/2023/09/regulation.jpeg"
+    },
+    "international_laws": {
+      "title": "Législation internationale",
+      "image_alt": "Législation internationale",
+      "image_title": "Législation internationale",
+      "image_src": "/assets/uploads/2021/03/AdobeStock_71382930-scaled.jpeg"
+    },
+    "individual_national_laws": {
+      "title": "Législations nationales",
+      "image_alt": "Législations nationales",
+      "image_title": "Législations nationales",
+      "image_src": "/assets/uploads/2021/03/AdobeStock_393652006-scaled.jpeg"
+    },
+    "national_law_france": {
+      "title": "Française",
+      "image_alt": "Française",
+      "image_title": "Française",
+      "image_src": "/assets/uploads/2021/03/francja.png"
+    },
+    "national_law_belgium": {
+      "title": "Belge",
+      "image_alt": "Belge",
+      "image_title": "Belge",
+      "image_src": "/assets/uploads/2021/03/belgia.png"
+    },
+    "national_law_canada": {
+      "title": "Canadienne",
+      "image_alt": "Canadienne",
+      "image_title": "Canadienne",
+      "image_src": "/assets/uploads/2021/03/canada.png"
+    },
+    "national_law_poland": {
+      "title": "Polonaise",
+      "image_alt": "Polonaise",
+      "image_title": "Polonaise",
+      "image_src": "/assets/uploads/2021/03/polska.png"
+    },
+    "what_should_i_do": {
+      "title": "Que puis-je faire ?",
+      "image_alt": "Que puis-je faire ?",
+      "image_title": "Que puis-je faire ?",
+      "image_src": "/assets/uploads/2023/09/what.png"
+    },
+    "steps_to_follow": {
+      "title": "Étapes à suivre",
+      "image_alt": "Étapes à suivre",
+      "image_title": "Étapes à suivre",
+      "image_src": "/assets/uploads/2021/03/kroki.png"
+    },
+    "parents_in_contact": {
+      "title": "Si vous êtes en contact avec l’autre parent et que vous savez qu’il est en Pologne",
+      "image_alt": "Si vous êtes en contact avec l’autre parent et que vous savez qu’il est en Pologne",
+      "image_title": "Si vous êtes en contact avec l’autre parent et que vous savez qu’il est en Pologne",
+      "image_src": "/assets/uploads/2023/09/polska.png"
+    },
+    "parental_non_cooperation": {
+      "title": "Si l’autre parent refuse la médiation",
+      "image_alt": "Si l’autre parent refuse la médiation",
+      "image_title": "Si l’autre parent refuse la médiation",
+      "image_src": "/assets/uploads/2023/09/mediacje.png"
+    },
+    "conflict_with_the_other_parent": {
+      "title": "Conflit avec l’autre parent",
+      "image_alt": "Conflit avec l’autre parent",
+      "image_title": "Conflit avec l’autre parent",
+      "image_src": "/assets/uploads/2023/09/rozwod.png"
+    },
+    "criminal_consequences": {
+      "title": "Les conséquences pénales pour enlèvement international d’enfant",
+      "image_alt": "Les conséquences pénales pour enlèvement international d’enfant",
+      "image_title": "Les conséquences pénales pour enlèvement international d’enfant",
+      "image_src": "/assets/uploads/2023/09/sad.png"
+    },
+    "why_remain_in_poland": {
+      "title": "Pourquoi votre enfant et son deuxième parent pourrait rester en Pologne ?",
+      "image_alt": "Pourquoi votre enfant et son deuxième parent pourrait rester en Pologne ?",
+      "image_title": "Pourquoi votre enfant et son deuxième parent pourrait rester en Pologne ?",
+      "image_src": "/assets/uploads/2023/09/polska.png"
+    },
+    "going_abroad_with_my_child": {
+      "title": "Je veux partir à l’étranger avec mon enfant",
+      "image_alt": "Je veux partir à l’étranger avec mon enfant",
+      "image_title": "Je veux partir à l’étranger avec mon enfant",
+      "image_src": "/assets/uploads/2023/09/travel.png"
+    },
+    "is_it_possible": {
+      "title": "Est-ce possible ?",
+      "image_alt": "Est-ce possible ?",
+      "image_title": "Est-ce possible ?",
+      "image_src": "/assets/uploads/2023/09/mozliwosci.png"
+    },
+    "filial_relationship": {
+      "title": "Rappel sur la filiation et l’autorité parentale",
+      "image_alt": "Rappel sur la filiation et l’autorité parentale",
+      "image_title": "Rappel sur la filiation et l’autorité parentale",
+      "image_src": "/assets/uploads/2021/03/rodzice-2.png"
+    },
+    "the_hague_convention": {
+      "title": "Convention de La Haye",
+      "image_alt": "Convention de La Haye",
+      "image_title": "Convention de La Haye",
+      "image_src": "/assets/uploads/2023/09/sad.png"
+    }
+  },
+  "contact_form": {
+    "name_label": "Nom",
+    "email_label": "E-mail",
+    "message_label": "Message"
+  }
+}

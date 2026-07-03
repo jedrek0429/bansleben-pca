@@ -1,0 +1,374 @@
+{
+  "lang": "hr",
+  "site_name": "Roditeljska otmica djeteta — Poljska",
+  "domain": "",
+  "menu": {
+    "introduction": "UVOD",
+    "whom_to_contact": "KOME SE OBRATITI?",
+    "jurisprudence": "SUDSKA PRAKSA",
+    "contact": "KONTAKT",
+    "who_we_are": "TKO SMO MI?",
+    "legal_practice": "PRAVNA PRAKSA"
+  },
+  "form": {
+    "name": "Ime i prezime",
+    "email": "E-mail",
+    "message": "Poruka",
+    "send": "POŠALJI",
+    "success": "Hvala. Vaša poruka je poslana.",
+    "error": "Nažalost, poruka nije mogla biti poslana. Provjerite e-mail adresu i pokušajte ponovno."
+  },
+  "common": {
+    "read_more": "Pročitaj više",
+    "back": "Natrag",
+    "home": "Uvod",
+    "content_placeholder": "Privremeni sadržaj. Ova stranica bit će popunjena iz Markdown datoteke u sljedećem koraku."
+  },
+  "not_found": {
+    "title": "Stranica nije pronađena",
+    "text": "Stranica koju tražite ne postoji ili je premještena.",
+    "button": "Povratak na uvod"
+  },
+  "hague_footer": {
+    "title": "Haška konvencija",
+    "text": "Ova stranica odnosi se na Hašku konvenciju od 25. listopada 1980. o građanskopravnim aspektima međunarodne otmice djece.",
+    "link_label": "Pročitaj više",
+    "page": "the_hague_convention"
+  },
+  "pages": {
+    "introduction": {
+      "enabled": true,
+      "title": "Uvod",
+      "slug": "",
+      "parent": null
+    },
+    "whom_to_contact": {
+      "enabled": true,
+      "title": "Kome se obratiti?",
+      "slug": "kome-se-obratiti",
+      "parent": null
+    },
+    "jurisprudence": {
+      "enabled": true,
+      "title": "Sudska praksa",
+      "slug": "sudska-praksa",
+      "parent": null
+    },
+    "contact": {
+      "enabled": true,
+      "title": "Kontakt",
+      "slug": "kontakt",
+      "parent": null
+    },
+    "who_we_are": {
+      "enabled": true,
+      "title": "Tko smo mi?",
+      "slug": "tko-smo-mi",
+      "parent": null
+    },
+    "privacy_policy": {
+      "enabled": true,
+      "title": "Politika privatnosti",
+      "slug": "politika-privatnosti",
+      "parent": null
+    },
+    "parental_child_abduction": {
+      "enabled": true,
+      "title": "Roditeljska otmica djeteta",
+      "slug": "roditeljska-otmica-djeteta",
+      "parent": null
+    },
+    "within_the_law": {
+      "enabled": true,
+      "title": "Što kaže zakon?",
+      "slug": "sto-kaze-zakon",
+      "parent": null
+    },
+    "international_laws": {
+      "enabled": true,
+      "title": "Međunarodno pravo",
+      "slug": "sto-kaze-zakon/medunarodno-pravo",
+      "parent": "within_the_law"
+    },
+    "individual_national_laws": {
+      "enabled": true,
+      "title": "Nacionalna prava",
+      "slug": "sto-kaze-zakon/nacionalna-prava",
+      "parent": "within_the_law"
+    },
+    "national_law_uk": {
+      "enabled": false,
+      "title": "",
+      "slug": "",
+      "parent": "individual_national_laws"
+    },
+    "national_law_us": {
+      "enabled": false,
+      "title": "",
+      "slug": "",
+      "parent": "individual_national_laws"
+    },
+    "national_law_france": {
+      "enabled": false,
+      "title": "",
+      "slug": "",
+      "parent": "individual_national_laws"
+    },
+    "national_law_belgium": {
+      "enabled": false,
+      "title": "",
+      "slug": "",
+      "parent": "individual_national_laws"
+    },
+    "national_law_canada": {
+      "enabled": false,
+      "title": "",
+      "slug": "",
+      "parent": "individual_national_laws"
+    },
+    "national_law_croatia": {
+      "enabled": true,
+      "title": "Hrvatska",
+      "slug": "sto-kaze-zakon/nacionalna-prava/hrvatska",
+      "parent": "individual_national_laws"
+    },
+    "national_law_poland": {
+      "enabled": true,
+      "title": "Poljska",
+      "slug": "sto-kaze-zakon/nacionalna-prava/poljska",
+      "parent": "individual_national_laws"
+    },
+    "what_should_i_do": {
+      "enabled": true,
+      "title": "Što mogu učiniti?",
+      "slug": "sto-mogu-uciniti",
+      "parent": null
+    },
+    "steps_to_follow": {
+      "enabled": true,
+      "title": "Koraci koje treba poduzeti",
+      "slug": "sto-mogu-uciniti/koraci-koje-treba-poduzeti",
+      "parent": "what_should_i_do"
+    },
+    "parents_in_contact": {
+      "enabled": true,
+      "title": "Ako ste u kontaktu s drugim roditeljem i znate da se nalazi u Poljskoj.",
+      "slug": "sto-mogu-uciniti/roditelji-u-kontaktu",
+      "parent": "what_should_i_do"
+    },
+    "parental_non_cooperation": {
+      "enabled": true,
+      "title": "Ako drugi roditelj odbije sredstva za medijaciju",
+      "slug": "sto-mogu-uciniti/nesuradnja-drugog-roditelja",
+      "parent": "what_should_i_do"
+    },
+    "conflict_with_the_other_parent": {
+      "enabled": true,
+      "title": "Sukob s drugim roditeljem",
+      "slug": "sukob-s-drugim-roditeljem",
+      "parent": null
+    },
+    "criminal_consequences": {
+      "enabled": true,
+      "title": "Kaznena odgovornost u slučaju međunarodne otmice djeteta",
+      "slug": "sukob-s-drugim-roditeljem/kaznena-odgovornost",
+      "parent": "going_abroad_with_my_child"
+    },
+    "why_remain_in_poland": {
+      "enabled": true,
+      "title": "Zašto bi dijete i svaki roditelj trebali ostati u Poljskoj?",
+      "slug": "sukob-s-drugim-roditeljem/zasto-ostati-u-poljskoj",
+      "parent": "conflict_with_the_other_parent"
+    },
+    "going_abroad_with_my_child": {
+      "enabled": true,
+      "title": "Želim otići u inozemstvo s djetetom",
+      "slug": "zelim-otici-u-inozemstvo-s-djetetom",
+      "parent": null
+    },
+    "is_it_possible": {
+      "enabled": true,
+      "title": "Je li to moguće?",
+      "slug": "zelim-otici-u-inozemstvo-s-djetetom/je-li-to-moguce",
+      "parent": "going_abroad_with_my_child"
+    },
+    "filial_relationship": {
+      "enabled": true,
+      "title": "Veza između roditelja i djeteta te roditeljska nadležnost",
+      "slug": "zelim-otici-u-inozemstvo-s-djetetom/veza-izmedu-roditelja-i-djeteta",
+      "parent": "conflict_with_the_other_parent"
+    },
+    "the_hague_convention": {
+      "enabled": true,
+      "title": "Haška konvencija",
+      "slug": "haska-konvencija",
+      "parent": null
+    }
+  },
+  "shared_blocks": {
+    "un_crc_intro": {
+      "text": "Prema Konvenciji Ujedinjenih naroda o pravima djeteta iz 1989., koja je stupila na snagu 1990., prihvaćeno je sljedeće:"
+    },
+    "hague_purpose": {
+      "title": "Ciljevi ove Konvencije su:",
+      "items": [
+        "osigurati što brži povratak djece protupravno odvedene ili zadržane u nekoj državi ugovornici; i",
+	"osigurati da se pravo na skrb o djetetu i pravo na kontakte prema pravu jedne države ugovornice učinkovito poštuju u drugim državama."
+      ],
+      "citation": "Članak 1. Haške konvencije od 25. listopada 1980."
+    }
+  },
+  "cards": {
+    "read_more": "Pročitaj više"
+  },
+  "brand": {
+    "logo_text": "Roditeljska otmica djeteta — Poljska",
+    "logo_alt": "Roditeljska otmica djeteta — Poljska",
+    "logo_src": "/assets/logos/logo-hr.png"
+  },
+  "footer": {
+    "privacy_policy": "Politika privatnosti"
+  },
+  "social": {
+    "facebook_follow": "Prati na Facebooku"
+  },
+  "card_items": {
+    "introduction": {
+      "title": "Uvod",
+      "image_alt": "Uvod",
+      "image_title": "Uvod"
+    },
+    "whom_to_contact": {
+      "title": "Kome se obratiti?",
+      "image_alt": "Kome se obratiti?",
+      "image_title": "Kome se obratiti?"
+    },
+    "jurisprudence": {
+      "title": "Sudska praksa",
+      "image_alt": "Sudska praksa",
+      "image_title": "Sudska praksa"
+    },
+    "contact": {
+      "title": "Kontakt",
+      "image_alt": "Kontakt",
+      "image_title": "Kontakt"
+    },
+    "who_we_are": {
+      "title": "Tko smo mi?",
+      "image_alt": "Tko smo mi?",
+      "image_title": "Tko smo mi?"
+    },
+    "privacy_policy": {
+      "title": "Politika privatnosti",
+      "image_alt": "Politika privatnosti",
+      "image_title": "Politika privatnosti"
+    },
+    "parental_child_abduction": {
+      "title": "Roditeljska otmica djeteta",
+      "image_alt": "Roditeljska otmica djeteta",
+      "image_title": "Roditeljska otmica djeteta",
+      "image_src": "/assets/uploads/2023/09/family.png"
+    },
+    "within_the_law": {
+      "title": "Što kaže zakon?",
+      "image_alt": "Što kaže zakon?",
+      "image_title": "Što kaže zakon?",
+      "image_src": "/assets/uploads/2023/09/regulation.jpeg"
+    },
+    "international_laws": {
+      "title": "Međunarodno pravo",
+      "image_alt": "Međunarodno pravo",
+      "image_title": "Međunarodno pravo",
+      "image_src": "/assets/uploads/2021/03/AdobeStock_71382930-scaled.jpeg"
+    },
+    "individual_national_laws": {
+      "title": "Nacionalna prava",
+      "image_alt": "Nacionalna prava",
+      "image_title": "Nacionalna prava",
+      "image_src": "/assets/uploads/2021/03/AdobeStock_393652006-scaled.jpeg"
+    },
+    "national_law_croatia": {
+      "title": "Hrvatska",
+      "image_alt": "Hrvatska",
+      "image_title": "Hrvatska",
+      "image_src": "/assets/cards/national_law_croatia.svg"
+    },
+    "national_law_poland": {
+      "title": "Poljska",
+      "image_alt": "Poljska",
+      "image_title": "Poljska",
+      "image_src": "/assets/uploads/2021/03/polska.png"
+    },
+    "what_should_i_do": {
+      "title": "Što mogu učiniti?",
+      "image_alt": "Što mogu učiniti?",
+      "image_title": "Što mogu učiniti?",
+      "image_src": "/assets/uploads/2023/09/what.png"
+    },
+    "steps_to_follow": {
+      "title": "Koraci koje treba poduzeti",
+      "image_alt": "Koraci koje treba poduzeti",
+      "image_title": "Koraci koje treba poduzeti",
+      "image_src": "/assets/uploads/2021/03/kroki.png"
+    },
+    "parents_in_contact": {
+      "title": "Ako ste u kontaktu s drugim roditeljem i znate da se nalazi u Poljskoj",
+      "image_alt": "Ako ste u kontaktu s drugim roditeljem i znate da se nalazi u Poljskoj",
+      "image_title": "Ako ste u kontaktu s drugim roditeljem i znate da se nalazi u Poljskoj",
+      "image_src": "/assets/uploads/2023/09/polska.png"
+    },
+    "parental_non_cooperation": {
+      "title": "Nesuradnja drugog roditelja",
+      "image_alt": "Nesuradnja drugog roditelja",
+      "image_title": "Nesuradnja drugog roditelja",
+      "image_src": "/assets/uploads/2023/09/mediacje.png"
+    },
+    "conflict_with_the_other_parent": {
+      "title": "Sukob s drugim roditeljem",
+      "image_alt": "Sukob s drugim roditeljem",
+      "image_title": "Sukob s drugim roditeljem",
+      "image_src": "/assets/uploads/2023/09/rozwod.png"
+    },
+    "criminal_consequences": {
+      "title": "Kaznena odgovornost u slučaju međunarodne otmice djeteta",
+      "image_alt": "Kaznena odgovornost u slučaju međunarodne otmice djeteta",
+      "image_title": "Kaznena odgovornost u slučaju međunarodne otmice djeteta",
+      "image_src": "/assets/uploads/2023/09/sad.png"
+    },
+    "why_remain_in_poland": {
+      "title": "Zašto bi dijete i svaki roditelj trebali ostati u Poljskoj?",
+      "image_alt": "Zašto bi dijete i svaki roditelj trebali ostati u Poljskoj?",
+      "image_title": "Zašto bi dijete i svaki roditelj trebali ostati u Poljskoj?",
+      "image_src": "/assets/uploads/2023/09/polska.png"
+    },
+    "going_abroad_with_my_child": {
+      "title": "Želim otići u inozemstvo s djetetom",
+      "image_alt": "Želim otići u inozemstvo s djetetom",
+      "image_title": "Želim otići u inozemstvo s djetetom",
+      "image_src": "/assets/uploads/2023/09/travel.png"
+    },
+    "is_it_possible": {
+      "title": "Je li to moguće?",
+      "image_alt": "Je li to moguće?",
+      "image_title": "Je li to moguće?",
+      "image_src": "/assets/uploads/2023/09/mozliwosci.png"
+    },
+    "filial_relationship": {
+      "title": "Veza između roditelja i djeteta te roditeljska skrb",
+      "image_alt": "Veza između roditelja i djeteta te roditeljska skrb",
+      "image_title": "Veza između roditelja i djeteta te roditeljska skrb",
+      "image_src": "/assets/uploads/2021/03/rodzice-2.png"
+    },
+    "the_hague_convention": {
+      "title": "Haška konvencija",
+      "image_alt": "Haška konvencija",
+      "image_title": "Haška konvencija",
+      "image_src": "/assets/uploads/2023/09/sad.png"
+    }
+  },
+  "contact_form": {
+    "name_label": "Ime i prezime",
+    "email_label": "E-mail",
+    "message_label": "Poruka"
+  }
+}

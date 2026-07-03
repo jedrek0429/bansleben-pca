@@ -1,0 +1,604 @@
+{
+  "pages": [
+    {
+      "key": "introduction",
+      "parent": null,
+      "enabled": [
+        "en",
+        "fr",
+        "hr"
+      ],
+      "titles": {
+        "en": "Introduction",
+        "fr": "Accueil",
+        "hr": "Uvod"
+      },
+      "slugs": {
+        "en": "",
+        "fr": "",
+        "hr": ""
+      },
+      "template": "home"
+    },
+    {
+      "key": "whom_to_contact",
+      "parent": null,
+      "enabled": [
+        "en",
+        "fr",
+        "hr"
+      ],
+      "titles": {
+        "en": "Whom to Contact?",
+        "fr": "Qui contacter ?",
+        "hr": "Kome se obratiti?"
+      },
+      "slugs": {
+        "en": "whom-to-contact",
+        "fr": "qui-contacter",
+        "hr": "kome-se-obratiti"
+      },
+      "template": "content"
+    },
+    {
+      "key": "jurisprudence",
+      "parent": null,
+      "enabled": [
+        "en",
+        "fr",
+        "hr"
+      ],
+      "titles": {
+        "en": "Jurisprudence",
+        "fr": "Jurisprudence",
+        "hr": "Sudska praksa"
+      },
+      "slugs": {
+        "en": "jurisprudence",
+        "fr": "jurisprudence",
+        "hr": "sudska-praksa"
+      },
+      "template": "content"
+    },
+    {
+      "key": "contact",
+      "parent": null,
+      "enabled": [
+        "en",
+        "fr",
+        "hr"
+      ],
+      "titles": {
+        "en": "Contact",
+        "fr": "Formulaire",
+        "hr": "Kontakt"
+      },
+      "slugs": {
+        "en": "contact",
+        "fr": "formulaire",
+        "hr": "kontakt"
+      },
+      "template": "contact"
+    },
+    {
+      "key": "who_we_are",
+      "parent": null,
+      "enabled": [
+        "en",
+        "fr",
+        "hr"
+      ],
+      "titles": {
+        "en": "Who We Are",
+        "fr": "Qui sommes-nous ?",
+        "hr": "Tko smo mi?"
+      },
+      "slugs": {
+        "en": "who-we-are",
+        "fr": "qui-sommes-nous",
+        "hr": "tko-smo-mi"
+      },
+      "template": "content"
+    },
+    {
+      "key": "privacy_policy",
+      "parent": null,
+      "enabled": [
+        "en",
+        "fr",
+        "hr"
+      ],
+      "titles": {
+        "en": "Privacy Policy",
+        "fr": "Politique de confidentialité",
+        "hr": "Politika privatnosti"
+      },
+      "slugs": {
+        "en": "privacy-policy",
+        "fr": "politique-de-confidentialite",
+        "hr": "politika-privatnosti"
+      },
+      "template": "content"
+    },
+    {
+      "key": "parental_child_abduction",
+      "parent": null,
+      "enabled": [
+        "en",
+        "fr",
+        "hr"
+      ],
+      "titles": {
+        "en": "Parental Child Abduction",
+        "fr": "Enlèvement parental",
+        "hr": "Roditeljska otmica djeteta"
+      },
+      "slugs": {
+        "en": "parental-child-abduction",
+        "fr": "enlevement-parental",
+        "hr": "roditeljska-otmica-djeteta"
+      },
+      "template": "content"
+    },
+    {
+      "key": "within_the_law",
+      "parent": null,
+      "enabled": [
+        "en",
+        "fr",
+        "hr"
+      ],
+      "titles": {
+        "en": "Within the Law",
+        "fr": "Que dit la loi ?",
+        "hr": "Što kaže zakon?"
+      },
+      "slugs": {
+        "en": "within-the-law",
+        "fr": "que-dit-la-loi",
+        "hr": "sto-kaze-zakon"
+      },
+      "template": "cards_with_intro",
+      "intro_block": "un_crc_intro",
+      "title": false
+    },
+    {
+      "key": "international_laws",
+      "parent": "within_the_law",
+      "enabled": [
+        "en",
+        "fr",
+        "hr"
+      ],
+      "titles": {
+        "en": "International Laws",
+        "fr": "Législation internationale",
+        "hr": "Međunarodno pravo"
+      },
+      "slugs": {
+        "en": "within-the-law/international-laws",
+        "fr": "que-dit-la-loi/legislation-internationale",
+        "hr": "sto-kaze-zakon/medunarodno-pravo"
+      },
+      "template": "content"
+    },
+    {
+      "key": "individual_national_laws",
+      "parent": "within_the_law",
+      "enabled": [
+        "en",
+        "fr",
+        "hr"
+      ],
+      "titles": {
+        "en": "Individual National Laws",
+        "fr": "Législations nationales",
+        "hr": "Nacionalna prava"
+      },
+      "slugs": {
+        "en": "within-the-law/individual-national-laws",
+        "fr": "que-dit-la-loi/legislations-nationales",
+        "hr": "sto-kaze-zakon/nacionalna-prava"
+      },
+      "template": "cards"
+    },
+    {
+      "key": "national_law_uk",
+      "parent": "individual_national_laws",
+      "enabled": [
+        "en"
+      ],
+      "titles": {
+        "en": "British",
+        "fr": "",
+        "hr": ""
+      },
+      "slugs": {
+        "en": "within-the-law/individual-national-laws/british",
+        "fr": "",
+        "hr": ""
+      },
+      "template": "content"
+    },
+    {
+      "key": "national_law_us",
+      "parent": "individual_national_laws",
+      "enabled": [
+        "en"
+      ],
+      "titles": {
+        "en": "American",
+        "fr": "",
+        "hr": ""
+      },
+      "slugs": {
+        "en": "within-the-law/individual-national-laws/american",
+        "fr": "",
+        "hr": ""
+      },
+      "template": "content"
+    },
+    {
+      "key": "national_law_france",
+      "parent": "individual_national_laws",
+      "enabled": [
+        "fr"
+      ],
+      "titles": {
+        "en": "",
+        "fr": "Française",
+        "hr": ""
+      },
+      "slugs": {
+        "en": "",
+        "fr": "que-dit-la-loi/legislations-nationales/francaise",
+        "hr": ""
+      },
+      "template": "content"
+    },
+    {
+      "key": "national_law_belgium",
+      "parent": "individual_national_laws",
+      "enabled": [
+        "fr"
+      ],
+      "titles": {
+        "en": "",
+        "fr": "Belge",
+        "hr": ""
+      },
+      "slugs": {
+        "en": "",
+        "fr": "que-dit-la-loi/legislations-nationales/belge",
+        "hr": ""
+      },
+      "template": "content"
+    },
+    {
+      "key": "national_law_canada",
+      "parent": "individual_national_laws",
+      "enabled": [
+        "en",
+        "fr"
+      ],
+      "titles": {
+        "en": "Canadian",
+        "fr": "Canadienne",
+        "hr": ""
+      },
+      "slugs": {
+        "en": "within-the-law/individual-national-laws/canadian",
+        "fr": "que-dit-la-loi/legislations-nationales/canadienne",
+        "hr": ""
+      },
+      "template": "content"
+    },
+    {
+      "key": "national_law_croatia",
+      "parent": "individual_national_laws",
+      "enabled": [
+        "hr"
+      ],
+      "titles": {
+        "en": "",
+        "fr": "",
+        "hr": "Hrvatska"
+      },
+      "slugs": {
+        "en": "",
+        "fr": "",
+        "hr": "sto-kaze-zakon/nacionalna-prava/hrvatska"
+      },
+      "template": "content"
+    },
+    {
+      "key": "national_law_poland",
+      "parent": "individual_national_laws",
+      "enabled": [
+        "en",
+        "fr",
+        "hr"
+      ],
+      "titles": {
+        "en": "Polish",
+        "fr": "Polonaise",
+        "hr": "Poljska"
+      },
+      "slugs": {
+        "en": "within-the-law/individual-national-laws/polish",
+        "fr": "que-dit-la-loi/legislations-nationales/polonaise",
+        "hr": "sto-kaze-zakon/nacionalna-prava/poljska"
+      },
+      "template": "content"
+    },
+    {
+      "key": "what_should_i_do",
+      "parent": null,
+      "enabled": [
+        "en",
+        "fr",
+        "hr"
+      ],
+      "titles": {
+        "en": "What Should I Do?",
+        "fr": "Que puis-je faire ?",
+        "hr": "Što mogu učiniti?"
+      },
+      "slugs": {
+        "en": "what-should-i-do",
+        "fr": "que-puis-je-faire",
+        "hr": "sto-mogu-uciniti"
+      },
+      "template": "cards"
+    },
+    {
+      "key": "steps_to_follow",
+      "parent": "what_should_i_do",
+      "enabled": [
+        "en",
+        "fr",
+        "hr"
+      ],
+      "titles": {
+        "en": "Steps to Follow",
+        "fr": "Étapes à suivre",
+        "hr": "Koraci koje treba poduzeti"
+      },
+      "slugs": {
+        "en": "what-should-i-do/steps-to-follow",
+        "fr": "que-puis-je-faire/etapes-a-suivre",
+        "hr": "sto-mogu-uciniti/koraci-koje-treba-poduzeti"
+      },
+      "template": "content"
+    },
+    {
+      "key": "parents_in_contact",
+      "parent": "what_should_i_do",
+      "enabled": [
+        "en",
+        "fr",
+        "hr"
+      ],
+      "titles": {
+        "en": "If Parents Remain in Contact and are Both in Poland",
+        "fr": "Si vous êtes en contact avec l’autre parent et que vous savez qu’il est en Pologne.",
+        "hr": "Ako ste u kontaktu s drugim roditeljem i znate da se nalazi u Poljskoj."
+      },
+      "slugs": {
+        "en": "what-should-i-do/parents-in-contact",
+        "fr": "que-puis-je-faire/parents-en-contact",
+        "hr": "sto-mogu-uciniti/roditelji-u-kontaktu"
+      },
+      "template": "content"
+    },
+    {
+      "key": "parental_non_cooperation",
+      "parent": "what_should_i_do",
+      "enabled": [
+        "en",
+        "fr",
+        "hr"
+      ],
+      "titles": {
+        "en": "If the Other Parent Refuses Mediation",
+        "fr": "Si l’autre parent refuse la médiation",
+        "hr": "Ako drugi roditelj odbije sredstva za medijaciju"
+      },
+      "slugs": {
+        "en": "what-should-i-do/parental-non-cooperation",
+        "fr": "que-puis-je-faire/non-cooperation-parentale",
+        "hr": "sto-mogu-uciniti/nesuradnja-drugog-roditelja"
+      },
+      "template": "content"
+    },
+    {
+      "key": "conflict_with_the_other_parent",
+      "parent": null,
+      "enabled": [
+        "en",
+        "fr",
+        "hr"
+      ],
+      "titles": {
+        "en": "Conflict with the Other Parent",
+        "fr": "Conflit avec l’autre parent",
+        "hr": "Sukob s drugim roditeljem"
+      },
+      "slugs": {
+        "en": "conflict-with-the-other-parent",
+        "fr": "conflit-avec-lautre-parent",
+        "hr": "sukob-s-drugim-roditeljem"
+      },
+      "template": "cards"
+    },
+    {
+      "key": "criminal_consequences",
+      "parent": "conflict_with_the_other_parent",
+      "enabled": [
+        "en",
+        "fr",
+        "hr"
+      ],
+      "titles": {
+        "en": "Criminal Consequences of International Child Abduction",
+        "fr": "Conséquences pénales de l’enlèvement international d’enfant",
+        "hr": "Kaznena odgovornost u slučaju međunarodne otmice djeteta"
+      },
+      "slugs": {
+        "en": "conflict-with-the-other-parent/criminal-consequences",
+        "fr": "conflit-avec-lautre-parent/consequences-penales",
+        "hr": "sukob-s-drugim-roditeljem/kaznena-odgovornost"
+      },
+      "template": "content"
+    },
+    {
+      "key": "why_remain_in_poland",
+      "parent": "conflict_with_the_other_parent",
+      "enabled": [
+        "en",
+        "fr",
+        "hr"
+      ],
+      "titles": {
+        "en": "Why Should the Child and Each Parent Remain within Poland?",
+        "fr": "Pourquoi votre enfant et son deuxième parent pourrait rester en Pologne ?",
+        "hr": "Zašto bi dijete i svaki roditelj trebali ostati u Poljskoj?"
+      },
+      "slugs": {
+        "en": "conflict-with-the-other-parent/why-remain-in-poland",
+        "fr": "conflit-avec-lautre-parent/pourquoi-rester-en-pologne",
+        "hr": "sukob-s-drugim-roditeljem/zasto-ostati-u-poljskoj"
+      },
+      "template": "content"
+    },
+    {
+      "key": "going_abroad_with_my_child",
+      "parent": null,
+      "enabled": [
+        "en",
+        "fr",
+        "hr"
+      ],
+      "titles": {
+        "en": "Going Abroad with My Child",
+        "fr": "Je veux partir à l’étranger avec mon enfant",
+        "hr": "Želim otići u inozemstvo s djetetom"
+      },
+      "slugs": {
+        "en": "going-abroad-with-my-child",
+        "fr": "je-veux-partir-a-letranger-avec-mon-enfant",
+        "hr": "zelim-otici-u-inozemstvo-s-djetetom"
+      },
+      "template": "cards"
+    },
+    {
+      "key": "is_it_possible",
+      "parent": "going_abroad_with_my_child",
+      "enabled": [
+        "en",
+        "fr",
+        "hr"
+      ],
+      "titles": {
+        "en": "Is It Possible?",
+        "fr": "Est-ce possible ?",
+        "hr": "Je li to moguće?"
+      },
+      "slugs": {
+        "en": "going-abroad-with-my-child/is-it-possible",
+        "fr": "je-veux-partir-a-letranger-avec-mon-enfant/est-ce-possible",
+        "hr": "zelim-otici-u-inozemstvo-s-djetetom/je-li-to-moguce"
+      },
+      "template": "content"
+    },
+    {
+      "key": "filial_relationship",
+      "parent": "going_abroad_with_my_child",
+      "enabled": [
+        "en",
+        "fr",
+        "hr"
+      ],
+      "titles": {
+        "en": "The Filial Relationship and Parental Authority",
+        "fr": "Rappel sur la filiation et l’autorité parentale.",
+        "hr": "Veza između roditelja i djeteta te roditeljska nadležnost"
+      },
+      "slugs": {
+        "en": "going-abroad-with-my-child/filial-relationship",
+        "fr": "je-veux-partir-a-letranger-avec-mon-enfant/la-filiation-et-lautorite-parentale",
+        "hr": "zelim-otici-u-inozemstvo-s-djetetom/veza-izmedu-roditelja-i-djeteta"
+      },
+      "template": "content"
+    },
+    {
+      "key": "the_hague_convention",
+      "parent": null,
+      "enabled": [
+        "en",
+        "fr",
+        "hr"
+      ],
+      "titles": {
+        "en": "The Hague Convention",
+        "fr": "Convention de La Haye",
+        "hr": "Haška konvencija"
+      },
+      "slugs": {
+        "en": "the-hague-convention",
+        "fr": "mieux-connaitre-la-convention-de-la-haye",
+        "hr": "haska-konvencija"
+      },
+      "template": "content"
+    }
+  ],
+  "card_groups": {
+    "within_the_law": [
+      "international_laws",
+      "individual_national_laws"
+    ],
+    "individual_national_laws": {
+      "en": [
+        "national_law_uk",
+        "national_law_us",
+        "national_law_canada",
+        "national_law_poland"
+      ],
+      "fr": [
+        "national_law_france",
+        "national_law_belgium",
+        "national_law_canada",
+        "national_law_poland"
+      ],
+      "hr": [
+        "national_law_croatia",
+        "national_law_poland"
+      ]
+    },
+    "what_should_i_do": [
+      "steps_to_follow",
+      "parents_in_contact",
+      "parental_non_cooperation"
+    ],
+    "conflict_with_the_other_parent": [
+      "criminal_consequences",
+      "why_remain_in_poland"
+    ],
+    "going_abroad_with_my_child": [
+      "is_it_possible",
+      "filial_relationship"
+    ]
+  },
+  "top_menu": [
+    "introduction",
+    "whom_to_contact",
+    "jurisprudence",
+    "contact",
+    "who_we_are"
+  ],
+  "external_links": {
+    "legal_practice": {
+      "url": "https://bansleben.pl/"
+    }
+  }
+}

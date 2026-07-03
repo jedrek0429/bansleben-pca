@@ -1,0 +1,1 @@
+The Uniform Child Custody Jurisdiction and Enforcement Act (UCCJEA) regulates who holds jurisdiction in cases concerning child custody where a child has lived with a parent for an unbroken six month period prior to court proceedings.

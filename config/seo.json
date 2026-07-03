@@ -1,0 +1,184 @@
+{
+  "site_urls": {
+    "en": "https://polandchildabduction.pl",
+    "fr": "https://enlevementparentalpologne.pl",
+    "hr": "https://roditeljskaotmicapoljska.pl"
+  },
+  "hreflang": {
+    "en": "en",
+    "fr": "fr",
+    "hr": "hr"
+  },
+  "og_locale": {
+    "en": "en_GB",
+    "fr": "fr_FR",
+    "hr": "hr_HR"
+  },
+  "x_default": "en",
+  "theme_color": "#317041",
+  "social_images": {
+    "en": "/assets/social/og-en.jpg",
+    "fr": "/assets/social/og-fr.jpg",
+    "hr": "/assets/social/og-hr.jpg"
+  },
+  "icons": {
+    "svg": "/assets/favicon.svg",
+    "png_32": "/assets/favicon-32x32.png",
+    "png_16": "/assets/favicon-16x16.png",
+    "apple_touch": "/assets/apple-touch-icon.png"
+  },
+  "schema": {
+    "legal_name": "Kancelaria Adwokacka Elżbieta Bansleben",
+    "url": "https://bansleben.pl/",
+    "same_as": [
+      "https://www.facebook.com/p/El%C5%BCbieta-Bansleben-Kancelaria-Adwokacka-100057481958300",
+      "https://linkedin.com/in/elżbieta-bansleben-1ab1ba35"
+    ],
+    "area_served": "Poland",
+    "languages": ["English", "French"],
+    "telephone": "+48667487700",
+    "address": {
+        "street_address": "ul. Armii Krajowej 116/18",
+        "address_locality": "Sopot",
+        "address_region": "pomorskie",
+        "postal_code": "81-824",
+        "address_country": "PL"
+      }
+  },
+  "default_descriptions": {
+    "en": "Information for parents dealing with international parental child abduction, wrongful removal or retention of a child in Poland, and Hague Convention return proceedings.",
+    "fr": "Informations pour les parents confrontés à un enlèvement parental international, un déplacement ou non-retour illicite d’enfant en Pologne, et aux procédures de retour fondées sur la Convention de La Haye.",
+    "hr": "Informacije za roditelje u slučajevima međunarodne roditeljske otmice, protupravnog odvođenja ili zadržavanja djeteta u Poljskoj te postupaka povratka prema Haškoj konvenciji."
+  },
+  "descriptions": {
+    "introduction": {
+      "en": "Practical legal information on parental child abduction to or from Poland, Hague Convention child return cases, Polish courts, and urgent steps for parents.",
+      "fr": "Informations pratiques sur l’enlèvement parental vers ou depuis la Pologne, les demandes de retour d’enfant au titre de la Convention de La Haye, les juridictions polonaises et les démarches urgentes.",
+      "hr": "Praktične pravne informacije o roditeljskoj otmici djece u Poljsku ili iz Poljske, postupcima povratka prema Haškoj konvenciji, poljskim sudovima i hitnim koracima za roditelje."
+    },
+    "whom_to_contact": {
+      "en": "Find out which authorities, institutions and legal professionals to contact when a child has been wrongfully removed to or retained in Poland.",
+      "fr": "Découvrez quelles autorités, institutions et professionnels du droit contacter lorsqu’un enfant a été déplacé ou retenu illicitement en Pologne.",
+      "hr": "Saznajte kojim se tijelima, ustanovama i pravnim stručnjacima obratiti ako je dijete protupravno odvedeno ili zadržano u Poljskoj."
+    },
+    "jurisprudence": {
+      "en": "Selected case law on international parental child abduction, Hague Convention return proceedings and family law issues involving Poland.",
+      "fr": "Sélection de jurisprudence sur l’enlèvement parental international, les procédures de retour fondées sur la Convention de La Haye et les affaires familiales impliquant la Pologne.",
+      "hr": "Odabrana sudska praksa o međunarodnoj roditeljskoj otmici djece, postupcima povratka prema Haškoj konvenciji i obiteljskim predmetima povezanim s Poljskom."
+    },
+    "contact": {
+      "en": "Contact us about an urgent parental child abduction, wrongful retention or Hague Convention child return case involving Poland.",
+      "fr": "Contactez-nous au sujet d’un enlèvement parental urgent, d’un non-retour illicite ou d’une procédure de retour d’enfant impliquant la Pologne.",
+      "hr": "Kontaktirajte nas u vezi s hitnom roditeljskom otmicom, protupravnim zadržavanjem ili postupkom povratka djeteta prema Haškoj konvenciji koji uključuje Poljsku."
+    },
+    "who_we_are": {
+      "en": "Learn who is behind Poland Child Abduction and how legal assistance can support parents in cross-border child abduction cases involving Poland.",
+      "fr": "Découvrez qui se trouve derrière Enlèvement Parental Pologne et comment une assistance juridique peut aider les parents dans les affaires transfrontalières impliquant la Pologne.",
+      "hr": "Saznajte tko stoji iza stranice Roditeljska otmica djeteta — Poljska i kako pravna pomoć može podržati roditelje u prekograničnim predmetima."
+    },
+    "privacy_policy": {
+      "en": "Read the privacy policy for Poland Child Abduction, including information about contact form data, personal information and website use.",
+      "fr": "Consultez la politique de confidentialité du site Enlèvement Parental Pologne, y compris les informations relatives au formulaire de contact et aux données personnelles.",
+      "hr": "Pročitajte politiku privatnosti stranice Roditeljska otmica djeteta — Poljska, uključujući informacije o obrascu za kontakt i osobnim podacima."
+    },
+    "parental_child_abduction": {
+      "en": "Explanation of parental child abduction, wrongful removal and wrongful retention under the Hague Convention, with a focus on cases involving Poland.",
+      "fr": "Explication de l’enlèvement parental, du déplacement illicite et du non-retour illicite au sens de la Convention de La Haye, avec un accent sur les affaires impliquant la Pologne.",
+      "hr": "Objašnjenje roditeljske otmice, protupravnog odvođenja i protupravnog zadržavanja prema Haškoj konvenciji, s naglaskom na predmete povezane s Poljskom."
+    },
+    "within_the_law": {
+      "en": "Overview of the international and national legal rules that may apply when a child is wrongfully removed to or retained in Poland.",
+      "fr": "Aperçu des règles juridiques internationales et nationales pouvant s’appliquer lorsqu’un enfant est déplacé ou retenu illicitement en Pologne.",
+      "hr": "Pregled međunarodnih i nacionalnih pravnih pravila koja se mogu primijeniti kada je dijete protupravno odvedeno ili zadržano u Poljskoj."
+    },
+    "international_laws": {
+      "en": "International legal framework for parental child abduction cases, including the Hague Convention and cross-border child return procedures involving Poland.",
+      "fr": "Cadre juridique international applicable aux affaires d’enlèvement parental, notamment la Convention de La Haye et les procédures transfrontalières de retour impliquant la Pologne.",
+      "hr": "Međunarodni pravni okvir za slučajeve roditeljske otmice djece, uključujući Hašku konvenciju i prekogranične postupke povratka povezane s Poljskom."
+    },
+    "individual_national_laws": {
+      "en": "Guide to selected national laws that may affect international parental child abduction, custody and child return cases involving Poland.",
+      "fr": "Guide des législations nationales sélectionnées pouvant influencer les affaires d’enlèvement parental, de garde et de retour d’enfant impliquant la Pologne.",
+      "hr": "Vodič kroz odabrana nacionalna prava koja mogu utjecati na međunarodnu roditeljsku otmicu, roditeljsku skrb i povratak djeteta u predmetima povezanim s Poljskom."
+    },
+    "national_law_uk": {
+      "en": "Overview of British legal issues that may arise in international parental child abduction and child return cases involving Poland."
+    },
+    "national_law_us": {
+      "en": "Overview of American legal issues that may arise in international parental child abduction and child return cases involving Poland."
+    },
+    "national_law_france": {
+      "fr": "Aperçu des questions de droit français pouvant se poser dans les affaires d’enlèvement parental international et de retour d’enfant impliquant la Pologne."
+    },
+    "national_law_belgium": {
+      "fr": "Aperçu des questions de droit belge pouvant se poser dans les affaires d’enlèvement parental international et de retour d’enfant impliquant la Pologne."
+    },
+    "national_law_canada": {
+      "en": "Overview of Canadian legal issues that may arise in international parental child abduction and child return cases involving Poland.",
+      "fr": "Aperçu des questions de droit canadien pouvant se poser dans les affaires d’enlèvement parental international et de retour d’enfant impliquant la Pologne."
+    },
+    "national_law_croatia": {
+      "hr": "Pregled hrvatskih pravnih pitanja koja se mogu pojaviti u međunarodnim slučajevima roditeljske otmice i povratka djeteta povezanima s Poljskom."
+    },
+    "national_law_poland": {
+      "en": "Overview of Polish legal rules relevant to custody, parental authority and international child abduction cases before Polish authorities and courts.",
+      "fr": "Aperçu des règles du droit polonais relatives à la garde, à l’autorité parentale et aux affaires d’enlèvement international d’enfant devant les autorités et juridictions polonaises.",
+      "hr": "Pregled poljskih pravnih pravila važnih za roditeljsku skrb, roditeljske ovlasti i međunarodnu otmicu djece pred poljskim tijelima i sudovima."
+    },
+    "what_should_i_do": {
+      "en": "First steps for a parent when a child has been taken to Poland or kept in Poland without consent, including documents, deadlines and legal options.",
+      "fr": "Premières démarches lorsqu’un enfant a été emmené ou retenu en Pologne sans consentement : documents, délais et options juridiques.",
+      "hr": "Prvi koraci kada je dijete odvedeno u Poljsku ili zadržano u Poljskoj bez suglasnosti: dokumenti, rokovi i pravne mogućnosti."
+    },
+    "steps_to_follow": {
+      "en": "Practical steps to take after a child has been wrongfully removed to or retained in Poland, including evidence, authorities and legal action.",
+      "fr": "Étapes pratiques à suivre lorsqu’un enfant a été déplacé ou retenu illicitement en Pologne : preuves, autorités et démarches juridiques.",
+      "hr": "Praktični koraci nakon što je dijete protupravno odvedeno ili zadržano u Poljskoj, uključujući dokaze, nadležna tijela i pravne radnje."
+    },
+    "parents_in_contact": {
+      "en": "Guidance for parents who remain in contact and know the child or the other parent is in Poland, including negotiation, mediation and legal safeguards.",
+      "fr": "Conseils lorsque les parents restent en contact et que l’enfant ou l’autre parent se trouve en Pologne : discussion, médiation et garanties juridiques.",
+      "hr": "Smjernice za roditelje koji su i dalje u kontaktu i znaju da se dijete ili drugi roditelj nalazi u Poljskoj, uključujući dogovor, medijaciju i pravnu zaštitu."
+    },
+    "parental_non_cooperation": {
+      "en": "Legal options when the other parent refuses mediation or cooperation after a child has been taken to or retained in Poland.",
+      "fr": "Options juridiques lorsque l’autre parent refuse la médiation ou la coopération après qu’un enfant a été emmené ou retenu en Pologne.",
+      "hr": "Pravne mogućnosti kada drugi roditelj odbija medijaciju ili suradnju nakon što je dijete odvedeno ili zadržano u Poljskoj."
+    },
+    "conflict_with_the_other_parent": {
+      "en": "Information for parents in conflict about custody, travel, residence and international child abduction risks involving Poland.",
+      "fr": "Informations pour les parents en conflit sur la garde, les voyages, la résidence et les risques d’enlèvement international d’enfant impliquant la Pologne.",
+      "hr": "Informacije za roditelje u sukobu oko skrbi, putovanja, prebivališta i rizika međunarodne otmice djeteta povezane s Poljskom."
+    },
+    "criminal_consequences": {
+      "en": "Overview of possible criminal consequences in international child abduction cases and why urgent legal advice is important when Poland is involved.",
+      "fr": "Aperçu des conséquences pénales possibles dans les affaires d’enlèvement international d’enfant et de l’importance d’un conseil juridique rapide lorsque la Pologne est concernée.",
+      "hr": "Pregled mogućih kaznenih posljedica u slučajevima međunarodne otmice djeteta i važnosti hitnog pravnog savjeta kada je uključena Poljska."
+    },
+    "why_remain_in_poland": {
+      "en": "Explanation of why a child and each parent may need to remain in Poland during family proceedings, mediation or Hague Convention child return cases.",
+      "fr": "Explication des raisons pour lesquelles l’enfant et chaque parent peuvent devoir rester en Pologne pendant une procédure familiale, une médiation ou une demande de retour fondée sur la Convention de La Haye.",
+      "hr": "Objašnjenje zašto dijete i svaki roditelj mogu trebati ostati u Poljskoj tijekom obiteljskog postupka, medijacije ili postupka povratka prema Haškoj konvenciji."
+    },
+    "going_abroad_with_my_child": {
+      "en": "Information for parents considering international travel or relocation with a child, including consent, custody and child abduction risks involving Poland.",
+      "fr": "Informations pour les parents envisageant un voyage ou un déménagement à l’étranger avec un enfant : consentement, garde et risques d’enlèvement parental impliquant la Pologne.",
+      "hr": "Informacije za roditelje koji razmišljaju o putovanju ili preseljenju u inozemstvo s djetetom, uključujući suglasnost, skrb i rizike otmice povezane s Poljskom."
+    },
+    "is_it_possible": {
+      "en": "Can a parent go abroad with a child? Learn about consent, custody rights and legal limits before travel or relocation involving Poland.",
+      "fr": "Un parent peut-il partir à l’étranger avec son enfant ? Consentement, droits de garde et limites juridiques avant un voyage ou un déménagement impliquant la Pologne.",
+      "hr": "Može li roditelj otići u inozemstvo s djetetom? Saznajte o suglasnosti, pravima skrbi i pravnim granicama prije putovanja ili preseljenja povezanog s Poljskom."
+    },
+    "filial_relationship": {
+      "en": "Explanation of the parent-child relationship, parental authority and custody issues relevant to international travel and child abduction risks involving Poland.",
+      "fr": "Rappel sur la filiation, l’autorité parentale et les questions de garde pertinentes en cas de voyage international et de risque d’enlèvement d’enfant impliquant la Pologne.",
+      "hr": "Objašnjenje odnosa roditelja i djeteta, roditeljske skrbi i pitanja skrbništva važnih za međunarodna putovanja i rizike otmice djeteta povezane s Poljskom."
+    },
+    "the_hague_convention": {
+      "en": "Guide to the Hague Convention on the Civil Aspects of International Child Abduction and how child return proceedings work in Poland.",
+      "fr": "Guide de la Convention de La Haye sur les aspects civils de l’enlèvement international d’enfants et du fonctionnement des procédures de retour en Pologne.",
+      "hr": "Vodič kroz Hašku konvenciju o građanskopravnim aspektima međunarodne otmice djece i postupke povratka djece u Poljskoj."
+    }
+  }
+}

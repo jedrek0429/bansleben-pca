@@ -1,0 +1,385 @@
+{
+  "lang": "en",
+  "site_name": "Poland Child Abduction",
+  "domain": "https://polandchildabduction.pl",
+  "menu": {
+    "introduction": "INTRODUCTION",
+    "whom_to_contact": "WHOM TO CONTACT?",
+    "jurisprudence": "JURISPRUDENCE",
+    "contact": "CONTACT",
+    "who_we_are": "WHO WE ARE",
+    "legal_practice": "LEGAL PRACTICE"
+  },
+  "form": {
+    "name": "Name",
+    "email": "E-mail",
+    "message": "Message",
+    "send": "SEND",
+    "success": "Thank you. Your message has been sent.",
+    "error": "Sorry, your message could not be sent. Please check your e-mail address and try again."
+  },
+  "common": {
+    "read_more": "Read more",
+    "back": "Back",
+    "home": "Introduction"
+  },
+  "not_found": {
+    "title": "Page not found",
+    "text": "The page you are looking for does not exist or has been moved.",
+    "button": "Back to introduction"
+  },
+  "hague_footer": {
+    "title": "The Hague Convention",
+    "text": "This website refers to the Hague Convention of 25 October 1980 on the Civil Aspects of International Child Abduction.",
+    "link_label": "Read more",
+    "page": "the_hague_convention"
+  },
+  "pages": {
+    "introduction": {
+      "enabled": true,
+      "title": "Introduction",
+      "slug": "",
+      "parent": null
+    },
+    "whom_to_contact": {
+      "enabled": true,
+      "title": "Whom to Contact?",
+      "slug": "whom-to-contact",
+      "parent": null
+    },
+    "jurisprudence": {
+      "enabled": true,
+      "title": "Jurisprudence",
+      "slug": "jurisprudence",
+      "parent": null
+    },
+    "contact": {
+      "enabled": true,
+      "title": "Contact",
+      "slug": "contact",
+      "parent": null
+    },
+    "who_we_are": {
+      "enabled": true,
+      "title": "Who We Are",
+      "slug": "who-we-are",
+      "parent": null
+    },
+    "privacy_policy": {
+      "enabled": true,
+      "title": "Privacy Policy",
+      "slug": "privacy-policy",
+      "parent": null
+    },
+    "parental_child_abduction": {
+      "enabled": true,
+      "title": "Parental Child Abduction",
+      "slug": "parental-child-abduction",
+      "parent": null
+    },
+    "within_the_law": {
+      "enabled": true,
+      "title": "Within the Law",
+      "slug": "within-the-law",
+      "parent": null
+    },
+    "international_laws": {
+      "enabled": true,
+      "title": "International Laws",
+      "slug": "within-the-law/international-laws",
+      "parent": "within_the_law"
+    },
+    "individual_national_laws": {
+      "enabled": true,
+      "title": "Individual National Laws",
+      "slug": "within-the-law/individual-national-laws",
+      "parent": "within_the_law"
+    },
+    "national_law_uk": {
+      "enabled": true,
+      "title": "British",
+      "slug": "within-the-law/individual-national-laws/british",
+      "parent": "individual_national_laws"
+    },
+    "national_law_us": {
+      "enabled": true,
+      "title": "American",
+      "slug": "within-the-law/individual-national-laws/american",
+      "parent": "individual_national_laws"
+    },
+    "national_law_france": {
+      "enabled": false,
+      "title": "",
+      "slug": "",
+      "parent": "individual_national_laws"
+    },
+    "national_law_belgium": {
+      "enabled": false,
+      "title": "",
+      "slug": "",
+      "parent": "individual_national_laws"
+    },
+    "national_law_canada": {
+      "enabled": true,
+      "title": "Canadian",
+      "slug": "within-the-law/individual-national-laws/canadian",
+      "parent": "individual_national_laws"
+    },
+    "national_law_croatia": {
+      "enabled": false,
+      "title": "",
+      "slug": "",
+      "parent": "individual_national_laws"
+    },
+    "national_law_poland": {
+      "enabled": true,
+      "title": "Polish",
+      "slug": "within-the-law/individual-national-laws/polish",
+      "parent": "individual_national_laws"
+    },
+    "what_should_i_do": {
+      "enabled": true,
+      "title": "What Should I Do?",
+      "slug": "what-should-i-do",
+      "parent": null
+    },
+    "steps_to_follow": {
+      "enabled": true,
+      "title": "Steps to Follow",
+      "slug": "what-should-i-do/steps-to-follow",
+      "parent": "what_should_i_do"
+    },
+    "parents_in_contact": {
+      "enabled": true,
+      "title": "If Parents Remain in Contact and are Both in Poland",
+      "slug": "what-should-i-do/parents-in-contact",
+      "parent": "what_should_i_do"
+    },
+    "parental_non_cooperation": {
+      "enabled": true,
+      "title": "If the Other Parent Refuses Mediation",
+      "slug": "what-should-i-do/parental-non-cooperation",
+      "parent": "what_should_i_do"
+    },
+    "conflict_with_the_other_parent": {
+      "enabled": true,
+      "title": "Conflict with the Other Parent",
+      "slug": "conflict-with-the-other-parent",
+      "parent": null
+    },
+    "criminal_consequences": {
+      "enabled": true,
+      "title": "Criminal Consequences of International Child Abduction",
+      "slug": "conflict-with-the-other-parent/criminal-consequences",
+      "parent": "going_abroad_with_my_child"
+    },
+    "why_remain_in_poland": {
+      "enabled": true,
+      "title": "Why Should the Child and Each Parent Remain within Poland?",
+      "slug": "conflict-with-the-other-parent/why-remain-in-poland",
+      "parent": "conflict_with_the_other_parent"
+    },
+    "going_abroad_with_my_child": {
+      "enabled": true,
+      "title": "Going Abroad with My Child",
+      "slug": "going-abroad-with-my-child",
+      "parent": null
+    },
+    "is_it_possible": {
+      "enabled": true,
+      "title": "Is It Possible?",
+      "slug": "going-abroad-with-my-child/is-it-possible",
+      "parent": "going_abroad_with_my_child"
+    },
+    "filial_relationship": {
+      "enabled": true,
+      "title": "The Filial Relationship and Parental Authority",
+      "slug": "going-abroad-with-my-child/filial-relationship",
+      "parent": "conflict_with_the_other_parent"
+    },
+    "the_hague_convention": {
+      "enabled": true,
+      "title": "The Hague Convention",
+      "slug": "the-hague-convention",
+      "parent": null
+    }
+  },
+  "shared_blocks": {
+    "un_crc_intro": {
+      "text": "Under the United Nations Convention on the Rights of the Child 1989, which came into force in 1990, the following was approved:"
+    },
+    "hague_purpose": {
+      "title": "The purpose of this Convention is:",
+      "items": [
+        "to secure the prompt return of children wrongfully removed or retained in any signatory state;",
+        "to effectively enforce in the other signatory states the rights of custody and visitation existing in a state that is signatory to the Convention."
+      ],
+      "citation": "Article 1 of the Hague Convention of 25 October 1980"
+    }
+  },
+  "cards": {
+    "read_more": "Read more"
+  },
+  "brand": {
+    "logo_text": "Poland Child Abduction",
+    "logo_alt": "Poland Child Abduction",
+    "logo_src": "/assets/logos/logo-en.png"
+  },
+  "footer": {
+    "privacy_policy": "Privacy Policy"
+  },
+  "social": {
+    "facebook_follow": "Follow on Facebook"
+  },
+  "card_items": {
+    "introduction": {
+      "title": "Introduction",
+      "image_alt": "Introduction",
+      "image_title": "Introduction"
+    },
+    "whom_to_contact": {
+      "title": "Whom to Contact?",
+      "image_alt": "Whom to Contact?",
+      "image_title": "Whom to Contact?"
+    },
+    "jurisprudence": {
+      "title": "Jurisprudence",
+      "image_alt": "Jurisprudence",
+      "image_title": "Jurisprudence"
+    },
+    "contact": {
+      "title": "Contact",
+      "image_alt": "Contact",
+      "image_title": "Contact"
+    },
+    "who_we_are": {
+      "title": "Who We Are",
+      "image_alt": "Who We Are",
+      "image_title": "Who We Are"
+    },
+    "privacy_policy": {
+      "title": "Privacy Policy",
+      "image_alt": "Privacy Policy",
+      "image_title": "Privacy Policy"
+    },
+    "parental_child_abduction": {
+      "title": "Parental Child Abduction",
+      "image_alt": "Parental Child Abduction",
+      "image_title": "Parental Child Abduction",
+      "image_src": "/assets/uploads/2023/09/family.png"
+    },
+    "within_the_law": {
+      "title": "Within the Law",
+      "image_alt": "Within the Law",
+      "image_title": "Within the Law",
+      "image_src": "/assets/uploads/2023/09/regulation.jpeg"
+    },
+    "international_laws": {
+      "title": "International Laws",
+      "image_alt": "International Laws",
+      "image_title": "International Laws",
+      "image_src": "/assets/uploads/2021/03/AdobeStock_71382930-scaled.jpeg"
+    },
+    "individual_national_laws": {
+      "title": "Individual National Laws",
+      "image_alt": "Individual National Laws",
+      "image_title": "Individual National Laws",
+      "image_src": "/assets/uploads/2021/03/AdobeStock_393652006-scaled.jpeg"
+    },
+    "national_law_uk": {
+      "title": "British",
+      "image_alt": "British",
+      "image_title": "British",
+      "image_src": "/assets/uploads/2023/09/2.jpg"
+    },
+    "national_law_us": {
+      "title": "American",
+      "image_alt": "American",
+      "image_title": "American",
+      "image_src": "/assets/uploads/2023/09/1.jpg"
+    },
+    "national_law_canada": {
+      "title": "Canadian",
+      "image_alt": "Canadian",
+      "image_title": "Canadian",
+      "image_src": "/assets/uploads/2021/03/canada.png"
+    },
+    "national_law_poland": {
+      "title": "Polish",
+      "image_alt": "Polish",
+      "image_title": "Polish",
+      "image_src": "/assets/uploads/2021/03/polska.png"
+    },
+    "what_should_i_do": {
+      "title": "What Should I Do?",
+      "image_alt": "What Should I Do?",
+      "image_title": "What Should I Do?",
+      "image_src": "/assets/uploads/2023/09/what.png"
+    },
+    "steps_to_follow": {
+      "title": "Steps to Follow",
+      "image_alt": "Steps to Follow",
+      "image_title": "Steps to Follow",
+      "image_src": "/assets/uploads/2021/03/kroki.png"
+    },
+    "parents_in_contact": {
+      "title": "If Parents Remain in Contact and are Both in Poland",
+      "image_alt": "If Parents Remain in Contact and are Both in Poland",
+      "image_title": "If Parents Remain in Contact and are Both in Poland",
+      "image_src": "/assets/uploads/2023/09/polska.png"
+    },
+    "parental_non_cooperation": {
+      "title": "If the Other Parent Refuses Mediation",
+      "image_alt": "If the Other Parent Refuses Mediation",
+      "image_title": "If the Other Parent Refuses Mediation",
+      "image_src": "/assets/uploads/2023/09/mediacje.png"
+    },
+    "conflict_with_the_other_parent": {
+      "title": "Conflict with the Other Parent",
+      "image_alt": "Conflict with the Other Parent",
+      "image_title": "Conflict with the Other Parent",
+      "image_src": "/assets/uploads/2023/09/rozwod.png"
+    },
+    "criminal_consequences": {
+      "title": "The Criminal Consequences of International Child Abduction",
+      "image_alt": "The Criminal Consequences of International Child Abduction",
+      "image_title": "The Criminal Consequences of International Child Abduction",
+      "image_src": "/assets/uploads/2023/09/sad.png"
+    },
+    "why_remain_in_poland": {
+      "title": "Why Should the Child and Each Parent Remain in Poland?",
+      "image_alt": "Why Should the Child and Each Parent Remain in Poland?",
+      "image_title": "Why Should the Child and Each Parent Remain in Poland?",
+      "image_src": "/assets/uploads/2023/09/polska.png"
+    },
+    "going_abroad_with_my_child": {
+      "title": "Going Abroad with My Child",
+      "image_alt": "Going Abroad with My Child",
+      "image_title": "Going Abroad with My Child",
+      "image_src": "/assets/uploads/2023/09/travel.png"
+    },
+    "is_it_possible": {
+      "title": "Is It Possible?",
+      "image_alt": "Is It Possible?",
+      "image_title": "Is It Possible?",
+      "image_src": "/assets/uploads/2023/09/mozliwosci.png"
+    },
+    "filial_relationship": {
+      "title": "The Filial Relationship and Parental Authority",
+      "image_alt": "The Filial Relationship and Parental Authority",
+      "image_title": "The Filial Relationship and Parental Authority",
+      "image_src": "/assets/uploads/2021/03/rodzice-2.png"
+    },
+    "the_hague_convention": {
+      "title": "The Hague Convention",
+      "image_alt": "The Hague Convention",
+      "image_title": "The Hague Convention",
+      "image_src": "/assets/uploads/2023/09/sad.png"
+    }
+  },
+  "contact_form": {
+    "name_label": "Name",
+    "email_label": "E-mail",
+    "message_label": "Message"
+  }
+}

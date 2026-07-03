@@ -1,0 +1,45 @@
+{
+  "introduction": [
+    "parental_child_abduction",
+    "within_the_law",
+    "what_should_i_do",
+    "conflict_with_the_other_parent",
+    "going_abroad_with_my_child",
+    "the_hague_convention"
+  ],
+  "within_the_law": [
+    "international_laws",
+    "individual_national_laws"
+  ],
+  "individual_national_laws": {
+    "en": [
+      "national_law_uk",
+      "national_law_us",
+      "national_law_canada",
+      "national_law_poland"
+    ],
+    "fr": [
+      "national_law_france",
+      "national_law_belgium",
+      "national_law_canada",
+      "national_law_poland"
+    ],
+    "hr": [
+      "national_law_croatia",
+      "national_law_poland"
+    ]
+  },
+  "what_should_i_do": [
+    "steps_to_follow",
+    "parents_in_contact",
+    "parental_non_cooperation"
+  ],
+  "conflict_with_the_other_parent": [
+    "criminal_consequences",
+    "why_remain_in_poland"
+  ],
+  "going_abroad_with_my_child": [
+    "is_it_possible",
+    "filial_relationship"
+  ]
+}
