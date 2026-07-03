@@ -1,4 +1,4 @@
-"""Finalize a GitHub Pages/SSH PR preview directory."""
+"""Finalize a PR preview directory for serving below a URL prefix."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ import shutil
 from pathlib import Path
 
 
-ROOT_ITEMS = ("assets", "wp-content", "wp-includes")
+ROOT_ITEMS = ("assets",)
 ROOT_PREFIXES = tuple(f"/{item}/" for item in ROOT_ITEMS)
 ROBOTS_META_RE = re.compile(r'<meta\s+name=["\']robots["\']\s+content=["\'][^"\']*["\']\s*/?>', re.IGNORECASE)
 NOINDEX_META = '<meta name="robots" content="noindex">'

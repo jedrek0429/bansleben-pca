@@ -1,6 +1,6 @@
 # bansleben-pca
 
-This workspace contains the source and deployed output for the Poland Child Abduction static sites in English, French and Croatian.
+This repository contains the source for the Poland Child Abduction static sites in English, French and Croatian.
 
 ## URLs
 
@@ -10,29 +10,35 @@ This workspace contains the source and deployed output for the Poland Child Abdu
 
 ## Build pipeline
 
-The main scripts live in `tools/`:
+The Python tooling lives in `tools/`:
 
-- `build.py`: builds the site from source into `../site-dist/`
+- `build.py`: builds the static site from source into `../site-dist/`
 - `validate_locales.py`: validates locale JSON files against the site config
-- `autofix_locales.py`: applies safe locale fixes
-- `BUILD_AND_PUBLISH.py`: runs validation, then build, then publish for the v2 flow
-- `publish.py`: publishes a built `../site-dist/` to a target directory (`../public_html/`)
+- `format_hyperlinks.py`: normalizes bare links in Markdown content
+- `BUILD_AND_PUBLISH.py`: runs validation, hyperlink formatting, build, and publish
+- `dev_build_and_publish.py`: builds and publishes a preview/development output
+- `publish.py`: publishes a built `../site-dist/` to a target directory such as `../public_html/`
+
+The project no longer carries the old Node regression harness, Playwright tests, Lighthouse CI setup, or bundled WordPress/Divi assets.
 
 ## Typical workflow
 
-Run tools from project root unless a script says otherwise.
+Run tools from the project root unless a script says otherwise.
 
-### Compile all python scripts
+### Compile Python scripts
+
 ```sh
-./tools/.venv/bin/python -m compileall tools/
+python -m compileall tools/
 ```
 
-### Publish editor
+### Build the static site
+
 ```sh
-./tools/.venv/bin/python ./tools/dev_publish_editor.py --dest ../public_html/en/editor
+python tools/build.py --root .
 ```
 
 ### Build and publish
+
 ```sh
-./tools/.venv/bin/python ./tools/BUILD_AND_PUBLISH.py
+python tools/BUILD_AND_PUBLISH.py --root .
 ```

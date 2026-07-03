@@ -1,18 +1,13 @@
 """
-Run validation, format hyperlinks, then build and publish a development/preview site.
+Run validation, hyperlink formatting, build, and publish a development/preview site.
 
-Usage: run from site-src root (or specify `--root path/to/site-src`).
+Usage: run from site source root, or specify `--root path/to/site-src`.
 
-Examples:
-- Existing v2 preview:
-  python tools/dev_build_and_publish.py
-
-- GitHub Pages PR preview:
-  python tools/dev_build_and_publish.py \
-    --url-prefix /bansleben-pca/pr-1 \
-    --dest pages-preview/pr-1 \
-    --rewrite-root-assets \
-    --write-preview-index
+Example:
+    python tools/dev_build_and_publish.py \
+      --url-prefix /bansleben-pca/pr-1 \
+      --dest pages-preview/pr-1 \
+      --write-preview-index
 """
 
 from __future__ import annotations
@@ -28,10 +23,6 @@ from common import CLR_GREEN, CLR_RED, print_labeled
 
 
 TOOLS_DIR = Path(__file__).resolve().parent
-ROOT_RELATIVE_ASSET_PREFIXES = (
-    "/wp-content/",
-    "/wp-includes/",
-)
 
 
 def normalize_url_prefix(value: str) -> str:
@@ -41,31 +32,6 @@ def normalize_url_prefix(value: str) -> str:
     if not value.startswith("/"):
         value = "/" + value
     return value
-
-
-def rewrite_root_relative_assets(dist: Path, url_prefix: str) -> None:
-    """Rewrite remaining root-relative legacy asset URLs for project-site previews."""
-    url_prefix = normalize_url_prefix(url_prefix)
-    if not url_prefix:
-        return
-
-    for path in dist.rglob("*.html"):
-        text = path.read_text(encoding="utf-8")
-        updated = text
-
-        for root_prefix in ROOT_RELATIVE_ASSET_PREFIXES:
-            replacement = url_prefix + root_prefix
-
-            for attr in ["href", "src", "srcset"]:
-                updated = updated.replace(f'{attr}="{root_prefix}', f'{attr}="{replacement}')
-                updated = updated.replace(f"{attr}='{root_prefix}", f"{attr}='{replacement}")
-
-            updated = updated.replace(f"url({root_prefix}", f"url({replacement}")
-            updated = updated.replace(f"url('{root_prefix}", f"url('{replacement}")
-            updated = updated.replace(f'url("{root_prefix}', f'url("{replacement}')
-
-        if updated != text:
-            path.write_text(updated, encoding="utf-8")
 
 
 def write_preview_index(dist: Path, url_prefix: str) -> None:
@@ -96,9 +62,9 @@ def write_preview_index(dist: Path, url_prefix: str) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Validate locales, build the site, then publish development output."
+        description="Validate locales, format hyperlinks, build the site, then publish development output."
     )
-    parser.add_argument("--root", default=".", help="site-src root, default: current directory")
+    parser.add_argument("--root", default=".", help="site source root, default: current directory")
     parser.add_argument(
         "--url-prefix",
         default="/v2",
@@ -108,11 +74,6 @@ def main() -> None:
         "--dest",
         default=None,
         help="Publish destination, default: ../public_html/en/v2 relative to root",
-    )
-    parser.add_argument(
-        "--rewrite-root-assets",
-        action="store_true",
-        help="Rewrite remaining /wp-content and /wp-includes URLs under --url-prefix after build.",
     )
     parser.add_argument(
         "--write-preview-index",
@@ -156,9 +117,6 @@ def main() -> None:
             print_labeled("ERROR", CLR_RED, f"{label} failed (see output).")
             sys.exit(1)
 
-    if args.rewrite_root_assets:
-        rewrite_root_relative_assets(dist, os.environ["SITE_URL_PREFIX"])
-
     if args.write_preview_index:
         write_preview_index(dist, os.environ["SITE_URL_PREFIX"])
 
@@ -177,7 +135,7 @@ def main() -> None:
         sys.exit(1)
 
     print()
-    print_labeled("OK", CLR_GREEN, "validation, hyperlinks format, build, and publish completed successfully.")
+    print_labeled("OK", CLR_GREEN, "validation, hyperlink formatting, build, and publish completed successfully.")
 
 
 if __name__ == "__main__":

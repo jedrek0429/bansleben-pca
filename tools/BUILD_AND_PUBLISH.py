@@ -1,8 +1,4 @@
-"""
-Run validation, format hyperlinks, then build, clean and publish to v2.
-
-Usage: run from site-src root (or specify `--root path/to/site-src`)
-"""
+"""Run validation, hyperlink formatting, build, and publish for the static site."""
 
 from __future__ import annotations
 
@@ -20,20 +16,25 @@ TOOLS_DIR = Path(__file__).resolve().parent
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Validate locales, build the site, clean public output, then publish the v2 output."
+        description="Validate locales, format hyperlinks, build the site, then publish the output."
     )
-    parser.add_argument("--root", default=".", help="site-src root, default: current directory")
+    parser.add_argument("--root", default=".", help="site source root, default: current directory")
     args = parser.parse_args()
 
-    validate_locales = TOOLS_DIR / "validate_locales.py"
-    format_hyperlinks = TOOLS_DIR / "format_hyperlinks.py"
-    build = TOOLS_DIR / "build.py"
-    static_output_guard = TOOLS_DIR / "clean_static_output_v2.py"
-    publish = TOOLS_DIR / "publish.py"
+    root = Path(args.root).expanduser().resolve()
+    dist = root.parent / "site-dist"
+    dest = root.parent / "public_html"
 
-    for script in [validate_locales, build, static_output_guard, publish]:
+    scripts = {
+        "Validation": TOOLS_DIR / "validate_locales.py",
+        "Format Hyperlinks": TOOLS_DIR / "format_hyperlinks.py",
+        "Build": TOOLS_DIR / "build.py",
+        "Publish": TOOLS_DIR / "publish.py",
+    }
+
+    for label, script in scripts.items():
         if not script.is_file():
-            print_labeled("ERROR", CLR_RED, f"Required script not found: {script}")
+            print_labeled("ERROR", CLR_RED, f"Required script not found for {label}: {script}")
             sys.exit(1)
 
     python_bin = sys.executable or shutil.which("python3") or shutil.which("python")
@@ -42,20 +43,15 @@ def main() -> None:
         print_labeled("ERROR", CLR_RED, "Python executable not found.")
         sys.exit(1)
 
-    root = Path(args.root).expanduser().resolve()
-    dist = root.parent / "site-dist"
-    dest = root.parent / "public_html"
-
     steps = [
-        ("Validation", [python_bin, str(validate_locales), "--root", str(root)]),
-        ("Format Hyperlinks", [python_bin, str(format_hyperlinks), "--root", str(root)]),
-        ("Build", [python_bin, str(build), "--root", str(root)]),
-        ("Static Output Guard", [python_bin, str(static_output_guard), "--dist", str(dist)]),
+        ("Validation", [python_bin, str(scripts["Validation"]), "--root", str(root)]),
+        ("Format Hyperlinks", [python_bin, str(scripts["Format Hyperlinks"]), "--root", str(root)]),
+        ("Build", [python_bin, str(scripts["Build"]), "--root", str(root)]),
         (
             "Publish",
             [
                 python_bin,
-                str(publish),
+                str(scripts["Publish"]),
                 "--dist",
                 str(dist),
                 "--dest",
@@ -71,7 +67,7 @@ def main() -> None:
             sys.exit(1)
 
     print()
-    print_labeled("OK", CLR_GREEN, "validation, hyperlinks format, build, static output guard, and publish completed successfully.")
+    print_labeled("OK", CLR_GREEN, "validation, hyperlink formatting, build, and publish completed successfully.")
 
 
 if __name__ == "__main__":
