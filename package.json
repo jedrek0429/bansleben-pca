@@ -1,0 +1,18 @@
+{
+  "name": "bansleben-pca-site-regression",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Regression harness for the static PCA site build.",
+  "scripts": {
+    "build:site": "python tools/build.py",
+    "test:smoke": "playwright test tests/site-smoke.spec.ts",
+    "test:visual": "PCA_VISUAL_REGRESSION=1 playwright test tests/site-visual.spec.ts",
+    "snapshots:update": "PCA_VISUAL_REGRESSION=1 playwright test tests/site-visual.spec.ts --update-snapshots",
+    "lhci:collect": "lhci collect --config=lhci.config.cjs",
+    "lhci:assert": "lhci assert --config=lhci.config.cjs"
+  },
+  "devDependencies": {
+    "@lhci/cli": "^0.15.1",
+    "@playwright/test": "^1.54.0"
+  }
+}
