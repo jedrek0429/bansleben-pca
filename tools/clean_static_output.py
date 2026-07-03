@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 import argparse
+import re
 import shutil
 from pathlib import Path
 
 from common import CLR_GREEN, CLR_RED, color, display_path, print_group, print_labeled, print_section
 
-LEGACY_DIR_NAMES = {"wp-admin", "wp-content", "wp-includes", "common"}
 LEGACY_TERMS = (
     "wp-content",
     "wp-includes",
@@ -17,11 +17,28 @@ LEGACY_TERMS = (
     "divi",
     "et_pb",
     "et-core",
+    "et_first_mobile_item",
     "wp-image",
+    "menu-item-type-post_type",
+    "menu-item-object-page",
+    "current_page_item",
+    "page_item",
     "elegantthemes",
     "fonts.googleapis.com",
     "fonts.gstatic.com",
 )
+CLASS_REWRITES = {
+    "menu-item": "nav-item",
+    "menu-item-type-post_type": "",
+    "menu-item-object-page": "",
+    "menu-item-type-custom": "",
+    "menu-item-object-custom": "",
+    "menu-item-home": "nav-item--home",
+    "current-menu-item": "is-current",
+    "page_item": "",
+    "current_page_item": "is-current",
+    "et_first_mobile_item": "nav-item--first-mobile",
+}
 TEXT_SUFFIXES = {".html", ".htm", ".css", ".js", ".json", ".txt", ".xml", ".svg", ".webmanifest"}
 LANGS = {"en", "fr", "hr"}
 
@@ -49,6 +66,33 @@ def remove_legacy_paths(dist: Path) -> list[Path]:
         removed.append(path)
 
     return removed
+
+
+def sanitize_class_attribute(match: re.Match[str]) -> str:
+    classes: list[str] = []
+
+    for class_name in match.group(1).split():
+        rewritten = CLASS_REWRITES.get(class_name, class_name)
+        if not rewritten:
+            continue
+        if rewritten not in classes:
+            classes.append(rewritten)
+
+    return 'class="' + " ".join(classes) + '"'
+
+
+def sanitize_generated_html(dist: Path) -> list[Path]:
+    changed: list[Path] = []
+
+    for path in sorted(dist.rglob("*.html")):
+        text = path.read_text(encoding="utf-8", errors="ignore")
+        updated = re.sub(r'class="([^"]*)"', sanitize_class_attribute, text)
+
+        if updated != text:
+            path.write_text(updated, encoding="utf-8")
+            changed.append(path)
+
+    return changed
 
 
 def legacy_findings(dist: Path) -> list[str]:
@@ -96,11 +140,15 @@ def clean_static_output(dist: Path) -> None:
 
     assert_dist_shape(dist)
     removed = remove_legacy_paths(dist)
+    rewritten = sanitize_generated_html(dist)
 
     if removed:
         print_group("Removed legacy paths", [display_path(path, dist.parent) for path in removed], "OK", CLR_GREEN)
     else:
         print_labeled("OK", CLR_GREEN, "no legacy directories found.")
+
+    if rewritten:
+        print_group("Sanitized generated markup", [display_path(path, dist.parent) for path in rewritten], "OK", CLR_GREEN)
 
     findings = legacy_findings(dist)
     if findings:
