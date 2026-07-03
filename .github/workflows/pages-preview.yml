@@ -1,0 +1,71 @@
+name: GitHub Pages preview
+
+on:
+  workflow_dispatch:
+    inputs:
+      preview_path:
+        description: Preview path under the Pages site, for example pr-1
+        required: true
+        default: pr-1
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python build dependencies
+        run: python -m pip install --upgrade pip markdown pymdown-extensions imagesize
+
+      - name: Build preview path
+        run: |
+          preview_path='${{ inputs.preview_path }}'
+          url_prefix='/${{ github.event.repository.name }}/${{ inputs.preview_path }}'
+          rm -rf pages-preview
+          python tools/dev_build_and_publish.py \
+            --root . \
+            --url-prefix "$url_prefix" \
+            --dest "pages-preview/$preview_path" \
+            --rewrite-root-assets \
+            --write-preview-index
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: pages-preview
+
+      - name: Deploy GitHub Pages preview
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Summarize preview
+        run: |
+          preview_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${{ inputs.preview_path }}/"
+          {
+            echo '## Live GitHub Pages preview'
+            echo ''
+            echo "Preview URL: $preview_url"
+            echo ''
+            echo 'Localized roots:'
+            echo "- ${preview_url}en/"
+            echo "- ${preview_url}fr/"
+            echo "- ${preview_url}hr/"
+          } >> "$GITHUB_STEP_SUMMARY"
