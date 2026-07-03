@@ -1,6 +1,12 @@
-# serwer88382
+# bansleben-pca
 
-This workspace contains the source and deployed output for the PCA static sites in English, French and Croatian.
+This workspace contains the source and deployed output for the Poland Child Abduction static sites in English, French and Croatian.
+
+## URLs
+
+- `en`: <https://polandchildabduction.com/>
+- `fr`: <https://enlevementparentalpologne.pl/>
+- `hr`: <https://roditeljskaotmicapoljska.pl/>
 
 ## Build pipeline
 
