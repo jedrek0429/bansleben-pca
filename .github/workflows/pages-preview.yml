@@ -53,8 +53,26 @@ jobs:
             --root . \
             --url-prefix "${{ steps.preview.outputs.url_prefix }}" \
             --dest "pages-preview/${{ steps.preview.outputs.path }}" \
-            --rewrite-root-assets \
-            --write-preview-index
+            --rewrite-root-assets
+
+      - name: Add preview root redirect
+        run: |
+          preview_dir="pages-preview/${{ steps.preview.outputs.path }}"
+          mkdir -p "$preview_dir"
+          cat > "$preview_dir/index.html" <<'HTML'
+          <!doctype html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <meta http-equiv="refresh" content="0; url=${{ steps.preview.outputs.url_prefix }}/en/">
+            <link rel="canonical" href="${{ steps.preview.outputs.url_prefix }}/en/">
+            <title>Preview redirect</title>
+          </head>
+          <body>
+            <p><a href="${{ steps.preview.outputs.url_prefix }}/en/">Open preview</a></p>
+          </body>
+          </html>
+          HTML
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
