@@ -1,101 +1,10 @@
-name: GitHub Pages PR preview
+name: GitHub Pages PR preview disabled
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: pages-preview-pr-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
+  workflow_dispatch:
 
 jobs:
-  deploy:
-    if: github.event.pull_request.head.repo.full_name == github.repository
+  disabled:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.preview.outputs.url }}
-
     steps:
-      - name: Check out PR commit
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install Python build dependencies
-        run: python -m pip install --upgrade pip markdown pymdown-extensions imagesize
-
-      - name: Resolve preview URL
-        id: preview
-        run: |
-          preview_path="pr-${{ github.event.pull_request.number }}"
-          preview_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${preview_path}/"
-          url_prefix="/${{ github.event.repository.name }}/${preview_path}"
-
-          echo "path=$preview_path" >> "$GITHUB_OUTPUT"
-          echo "url=$preview_url" >> "$GITHUB_OUTPUT"
-          echo "url_prefix=$url_prefix" >> "$GITHUB_OUTPUT"
-
-      - name: Build PR preview path
-        run: |
-          rm -rf pages-preview
-          python tools/dev_build_and_publish.py \
-            --root . \
-            --url-prefix "${{ steps.preview.outputs.url_prefix }}" \
-            --dest "pages-preview/${{ steps.preview.outputs.path }}" \
-            --rewrite-root-assets
-
-      - name: Add preview root redirect
-        run: |
-          preview_dir="pages-preview/${{ steps.preview.outputs.path }}"
-          mkdir -p "$preview_dir"
-          cat > "$preview_dir/index.html" <<'HTML'
-          <!doctype html>
-          <html lang="en">
-          <head>
-            <meta charset="utf-8">
-            <meta http-equiv="refresh" content="0; url=${{ steps.preview.outputs.url_prefix }}/en/">
-            <link rel="canonical" href="${{ steps.preview.outputs.url_prefix }}/en/">
-            <title>Preview redirect</title>
-          </head>
-          <body>
-            <p><a href="${{ steps.preview.outputs.url_prefix }}/en/">Open preview</a></p>
-          </body>
-          </html>
-          HTML
-
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload GitHub Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: pages-preview
-
-      - name: Deploy GitHub Pages preview
-        id: deployment
-        uses: actions/deploy-pages@v4
-
-      - name: Summarize preview
-        run: |
-          preview_url="${{ steps.preview.outputs.url }}"
-          {
-            echo '## Live GitHub Pages PR preview'
-            echo ''
-            echo "Preview URL: $preview_url"
-            echo ''
-            echo 'Localized roots:'
-            echo "- ${preview_url}en/"
-            echo "- ${preview_url}fr/"
-            echo "- ${preview_url}hr/"
-          } >> "$GITHUB_STEP_SUMMARY"
+      - run: echo "Superseded by pages-preview-fixed.yml"
