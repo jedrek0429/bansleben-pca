@@ -292,6 +292,22 @@ body.custom-background {
     transform: translateY(0) !important;
     transition-delay: 0s !important;
   }
+
+  #footer-info {
+    width: 100% !important;
+    text-align: left !important;
+  }
+
+  #footer-info a {
+    display: inline-block !important;
+    text-align: left !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  #footer-bottom .container {
+    text-align: left !important;
+  }
 }
 
 @media (max-width: 980px) {
