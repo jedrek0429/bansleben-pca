@@ -28,7 +28,7 @@ def main() -> None:
     validate_locales = TOOLS_DIR / "validate_locales.py"
     format_hyperlinks = TOOLS_DIR / "format_hyperlinks.py"
     build = TOOLS_DIR / "build.py"
-    static_output_guard = TOOLS_DIR / "clean_static_output.py"
+    static_output_guard = TOOLS_DIR / "clean_static_output_v2.py"
     publish = TOOLS_DIR / "publish.py"
 
     for script in [validate_locales, build, static_output_guard, publish]:
