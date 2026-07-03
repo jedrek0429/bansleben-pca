@@ -34,34 +34,6 @@ jobs:
       - name: Build static site
         run: python tools/build.py
 
-      - name: Prepare website preview artifact
-        run: |
-          rm -rf site-preview
-          mkdir -p site-preview
-          cp -a ../site-dist/. site-preview/
-          {
-            echo '## Website preview'
-            echo ''
-            echo 'The built static site is attached to this workflow run as the `site-preview` artifact.'
-            echo ''
-            echo 'To preview locally:'
-            echo ''
-            echo '```sh'
-            echo 'unzip site-preview.zip -d site-preview'
-            echo 'python -m http.server 8080 --directory site-preview'
-            echo '```'
-            echo ''
-            echo 'Then open `http://127.0.0.1:8080/en/`, `/fr/`, or `/hr/`.'
-          } >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Upload website preview
-        uses: actions/upload-artifact@v4
-        with:
-          name: site-preview
-          path: site-preview
-          if-no-files-found: error
-          retention-days: 14
-
       - name: Run smoke regression tests
         run: npm run test:smoke
 
