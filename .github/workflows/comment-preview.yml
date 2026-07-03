@@ -47,3 +47,15 @@ jobs:
             --repo "$GITHUB_REPOSITORY" \
             --ref "$DISPATCH_REF" \
             -f pr_number="$PR_NUMBER"
+
+      - name: Dispatch screenshot workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+          DISPATCH_REF: ${{ steps.pr.outputs.ref }}
+        run: |
+          gh workflow run site-screenshots.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref "$DISPATCH_REF" \
+            -f pr_number="$PR_NUMBER" \
+            -f path="/en/"
