@@ -19,8 +19,6 @@ The Python tooling lives in `tools/`:
 - `dev_build_and_publish.py`: builds and publishes a preview/development output
 - `publish.py`: publishes a built `../site-dist/` to a target directory such as `../public_html/`
 
-The project no longer carries the old Node regression harness, Playwright tests, Lighthouse CI setup, or bundled WordPress/Divi assets.
-
 ## Typical workflow
 
 Run tools from the project root unless a script says otherwise.
