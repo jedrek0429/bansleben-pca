@@ -100,6 +100,17 @@ def sanitize_text_files(dist: Path) -> list[Path]:
     return changed
 
 
+def empty_root_index(dist: Path) -> list[Path]:
+    root_index = dist / "index.html"
+    if not root_index.exists():
+        root_index.write_text("", encoding="utf-8")
+        return [root_index]
+    if root_index.read_text(encoding="utf-8", errors="ignore") != "":
+        root_index.write_text("", encoding="utf-8")
+        return [root_index]
+    return []
+
+
 def legacy_in_path(path: Path, dist: Path) -> bool:
     rel = path.relative_to(dist).as_posix().lower()
     parts = rel.split("/")
@@ -139,6 +150,7 @@ def clean_static_output(dist: Path) -> None:
     assert_dist_shape(dist)
     removed = remove_legacy_paths(dist)
     changed = sanitize_text_files(dist)
+    changed.extend(empty_root_index(dist))
     if removed:
         print_group("Removed legacy paths", [display_path(path, dist.parent) for path in removed], "OK", CLR_GREEN)
     else:
