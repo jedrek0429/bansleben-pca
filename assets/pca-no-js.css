@@ -1,0 +1,23 @@
+/* Fallbacks for browsers with JavaScript disabled. */
+@media (max-width: 900px) {
+  html:not(.js) .pca-mobile-menu-toggle,
+  html:not(.js) .select_page {
+    display: none;
+  }
+
+  html:not(.js) .pca-mobile-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: calc(100vh - var(--pca-header-mobile));
+    padding: 18px 5%;
+    overflow-y: auto;
+    visibility: visible;
+    opacity: 1;
+    background: #fff;
+    border-top: 3px solid var(--pca-green);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, .16);
+    transform: none;
+  }
+}
