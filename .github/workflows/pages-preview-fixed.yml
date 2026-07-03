@@ -104,7 +104,7 @@ jobs:
           "${ssh_cmd[@]}" "${PREVIEW_SSH_USERNAME}@${PREVIEW_SSH_HOST}" "mkdir -p \"${remote_dir}\""
           rsync -az --delete -e "$rsync_ssh" "${local_dir}/" "${PREVIEW_SSH_USERNAME}@${PREVIEW_SSH_HOST}:${remote_dir}/"
 
-      - name: Comment preview URL
+      - name: Notify preview
         env:
           GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
