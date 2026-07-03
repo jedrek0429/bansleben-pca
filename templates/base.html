@@ -18,10 +18,9 @@
     href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800&#038;subset=latin,latin-ext&#038;display=swap"
     type="text/css" media="all">
   <link rel="stylesheet" id="et-builder-googlefonts-cached-css"
-    href="https://fonts.googleapis.com/css?family=Cormorant+Garamond:300,300italic,regular,italic,500,500italic,600,600italic,700,700italic|Muli:200,300,regular,500,600,700,800,900,200italic,300italic,italic,500italic,600italic,700italic,800italic,900italic&#038;subset=latin-ext,vietnamese,cyrillic,latin,cyrillic-ext&#038;display=swap"
+    href="https://fonts.googleapis.com/css?family=Cormorant+Garamond:300,300italic,regular,italic,500,500italic,600,600italic,700italic|Muli:200,300,regular,500,600,700,800,900,200italic,300italic,italic,500italic,600italic,700italic,800italic,900italic&#038;subset=latin-ext,vietnamese,cyrillic,latin,cyrillic-ext&#038;display=swap"
     type="text/css" media="all">
-
-  <link rel="stylesheet" id="pca-divi-used-css" href="{{url_prefix}}/assets/pca-divi-used.css?ver=20260703" type="text/css" media="all">
+  <link rel="stylesheet" id="divi-style-css" href="{{url_prefix}}/wp-content/themes/Divi/style.css?ver=4.9.1" type="text/css" media="all">
 
   {{page.cache_css}}
 
@@ -53,27 +52,6 @@
 
     </div>
   </div>
-
-  <script id="pca-static-contact-guard">
-    (function () {
-      function isStaticContactForm(form) {
-        return !!(form && form.classList && form.classList.contains('static_contact_form'));
-      }
-
-      document.addEventListener('submit', function (event) {
-        if (isStaticContactForm(event.target)) {
-          event.stopImmediatePropagation();
-        }
-      }, true);
-
-      document.addEventListener('click', function (event) {
-        var button = event.target && event.target.closest ? event.target.closest('button, input[type="submit"]') : null;
-        if (button && isStaticContactForm(button.form)) {
-          event.stopImmediatePropagation();
-        }
-      }, true);
-    })();
-  </script>
 
   <script defer src="{{url_prefix}}/assets/pca-static.js?ver=20260703" id="pca-static-js"></script>
 
