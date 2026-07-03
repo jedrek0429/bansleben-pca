@@ -63,8 +63,7 @@ jobs:
           python tools/dev_build_and_publish.py \
             --root . \
             --url-prefix "${{ steps.preview.outputs.url_prefix }}" \
-            --dest "pages-preview/${{ steps.preview.outputs.path }}" \
-            --rewrite-root-assets
+            --dest "pages-preview/${{ steps.preview.outputs.path }}"
 
       - name: Finalize preview assets
         run: python tools/pages_preview_finalize.py --preview-dir "pages-preview/${{ steps.preview.outputs.path }}" --url-prefix "${{ steps.preview.outputs.url_prefix }}"
