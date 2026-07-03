@@ -9,7 +9,7 @@ The rule for cleanup work is simple: AI or humans may propose smaller CSS/JS, bu
 - Playwright smoke tests for core page structure and key behavior.
 - Opt-in Playwright visual regression tests for page screenshots and UI states.
 - Lighthouse CI configuration for collecting performance reports and warning-level budgets.
-- A GitHub Actions workflow that builds the static site and runs smoke checks on pull requests.
+- A GitHub Actions workflow that builds the static site, uploads a website preview artifact, and runs smoke checks on pull requests.
 
 No generated site output, templates, content, locale data, or legacy assets are changed by this harness.
 
@@ -28,6 +28,23 @@ npm run build:site
 ```
 
 The current Python build writes output to `../site-dist/`.
+
+## Preview from GitHub Actions
+
+Every workflow run uploads the built static site as a `site-preview` artifact. Download and unzip it, then serve it locally:
+
+```sh
+unzip site-preview.zip -d site-preview
+python -m http.server 8080 --directory site-preview
+```
+
+Then open one of the localized roots:
+
+- `http://127.0.0.1:8080/en/`
+- `http://127.0.0.1:8080/fr/`
+- `http://127.0.0.1:8080/hr/`
+
+The artifact is a downloadable preview bundle, not a public live deployment. A hosted preview URL can be added later with GitHub Pages, Cloudflare Pages, Netlify, or another deployment target.
 
 ## Run smoke checks
 
