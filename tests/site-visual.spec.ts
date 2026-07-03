@@ -42,8 +42,8 @@ test.describe('visual regression baselines', () => {
   test('mobile menu open state matches baseline', async ({ page }, testInfo) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await stabilize(page, '/hr/');
-    await page.locator('.mobile_menu_bar').click();
-    await expect(page.locator('.mobile_nav')).toHaveClass(/opened/);
+    await page.locator('.pca-mobile-menu-toggle').click();
+    await expect(page.locator('.pca-mobile-nav')).toHaveClass(/opened/);
 
     await expect(page).toHaveScreenshot(`hr-home-${testInfo.project.name}-mobile-menu-open.png`, {
       fullPage: true,
@@ -53,7 +53,7 @@ test.describe('visual regression baselines', () => {
   test('scrolled header state matches baseline', async ({ page }, testInfo) => {
     await stabilize(page, '/en/');
     await page.evaluate(() => window.scrollTo(0, 900));
-    await expect(page.locator('#main-header')).toHaveClass(/et-fixed-header/);
+    await expect(page.locator('#main-header')).toHaveClass(/pca-header-compact/);
 
     await expect(page).toHaveScreenshot(`en-home-${testInfo.project.name}-scrolled-header.png`, {
       fullPage: true,

@@ -45,20 +45,20 @@ test.describe('static PCA site smoke tests', () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await gotoOk(page, '/hr/');
 
-    const mobileNav = page.locator('.mobile_nav');
-    const toggle = page.locator('.mobile_menu_bar');
+    const mobileNav = page.locator('.pca-mobile-nav');
+    const toggle = page.locator('.pca-mobile-menu-toggle');
     await expect(toggle).toBeVisible();
 
     await toggle.click();
     await expect(mobileNav).toHaveClass(/opened/);
-    await expect(page.locator('#mobile_menu')).toBeVisible();
+    await expect(page.locator('#pca-mobile-menu')).toBeVisible();
 
     await toggle.click();
     await expect(mobileNav).toHaveClass(/closed/);
   });
 
   test('desktop header remains fixed while scrolling', async ({ page, viewport }) => {
-    test.skip((viewport?.width ?? 0) < 981, 'Fixed desktop header behavior is only expected above the Divi mobile breakpoint.');
+    test.skip((viewport?.width ?? 0) < 981, 'Fixed desktop header behavior is only expected above the mobile breakpoint.');
 
     await gotoOk(page, '/en/');
 

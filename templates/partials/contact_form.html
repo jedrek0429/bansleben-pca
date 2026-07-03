@@ -1,52 +1,34 @@
-<div class="et_pb_section et_pb_section_1 et_section_regular">
-    <div class="et_pb_row et_pb_row_1">
-        <div class="et_pb_column et_pb_column_4_4 et_pb_column_1 et_pb_css_mix_blend_mode_passthrough et-last-child">
+<section class="pca-contact-section pca-section">
+  <div class="container pca-contact">
+    <h1 class="pca-contact__title">{{page.title}}</h1>
+    <div class="pca-contact__message" aria-live="polite"></div>
 
-            <div id="et_pb_contact_form_0"
-                class="et_pb_module et_pb_contact_form_0 et_pb_contact_form_container clearfix"
-                data-form_unique_num="0">
-                <h1 class="et_pb_contact_main_title">{{page.title}}</h1>
-                <div class="et-pb-contact-message"></div>
+    <form class="static_contact_form pca-form" method="post" action="{{contact_action}}">
+      <div class="pca-form__row">
+        <p class="pca-form__field pca-form__field--half">
+          <label for="static_contact_name" class="pca-form__label">{{contact_form.name_label}}</label>
+          <input type="text" id="static_contact_name" class="pca-form__input" name="name" placeholder="{{form.name}}" required>
+        </p>
 
-                <div class="et_pb_contact">
-                    <form class="static_contact_form clearfix" method="post" action="{{contact_action}}">
-                        <p class="et_pb_contact_field et_pb_contact_field_0 et_pb_contact_field_half" data-id="name"
-                            data-type="input">
-                            <label for="static_contact_name"
-                                class="et_pb_contact_form_label">{{contact_form.name_label}}</label>
-                            <input type="text" id="static_contact_name" class="input" name="name"
-                                placeholder="{{form.name}}" required>
-                        </p>
+        <p class="pca-form__field pca-form__field--half">
+          <label for="static_contact_email" class="pca-form__label">{{contact_form.email_label}}</label>
+          <input type="email" id="static_contact_email" class="pca-form__input" name="email" placeholder="{{form.email}}" required>
+        </p>
+      </div>
 
-                        <p class="et_pb_contact_field et_pb_contact_field_1 et_pb_contact_field_half et_pb_contact_field_last"
-                            data-id="email" data-type="email">
-                            <label for="static_contact_email"
-                                class="et_pb_contact_form_label">{{contact_form.email_label}}</label>
-                            <input type="email" id="static_contact_email" class="input" name="email"
-                                placeholder="{{form.email}}" required>
-                        </p>
+      <p class="pca-form__field">
+        <label for="static_contact_message" class="pca-form__label">{{contact_form.message_label}}</label>
+        <textarea id="static_contact_message" class="pca-form__input pca-form__textarea" name="message" placeholder="{{form.message}}" required></textarea>
+      </p>
 
-                        <p class="et_pb_contact_field et_pb_contact_field_2 et_pb_contact_field_last" data-id="message"
-                            data-type="text">
-                            <label for="static_contact_message"
-                                class="et_pb_contact_form_label">{{contact_form.message_label}}</label>
-                            <textarea id="static_contact_message" class="et_pb_contact_message input" name="message"
-                                placeholder="{{form.message}}" required></textarea>
-                        </p>
+      <input type="hidden" name="lang" value="{{lang}}">
+      <input type="hidden" name="back_url" value="{{page.url}}">
+      <input type="hidden" name="page" value="{{page.url}}">
+      <input type="text" name="website" autocomplete="off" tabindex="-1" aria-hidden="true" class="pca-form__trap">
 
-                        <input type="hidden" name="lang" value="{{lang}}">
-                        <input type="hidden" name="back_url" value="{{page.url}}">
-                        <input type="hidden" name="page" value="{{page.url}}">
-                        <input type="text" name="website" autocomplete="off" tabindex="-1" aria-hidden="true"
-                            style="position:absolute;left:-9999px;">
-
-                        <div class="et_contact_bottom_container">
-                            <button type="submit" class="et_pb_button">{{form.send}}</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</div>
+      <div class="pca-form__actions">
+        <button type="submit" class="pca-button">{{form.send}}</button>
+      </div>
+    </form>
+  </div>
+</section>
