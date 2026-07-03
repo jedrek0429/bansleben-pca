@@ -1,6 +1,7 @@
 /*! PCA static runtime: small first-party replacement for WordPress/Divi JavaScript behavior. */
 (function () {
   var PHONE_MAX_WIDTH = 767;
+  var REVEAL_SELECTOR = '.et_animated,.et_had_animation,.et_pb_animation_top,.et_pb_animation_bottom,.et_pb_animation_left,.et_pb_animation_right,.et_pb_animation_fade_in';
 
   function ready(callback) {
     if (document.readyState === 'loading') {
@@ -76,12 +77,34 @@
     });
   }
 
-  function revealStaticAnimatedContent() {
-    document.querySelectorAll('.et_animated,.et_had_animation,.et_pb_animation_top,.et_pb_animation_bottom,.et_pb_animation_left,.et_pb_animation_right,.et_pb_animation_fade_in').forEach(function (node) {
-      node.style.opacity = '1';
-      node.style.transform = 'none';
-      node.style.animation = 'none';
-      node.classList.remove('et-waypoint');
+  function revealNow(node) {
+    node.classList.add('pca-in-view');
+    node.classList.remove('et-waypoint');
+  }
+
+  function initReveals() {
+    var nodes = Array.prototype.slice.call(document.querySelectorAll(REVEAL_SELECTOR));
+    if (!nodes.length) return;
+
+    if (!('IntersectionObserver' in window)) {
+      nodes.forEach(revealNow);
+      return;
+    }
+
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        revealNow(entry.target);
+        observer.unobserve(entry.target);
+      });
+    }, {
+      root: null,
+      rootMargin: '0px 0px -12% 0px',
+      threshold: 0.15
+    });
+
+    nodes.forEach(function (node) {
+      observer.observe(node);
     });
   }
 
@@ -105,12 +128,12 @@
   function refresh() {
     updateHeaderMode();
     updateFixedHeader();
-    revealStaticAnimatedContent();
   }
 
   function init() {
     initMobileMenu();
     initContactMessages();
+    initReveals();
     refresh();
 
     var refreshLater = rafDebounce(refresh);
