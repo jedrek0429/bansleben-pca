@@ -3,3 +3,7 @@ pca-contact-config.php
 .editor_state/
 tools/.venv
 tools/__pycache__
+node_modules/
+test-results/
+playwright-report/
+.lighthouseci/
