@@ -1,14 +1,83 @@
 /* PCA static runtime styles: first-party replacement for the small layout behavior formerly supplied by Divi JS. */
-.et_animated,
-.et_had_animation,
-.et_pb_animation_top,
-.et_pb_animation_bottom,
-.et_pb_animation_left,
-.et_pb_animation_right,
-.et_pb_animation_fade_in {
+.v2-card-row,
+.pca-card-section .et_pb_row {
+  display: flex;
+  align-items: stretch;
+  flex-wrap: wrap;
+}
+
+.v2-card-col,
+.pca-card-section .pca-card {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 30px;
+}
+
+.v2-card-col .v2-card-text,
+.pca-card-section .pca-card-title {
+  flex: 1 1 auto;
+}
+
+.v2-card-col .v2-card-button-wrap,
+.pca-card-section .pca-card-button {
+  margin-top: auto !important;
+}
+
+.v2-card-col .et_pb_text_inner p:empty,
+.v2-card-col .et_pb_text_inner pre:empty {
+  display: none !important;
+}
+
+.pca-article-section .et_pb_text_inner,
+.pca-intro-section .et_pb_text_inner {
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.static-form-message {
+  margin-bottom: 20px;
+  padding: 14px;
+  background: #f7f9fc;
+}
+
+.pca-card-section .pca-card-image,
+.pca-card-section .pca-card-title,
+.pca-card-section .pca-card-title h3,
+.pca-card-section .pca-card-button {
+  text-align: center;
+}
+
+.pca-card-section .pca-card-image {
+  margin-bottom: 0;
+}
+
+.pca-card-section .pca-card-image img {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+}
+
+.pca-card-section .pca-card-title {
+  margin-bottom: 20px;
+}
+
+html.js .et_animated,
+html.js .et_had_animation,
+html.js .et_pb_animation_top,
+html.js .et_pb_animation_bottom,
+html.js .et_pb_animation_left,
+html.js .et_pb_animation_right,
+html.js .et_pb_animation_fade_in {
+  opacity: 0 !important;
+  transform: translateY(24px) !important;
+  animation: none !important;
+  transition: opacity .7s ease, transform .7s ease !important;
+}
+
+html.js .pca-in-view {
   opacity: 1 !important;
   transform: none !important;
-  animation: none !important;
 }
 
 .et_pb_section_hague,
@@ -218,5 +287,14 @@ body.custom-background {
     pointer-events: auto !important;
     transform: translateY(0) !important;
     transition-delay: 0s !important;
+  }
+}
+
+@media (max-width: 980px) {
+  .v2-card-row,
+  .v2-card-col,
+  .pca-card-section .et_pb_row,
+  .pca-card-section .pca-card {
+    display: block;
   }
 }
