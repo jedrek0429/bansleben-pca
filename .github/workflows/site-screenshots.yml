@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       pr_number:
-        description: Pull request number to comment on
+        description: Pull request number
         required: false
         type: string
       path:
@@ -15,7 +15,7 @@ on:
         type: string
 
 permissions:
-  contents: read
+  contents: write
   issues: write
   pull-requests: write
 
@@ -27,6 +27,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -65,7 +67,7 @@ jobs:
           npx playwright screenshot --browser=chromium --viewport-size=1440,1000 --full-page "http://127.0.0.1:4173${SCREENSHOT_PATH}" screenshots/desktop.png
           npx playwright screenshot --browser=chromium --viewport-size=390,844 --full-page "http://127.0.0.1:4173${SCREENSHOT_PATH}" screenshots/mobile.png
 
-      - name: Upload screenshots
+      - name: Upload screenshots artifact
         id: upload
         if: always()
         uses: actions/upload-artifact@v4
@@ -74,7 +76,13 @@ jobs:
           path: screenshots
           if-no-files-found: ignore
 
-      - name: Comment screenshot artifact on PR
+      - name: Publish screenshots branch
+        if: always() && (github.event_name == 'pull_request' || inputs.pr_number != '')
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
+        run: python tools/publish_screenshots_branch.py --pr-number "$PR_NUMBER"
+
+      - name: Comment screenshots on PR
         if: always() && (github.event_name == 'pull_request' || inputs.pr_number != '')
         env:
           GH_TOKEN: ${{ github.token }}
@@ -86,15 +94,23 @@ jobs:
           marker='<!-- pca-site-screenshots -->'
           run_url="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
           artifact_url="${ARTIFACT_URL:-${run_url}}"
+          raw_base="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/site-screenshots/pr-${PR_NUMBER}"
+          cache="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          desktop_url="${raw_base}/desktop.png?cache=${cache}"
+          mobile_url="${raw_base}/mobile.png?cache=${cache}"
+          branch_url="https://github.com/${GITHUB_REPOSITORY}/tree/site-screenshots/pr-${PR_NUMBER}"
           body="${marker}
           Site screenshots for \`${SCREENSHOT_PATH}\` are ready.
 
-          - [Download desktop/mobile screenshots artifact](${artifact_url})
-          - [Open workflow run](${run_url})
+          **Desktop**
 
-          Artifact contents:
-          - \`desktop.png\`
-          - \`mobile.png\`"
+          ![Desktop screenshot](${desktop_url})
+
+          **Mobile**
+
+          ![Mobile screenshot](${mobile_url})
+
+          Links: [screenshot branch](${branch_url}) · [artifact download](${artifact_url}) · [workflow run](${run_url})"
 
           existing_id=$(gh api "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" --paginate \
             --jq ".[] | select(.user.login == \"github-actions[bot]\" and (.body | contains(\"${marker}\"))) | .id" \

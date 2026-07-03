@@ -2,11 +2,10 @@ name: SSH PR preview
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
   workflow_dispatch:
     inputs:
       pr_number:
-        description: Pull request number to deploy
+        description: Pull request number 
         required: true
         type: string
 
@@ -28,7 +27,11 @@ jobs:
       - name: Check out PR commit
         uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha || format('refs/pull/{0}/head', inputs.pr_number) }}
+
+      - name: Restore original Divi CSS for preview
+        run: git checkout origin/main -- assets/common/wp-content/themes/Divi/style.css
 
       - name: Set up Python
         uses: actions/setup-python@v5
