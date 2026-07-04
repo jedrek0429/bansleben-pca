@@ -1,8 +1,5 @@
 """Run validation, hyperlink formatting, build, and publish for production or preview output.
 
-The script is intentionally mode-free: callers choose behavior by passing the
-publish destination and optional preview flags.
-
 Production example:
     python tools/build_and_publish.py --root . --dest ../public_html
 
