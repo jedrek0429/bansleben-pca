@@ -63,7 +63,7 @@ python tools/build_and_publish.py \
   --write-preview-index
 ```
 
-Compatibility wrappers still exist because workflows and hosting scripts may already call them:
+Compatibility wrappers still exist because hosting scripts may already call them:
 
 - `tools/BUILD_AND_PUBLISH.py`
 - `tools/dev_build_and_publish.py`
@@ -118,4 +118,4 @@ Keep this disabled unless the build environment is isolated enough to run untrus
 ## Useful docs
 
 - `docs/python-tools.md` documents the Python scripts under `tools/`.
-- `docs/deployment-webhook.md` explains the webhook endpoint, queue, worker, commit status updates, PR comments, and preview log URLs.
+- `docs/deployment-webhook.md` explains the webhook endpoint, queue, worker, GitHub App check runs, and preview log URLs.

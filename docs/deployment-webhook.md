@@ -10,7 +10,7 @@ GitHub webhook
   -> public_html/.private/deploy-queue/*.json
   -> cron runs tools/webhook_deploy_worker.py
   -> git fetch + local build + local publish
-  -> GitHub commit status + PR comment
+  -> GitHub App check run
 ```
 
 The webhook endpoint only validates the GitHub signature and queues a job. It returns quickly, so GitHub does not wait for the full build.
@@ -22,6 +22,37 @@ The worker performs the slow work from the server itself:
 - `issue_comment` containing `/preview` forces a preview rebuild.
 - `pull_request` `closed` removes the preview directory.
 
+## GitHub App setup
+
+Create a GitHub App for the repository and install it only on `jedrek0429/bansleben-pca`.
+
+Suggested app name:
+
+```text
+PCA Deploy Bot
+```
+
+Repository permissions:
+
+- `Checks`: read and write
+- `Pull requests`: read-only
+- `Contents`: read-only
+- `Metadata`: read-only
+
+Generate a private key for the app and save it on the server, for example:
+
+```text
+/home/platne/serwer88382/public_html/.private/pca-deploy-bot.private-key.pem
+```
+
+Do not commit the private key to the repository.
+
+Record these values for `pca-deploy-config.json`:
+
+- GitHub App ID
+- Installation ID for the repository installation
+- private key path on the server
+
 ## One-time server setup
 
 Copy the webhook endpoint into the public web root:
@@ -31,21 +62,26 @@ cd ~/site-src
 cp server/github-webhook.php ../public_html/github-webhook.php
 ```
 
-Create the private config file:
+Create the private config file and private directories:
 
 ```bash
 mkdir -p ../public_html/.private/deploy-queue ../public_html/.private/deploy-logs
 cp server/pca-deploy-config.example.json ../public_html/.private/pca-deploy-config.json
 chmod 600 ../public_html/.private/pca-deploy-config.json
+chmod 600 ../public_html/.private/pca-deploy-bot.private-key.pem
 ```
 
 Edit `../public_html/.private/pca-deploy-config.json` and set:
 
 - `webhook_secret` to the same secret configured in GitHub webhook settings.
-- `github_token` to a token that can write commit statuses and PR comments for this repository.
+- `github_app_id` to the GitHub App ID.
+- `github_app_installation_id` to the repository installation ID.
+- `github_app_private_key_path` to the private key path on the server.
 - paths if LH.pl uses different absolute paths.
 
 Keep `allow_preview_from_forks` as `false` unless the server is isolated enough to build untrusted PR code.
+
+The worker signs a short-lived GitHub App JWT with `openssl`, exchanges it for an installation access token, and uses that token to create/update Checks API check runs.
 
 ## GitHub webhook settings
 
@@ -118,20 +154,20 @@ https://preview.polandchildabduction.pl/pr-<number>/_deploy.log
 
 ## GitHub feedback
 
-The worker sets commit statuses:
+The worker creates GitHub App check runs:
 
-- `pca/production`
-- `pca/preview`
+- `PCA Production Deploy`
+- `PCA Preview Deploy`
 
-For successful preview deploys, the status target URL points to the ready preview:
+For successful preview deploys, the check details URL points to the ready preview:
 
 ```text
 https://preview.polandchildabduction.pl/pr-<number>/
 ```
 
-If preview deployment fails, the status target URL points to the public `_deploy.log` file instead.
+If preview deployment fails, the check details URL points to the public `_deploy.log` file instead.
 
-The worker also upserts one PR comment containing both the preview URL and the build log URL.
+The worker does not create PR comments. The check run output contains the preview URL and the build log URL.
 
 ## Manual test
 

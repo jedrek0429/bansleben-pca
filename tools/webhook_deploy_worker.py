@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import json
 import shutil
 import subprocess
@@ -74,10 +75,48 @@ def run(command: list[str], cwd: Path, log, check: bool = True) -> None:
         raise DeployError(f"Command failed with exit code {rc}: {' '.join(command)}")
 
 
-def github_api(config, method, path, data=None):
-    token = str(config.get("github_token") or "").strip()
-    if not token:
-        return None
+def b64url(data: bytes) -> str:
+    return base64.urlsafe_b64encode(data).decode("ascii").rstrip("=")
+
+
+def github_app_private_key(config: dict[str, Any]) -> Path:
+    value = config.get("github_app_private_key_path")
+    if not value:
+        raise DeployError("Missing github_app_private_key_path in deploy config.")
+    path = Path(str(value)).expanduser().resolve()
+    if not path.is_file():
+        raise DeployError(f"GitHub App private key not found: {path}")
+    return path
+
+
+def github_app_jwt(config: dict[str, Any]) -> str:
+    app_id = str(config.get("github_app_id") or "").strip()
+    if not app_id:
+        raise DeployError("Missing github_app_id in deploy config.")
+
+    now = int(time.time())
+    header = {"alg": "RS256", "typ": "JWT"}
+    payload = {"iat": now - 60, "exp": now + 540, "iss": app_id}
+    signing_input = (
+        b64url(json.dumps(header, separators=(",", ":")).encode("utf-8"))
+        + "."
+        + b64url(json.dumps(payload, separators=(",", ":")).encode("utf-8"))
+    ).encode("ascii")
+
+    completed = subprocess.run(
+        ["openssl", "dgst", "-sha256", "-sign", str(github_app_private_key(config))],
+        input=signing_input,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+    if completed.returncode != 0:
+        raise DeployError("Could not sign GitHub App JWT with openssl: " + completed.stderr.decode("utf-8", errors="replace"))
+
+    return signing_input.decode("ascii") + "." + b64url(completed.stdout)
+
+
+def github_request(token: str, method: str, path: str, data: dict[str, Any] | None = None) -> Any:
     body = json.dumps(data).encode("utf-8") if data is not None else None
     request = urllib.request.Request(f"https://api.github.com{path}", data=body, method=method)
     request.add_header("Accept", "application/vnd.github+json")
@@ -94,14 +133,54 @@ def github_api(config, method, path, data=None):
         raise DeployError(f"GitHub API {method} {path} failed: {exc.code} {raw}") from exc
 
 
-def set_status(config, sha, state, context, description, target_url):
-    if sha:
-        github_api(config, "POST", f"/repos/{repo_full_name(config)}/statuses/{sha}", {
-            "state": state,
-            "context": context,
-            "description": description[:140],
-            "target_url": target_url,
-        })
+def github_installation_token(config: dict[str, Any]) -> str:
+    cached = config.get("_github_installation_token")
+    if cached:
+        return str(cached)
+
+    installation_id = str(config.get("github_app_installation_id") or "").strip()
+    if not installation_id:
+        raise DeployError("Missing github_app_installation_id in deploy config.")
+
+    data = github_request(github_app_jwt(config), "POST", f"/app/installations/{installation_id}/access_tokens")
+    token = data.get("token") if isinstance(data, dict) else None
+    if not token:
+        raise DeployError("GitHub App installation token response did not include token.")
+
+    config["_github_installation_token"] = token
+    return str(token)
+
+
+def github_api(config, method, path, data=None):
+    return github_request(github_installation_token(config), method, path, data)
+
+
+def create_check_run(config, name, sha, details_url, title, summary, external_id=None):
+    if not sha:
+        return None
+    payload = {
+        "name": name,
+        "head_sha": sha,
+        "status": "in_progress",
+        "started_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "details_url": details_url,
+        "output": {"title": title, "summary": summary},
+    }
+    if external_id:
+        payload["external_id"] = external_id
+    return github_api(config, "POST", f"/repos/{repo_full_name(config)}/check-runs", payload)
+
+
+def update_check_run(config, check_run, conclusion, details_url, title, summary):
+    if not isinstance(check_run, dict) or not check_run.get("id"):
+        return
+    github_api(config, "PATCH", f"/repos/{repo_full_name(config)}/check-runs/{check_run['id']}", {
+        "status": "completed",
+        "conclusion": conclusion,
+        "completed_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "details_url": details_url,
+        "output": {"title": title, "summary": summary},
+    })
 
 
 def get_pull_request(config, pr_number):
@@ -109,19 +188,6 @@ def get_pull_request(config, pr_number):
     if not isinstance(data, dict):
         raise DeployError(f"Could not load PR #{pr_number} from GitHub API.")
     return data
-
-
-def upsert_pr_comment(config, pr_number, marker, body):
-    comments = github_api(config, "GET", f"/repos/{repo_full_name(config)}/issues/{pr_number}/comments?per_page=100")
-    existing_id = None
-    if isinstance(comments, list):
-        for comment in comments:
-            if isinstance(comment, dict) and marker in str(comment.get("body") or ""):
-                existing_id = comment.get("id")
-    if existing_id:
-        github_api(config, "PATCH", f"/repos/{repo_full_name(config)}/issues/comments/{existing_id}", {"body": body})
-    else:
-        github_api(config, "POST", f"/repos/{repo_full_name(config)}/issues/{pr_number}/comments", {"body": body})
 
 
 def install_requirements(config, root, log):
@@ -159,7 +225,15 @@ def deploy_production(config, job):
     root = site_src(config)
     log_dir(config).mkdir(parents=True, exist_ok=True)
     log_path = log_dir(config) / f"production-{(sha or time.strftime('%Y%m%d-%H%M%S'))[:12]}.log"
-    set_status(config, sha, "pending", "pca/production", "Production deploy started", production_url(config))
+    check_run = create_check_run(
+        config,
+        "PCA Production Deploy",
+        sha,
+        production_url(config),
+        "Production deploy started",
+        f"Production deploy started for `{sha or 'unknown'}`.",
+        external_id=f"production-{sha or int(time.time())}",
+    )
     try:
         with log_path.open("w", encoding="utf-8") as log:
             log.write(f"Production deploy job: {json.dumps(job, ensure_ascii=False)}\n")
@@ -168,10 +242,24 @@ def deploy_production(config, job):
             run(["git", "reset", "--hard", "origin/main"], root, log)
             install_requirements(config, root, log)
             run_build_and_publish(config, root, public_html(config), log)
-    except Exception:
-        set_status(config, sha, "failure", "pca/production", "Production deploy failed", production_url(config))
+    except Exception as exc:
+        update_check_run(
+            config,
+            check_run,
+            "failure",
+            production_url(config),
+            "Production deploy failed",
+            f"Production deploy failed.\n\nError: `{exc}`",
+        )
         raise
-    set_status(config, sha, "success", "pca/production", "Production deployed", production_url(config))
+    update_check_run(
+        config,
+        check_run,
+        "success",
+        production_url(config),
+        "Production deployed",
+        f"Production deploy completed successfully.\n\nSite: {production_url(config)}",
+    )
 
 
 def normalize_preview_job(config, job):
@@ -200,8 +288,8 @@ def prepare_preview_worktree(config, pr_number, log):
     return target
 
 
-def preview_comment_body(pr_number, status, url, log_url, marker):
-    return f"{marker}\nPreview deploy {status} for PR #{pr_number}.\n\n- Preview: {url}\n- Build log: {log_url}"
+def preview_summary(pr_number, url, log_url, status):
+    return f"Preview deploy {status} for PR #{pr_number}.\n\n- Preview: {url}\n- Build log: {log_url}"
 
 
 def deploy_preview(config, job):
@@ -210,11 +298,18 @@ def deploy_preview(config, job):
     sha = str(job.get("sha") or "") or None
     url = preview_url(config, pr_number)
     log_url = preview_log_url(config, pr_number)
-    marker = "<!-- pca-webhook-preview -->"
     log_dir(config).mkdir(parents=True, exist_ok=True)
     log_path = log_dir(config) / f"preview-pr-{pr_number}-{(sha or time.strftime('%Y%m%d-%H%M%S'))[:12]}.log"
 
-    set_status(config, sha, "pending", "pca/preview", "Preview deploy started", url)
+    check_run = create_check_run(
+        config,
+        "PCA Preview Deploy",
+        sha,
+        url,
+        "Preview deploy started",
+        preview_summary(pr_number, url, log_url, "started"),
+        external_id=f"preview-pr-{pr_number}-{sha or int(time.time())}",
+    )
     try:
         with log_path.open("w", encoding="utf-8") as log:
             log.write(f"Preview deploy job: {json.dumps(job, ensure_ascii=False)}\n")
@@ -223,16 +318,28 @@ def deploy_preview(config, job):
             run_build_and_publish(config, root, preview_root(config) / f"pr-{pr_number}", log, [
                 "--url-prefix", f"/pr-{pr_number}", "--lang-in-url", "--write-preview-index",
             ])
-    except Exception:
+    except Exception as exc:
         if log_path.exists():
             publish_preview_log(config, pr_number, log_path)
-        set_status(config, sha, "failure", "pca/preview", "Preview deploy failed", log_url)
-        upsert_pr_comment(config, pr_number, marker, preview_comment_body(pr_number, "failed", url, log_url, marker))
+        update_check_run(
+            config,
+            check_run,
+            "failure",
+            log_url,
+            "Preview deploy failed",
+            preview_summary(pr_number, url, log_url, "failed") + f"\n\nError: `{exc}`",
+        )
         raise
 
     publish_preview_log(config, pr_number, log_path)
-    upsert_pr_comment(config, pr_number, marker, preview_comment_body(pr_number, "succeeded", url, log_url, marker))
-    set_status(config, sha, "success", "pca/preview", "Preview deployed", url)
+    update_check_run(
+        config,
+        check_run,
+        "success",
+        url,
+        "Preview deployed",
+        preview_summary(pr_number, url, log_url, "succeeded"),
+    )
 
 
 def cleanup_preview(config, job):
