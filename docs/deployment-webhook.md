@@ -5,9 +5,9 @@ This document describes the pull-based deployment flow used to avoid SSH/SCP tim
 ## Architecture
 
 ```text
-GitHub webhook
-  -> public_html/github-webhook.php
-  -> public_html/.private/deploy-queue/*.json
+GitHub App webhook
+  -> preview.polandchildabduction.pl/github-webhook.php
+  -> public_html/preview/.private/deploy-queue/*.json
   -> cron runs tools/webhook_deploy_worker.py
   -> git fetch + local build + local publish
   -> GitHub App check run
@@ -15,12 +15,14 @@ GitHub webhook
 
 The webhook endpoint only validates the GitHub signature and queues a job. It returns quickly, so GitHub does not wait for the full build.
 
+The endpoint and private deployment state live under `public_html/preview/`, because that directory is preserved by production publishes and is the document root for `https://preview.polandchildabduction.pl`.
+
 The worker performs the slow work from the server itself:
 
 - `push` to `main` publishes production.
 - `pull_request` `opened`, `synchronize`, and `reopened` publish preview automatically.
 - `issue_comment` containing `/preview` forces a preview rebuild.
-- `pull_request` `closed` removes the preview directory.
+- `pull_request` `closed` removes the preview directory for that PR.
 
 ## GitHub App setup
 
@@ -39,72 +41,77 @@ Repository permissions:
 - `Contents`: read-only
 - `Metadata`: read-only
 
-Generate a private key for the app and save it on the server, for example:
+Configure the GitHub App webhook:
 
 ```text
-/home/platne/serwer88382/public_html/.private/pca-deploy-bot.private-key.pem
+Webhook URL: https://preview.polandchildabduction.pl/github-webhook.php
+Webhook secret: same value as webhook_secret in pca-deploy-config.json
 ```
 
-Do not commit the private key to the repository.
+Subscribe the app webhook to these events:
+
+- `Push`
+- `Pull request`
+- `Issue comment`
+
+Generate an app key and save it on the server under the preview private directory, for example:
+
+```text
+/home/platne/serwer88382/public_html/preview/.private/github-app-key.pem
+```
+
+Do not commit the key file to the repository.
 
 Record these values for `pca-deploy-config.json`:
 
 - GitHub App ID
 - Installation ID for the repository installation
-- private key path on the server
+- key path on the server
 
 ## One-time server setup
 
-Copy the webhook endpoint into the public web root:
+Copy the webhook endpoint into the preview web root:
 
 ```bash
 cd ~/site-src
-cp server/github-webhook.php ../public_html/github-webhook.php
+mkdir -p ../public_html/preview
+cp server/github-webhook.php ../public_html/preview/github-webhook.php
 ```
 
-Create the private config file and private directories:
+Create the private config file and private directories under the preserved preview root:
 
 ```bash
-mkdir -p ../public_html/.private/deploy-queue ../public_html/.private/deploy-logs
-cp server/pca-deploy-config.example.json ../public_html/.private/pca-deploy-config.json
-chmod 600 ../public_html/.private/pca-deploy-config.json
-chmod 600 ../public_html/.private/pca-deploy-bot.private-key.pem
+mkdir -p ../public_html/preview/.private/deploy-queue ../public_html/preview/.private/deploy-logs
+cat > ../public_html/preview/.private/.htaccess <<'EOF'
+Require all denied
+Deny from all
+EOF
+cp server/pca-deploy-config.example.json ../public_html/preview/.private/pca-deploy-config.json
+chmod 600 ../public_html/preview/.private/.htaccess
+chmod 600 ../public_html/preview/.private/pca-deploy-config.json
+chmod 600 ../public_html/preview/.private/github-app-key.pem
 ```
 
-Edit `../public_html/.private/pca-deploy-config.json` and set:
+The `.htaccess` file is important because `.private` is under the preview web root and contains deployment secrets.
 
-- `webhook_secret` to the same secret configured in GitHub webhook settings.
+Edit `../public_html/preview/.private/pca-deploy-config.json` and set:
+
+- `webhook_secret` to the same secret configured in the GitHub App webhook settings.
 - `github_app_id` to the GitHub App ID.
 - `github_app_installation_id` to the repository installation ID.
-- `github_app_private_key_path` to the private key path on the server.
+- `github_app_private_key_path` to the key path on the server.
 - paths if LH.pl uses different absolute paths.
 
 Keep `allow_preview_from_forks` as `false` unless the server is isolated enough to build untrusted PR code.
 
 The worker signs a short-lived GitHub App JWT with `openssl`, exchanges it for an installation access token, and uses that token to create/update Checks API check runs.
 
-## GitHub webhook settings
-
-Add a repository webhook pointing to:
-
-```text
-https://polandchildabduction.pl/github-webhook.php
-```
-
-Use content type `application/json` and configure the same secret as `webhook_secret`.
-
-Recommended events:
-
-- `Pushes`
-- `Pull requests`
-- `Issue comments`
-
 ## Cron worker
 
 Run the worker from cron, for example once per minute:
 
 ```cron
-* * * * * cd /home/platne/serwer88382/site-src && tools/.venv/bin/python tools/webhook_deploy_worker.py >> /home/platne/serwer88382/public_html/.private/deploy-worker.log 2>&1
+* * * * * cd /home/platne/serwer88382/site-src && tools/.venv/bin/python tools/webhook_deploy_worker.py >> /home/platne/serwer88382/public_html/preview/.private/deploy-worker.log 2>&1
 ```
 
 The worker uses a lock file, so overlapping cron runs should not process the same queue concurrently.
@@ -126,6 +133,8 @@ python tools/build_and_publish.py --root . --dest ../public_html
 - `preview/`
 - `.private/`
 - `github-webhook.php`
+
+Because the webhook endpoint and deployment state now live inside `public_html/preview/`, the whole deploy control plane is preserved by the root-level `preview/` exclusion.
 
 ## Preview behavior
 
@@ -174,7 +183,7 @@ The worker does not create PR comments. The check run output contains the previe
 After installing the config, a dry manual queue test can be done by creating a small job file:
 
 ```bash
-cat > ../public_html/.private/deploy-queue/manual-preview.json <<'JSON'
+cat > ../public_html/preview/.private/deploy-queue/manual-preview.json <<'JSON'
 {
   "type": "preview_comment",
   "repository": "jedrek0429/bansleben-pca",
