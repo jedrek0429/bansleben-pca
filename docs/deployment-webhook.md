@@ -8,7 +8,7 @@ This document describes the pull-based deployment flow used to avoid SSH/SCP tim
 GitHub webhook
   -> public_html/github-webhook.php
   -> public_html/.private/deploy-queue/*.json
-  -> cron runs tools/deploy_worker.py
+  -> cron runs tools/webhook_deploy_worker.py
   -> git fetch + local build + local publish
   -> GitHub commit status + PR comment
 ```
@@ -68,7 +68,7 @@ Recommended events:
 Run the worker from cron, for example once per minute:
 
 ```cron
-* * * * * cd /home/platne/serwer88382/site-src && tools/.venv/bin/python tools/deploy_worker.py >> /home/platne/serwer88382/public_html/.private/deploy-worker.log 2>&1
+* * * * * cd /home/platne/serwer88382/site-src && tools/.venv/bin/python tools/webhook_deploy_worker.py >> /home/platne/serwer88382/public_html/.private/deploy-worker.log 2>&1
 ```
 
 The worker uses a lock file, so overlapping cron runs should not process the same queue concurrently.
@@ -129,6 +129,8 @@ For successful preview deploys, the status target URL points to the ready previe
 https://preview.polandchildabduction.pl/pr-<number>/
 ```
 
+If preview deployment fails, the status target URL points to the public `_deploy.log` file instead.
+
 The worker also upserts one PR comment containing both the preview URL and the build log URL.
 
 ## Manual test
@@ -144,7 +146,7 @@ cat > ../public_html/.private/deploy-queue/manual-preview.json <<'JSON'
 }
 JSON
 
-tools/.venv/bin/python tools/deploy_worker.py
+tools/.venv/bin/python tools/webhook_deploy_worker.py
 ```
 
 Use a current open PR number for the test.
