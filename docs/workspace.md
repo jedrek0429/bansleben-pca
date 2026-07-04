@@ -118,4 +118,4 @@ Keep this disabled unless the build environment is isolated enough to run untrus
 ## Useful docs
 
 - `docs/python-tools.md` documents the Python scripts under `tools/`.
-- `docs/deployment-webhook.md` explains the webhook endpoint, queue, worker, GitHub App check runs, and preview log URLs.
+- `docs/deployment-webhook.md` explains the webhook endpoint, queue, worker, GitHub App check runs, bot-authored PR comments, and preview log URLs.
