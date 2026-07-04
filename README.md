@@ -72,6 +72,7 @@ Legacy entry points are kept for compatibility with existing workflows:
 Start here:
 
 - [`docs/workspace.md`](docs/workspace.md) — repository layout, build outputs, local workflow, and safety notes.
+- [`docs/python-tools.md`](docs/python-tools.md) — Python tools reference with usage examples.
 - [`docs/deployment-webhook.md`](docs/deployment-webhook.md) — pull-based webhook deployment and PR preview setup.
 
 ## Deployment model
