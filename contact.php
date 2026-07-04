@@ -3,14 +3,22 @@ declare(strict_types=1);
 
 $logFile = __DIR__ . '/.private/pca-contact.log';
 
-function find_config(): string {
-    $configFile = __DIR__ . '/.private/pca-contact-config.php';
+function config_candidates(): array {
+    return array_values(array_unique([
+        __DIR__ . '/.private/pca-contact-config.json',
+        dirname(__DIR__) . '/.private/pca-contact-config.json',
+        dirname(__DIR__, 2) . '/.private/pca-contact-config.json',
+    ]));
+}
 
-    if (is_file($configFile)) {
-        return $configFile; 
+function find_config(): string {
+    foreach (config_candidates() as $configFile) {
+        if (is_file($configFile)) {
+            return $configFile;
+        }
     }
 
-    throw new RuntimeException('Missing SMTP config: ' . $configFile);
+    throw new RuntimeException('Missing SMTP config. Checked: ' . implode(', ', config_candidates()));
 }
 
 function load_config(): array {
@@ -19,9 +27,18 @@ function load_config(): array {
     $configPath = find_config();
     $logFile = dirname($configPath) . '/pca-contact.log';
 
-    $config = require $configPath;
+    $rawConfig = file_get_contents($configPath);
+    if ($rawConfig === false) {
+        throw new RuntimeException('Unable to read SMTP config: ' . $configPath);
+    }
+
+    $config = json_decode($rawConfig, true);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        throw new RuntimeException('SMTP config JSON is invalid: ' . json_last_error_msg());
+    }
+
     if (!is_array($config)) {
-        throw new RuntimeException('SMTP config file must return an array');
+        throw new RuntimeException('SMTP config JSON must contain an object');
     }
 
     foreach (['smtp_host', 'smtp_port', 'smtp_user', 'smtp_pass', 'from_email', 'from_name', 'to_email'] as $key) {
@@ -29,6 +46,8 @@ function load_config(): array {
             throw new RuntimeException('SMTP config missing key: ' . $key);
         }
     }
+
+    $config['smtp_port'] = (int)$config['smtp_port'];
 
     return $config;
 }
