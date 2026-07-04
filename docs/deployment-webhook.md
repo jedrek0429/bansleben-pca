@@ -10,7 +10,7 @@ GitHub webhook
   -> public_html/.private/deploy-queue/*.json
   -> cron runs tools/webhook_deploy_worker.py
   -> git fetch + local build + local publish
-  -> GitHub App check run
+  -> GitHub App check run + bot PR comment
 ```
 
 The webhook endpoint only validates the GitHub signature and queues a job. It returns quickly, so GitHub does not wait for the full build.
@@ -35,9 +35,12 @@ PCA Deploy Bot
 Repository permissions:
 
 - `Checks`: read and write
+- `Issues`: read and write
 - `Pull requests`: read-only
 - `Contents`: read-only
 - `Metadata`: read-only
+
+`Issues` write access is needed because pull request comments are created through the issue comments API. Comments will be authored by the GitHub App bot instead of a personal user account.
 
 Generate a private key for the app and save it on the server, for example:
 
@@ -81,7 +84,7 @@ Edit `../public_html/.private/pca-deploy-config.json` and set:
 
 Keep `allow_preview_from_forks` as `false` unless the server is isolated enough to build untrusted PR code.
 
-The worker signs a short-lived GitHub App JWT with `openssl`, exchanges it for an installation access token, and uses that token to create/update Checks API check runs.
+The worker signs a short-lived GitHub App JWT with `openssl`, exchanges it for an installation access token, and uses that token to create/update Checks API check runs and PR comments.
 
 ## GitHub webhook settings
 
@@ -167,7 +170,7 @@ https://preview.polandchildabduction.pl/pr-<number>/
 
 If preview deployment fails, the check details URL points to the public `_deploy.log` file instead.
 
-The worker does not create PR comments. The check run output contains the preview URL and the build log URL.
+The worker also upserts one PR comment with the marker `<!-- pca-webhook-preview -->`. That comment contains both the preview URL and the build log URL, and is authored by the GitHub App bot.
 
 ## Manual test
 
