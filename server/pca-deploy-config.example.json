@@ -1,0 +1,14 @@
+{
+  "repository": "jedrek0429/bansleben-pca",
+  "webhook_secret": "replace-with-the-github-webhook-secret",
+  "github_token": "replace-with-a-token-that-can-write-commit-statuses-and-pr-comments",
+  "site_src": "/home/platne/serwer88382/site-src",
+  "public_html": "/home/platne/serwer88382/public_html",
+  "python": "/home/platne/serwer88382/site-src/tools/.venv/bin/python",
+  "production_base_url": "https://polandchildabduction.pl",
+  "preview_base_url": "https://preview.polandchildabduction.pl",
+  "preview_root": "/home/platne/serwer88382/public_html/preview",
+  "queue_dir": "/home/platne/serwer88382/public_html/.private/deploy-queue",
+  "log_dir": "/home/platne/serwer88382/public_html/.private/deploy-logs",
+  "allow_preview_from_forks": false
+}
