@@ -1,0 +1,33 @@
+name: Deploy PCA
+
+on:
+  push:
+    branches:
+      - main 
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Execute Remote SSH Commands
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd ~/site-src
+            
+            git reset --hard HEAD
+            git pull origin main
+            
+            source tools/.venv/bin/activate
+            python -m pip install --upgrade pip
+            python -m pip install -r requirements.txt
+
+            python -m compileall -q tools/
+
+            python tools/BUILD_AND_PUBLISH.py --root .       
+                  
