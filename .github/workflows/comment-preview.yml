@@ -1,4 +1,4 @@
-name: Preview comment trigger
+name: PCA / Preview / Dispatch
 
 on:
   issue_comment:
@@ -11,7 +11,7 @@ permissions:
   pull-requests: read
 
 jobs:
-  dispatch-preview:
+  preview-dispatch:
     if: contains(github.event.comment.html_url, '/pull/') && contains(github.event.comment.body, '/preview')
     runs-on: ubuntu-latest
 
@@ -37,7 +37,7 @@ jobs:
           echo "number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
           echo "ref=$dispatch_ref" >> "$GITHUB_OUTPUT"
 
-      - name: Dispatch SSH preview workflow
+      - name: Dispatch preview deploy
         env:
           GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ steps.pr.outputs.number }}
@@ -48,7 +48,7 @@ jobs:
             --ref "$DISPATCH_REF" \
             -f pr_number="$PR_NUMBER"
 
-      - name: Dispatch screenshot workflow
+      - name: Dispatch preview screenshots
         env:
           GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ steps.pr.outputs.number }}
