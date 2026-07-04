@@ -22,7 +22,8 @@ except ImportError:
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_PUBLIC_HTML = ROOT.parent / "public_html"
-DEFAULT_CONFIG = DEFAULT_PUBLIC_HTML / ".private" / "pca-deploy-config.json"
+DEFAULT_PREVIEW_ROOT = DEFAULT_PUBLIC_HTML / "preview"
+DEFAULT_CONFIG = DEFAULT_PREVIEW_ROOT / ".private" / "pca-deploy-config.json"
 
 
 class DeployError(RuntimeError):
@@ -46,8 +47,9 @@ def cfg_path(config: dict[str, Any], key: str, default: Path) -> Path:
 def site_src(config): return cfg_path(config, "site_src", ROOT)
 def public_html(config): return cfg_path(config, "public_html", site_src(config).parent / "public_html")
 def preview_root(config): return cfg_path(config, "preview_root", public_html(config) / "preview")
-def queue_dir(config): return cfg_path(config, "queue_dir", public_html(config) / ".private" / "deploy-queue")
-def log_dir(config): return cfg_path(config, "log_dir", public_html(config) / ".private" / "deploy-logs")
+def private_dir(config): return cfg_path(config, "private_dir", preview_root(config) / ".private")
+def queue_dir(config): return cfg_path(config, "queue_dir", private_dir(config) / "deploy-queue")
+def log_dir(config): return cfg_path(config, "log_dir", private_dir(config) / "deploy-logs")
 def worktree_dir(config): return cfg_path(config, "worktree_dir", site_src(config) / ".deploy-worktrees")
 def python_bin(config): return str(config.get("python") or sys.executable or shutil.which("python3") or shutil.which("python"))
 
