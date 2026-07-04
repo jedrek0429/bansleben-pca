@@ -77,6 +77,6 @@ Start here:
 
 ## Deployment model
 
-The current direction is pull-based deployment: GitHub sends webhook events to the hosting server, the server queues jobs, and a cron-run worker performs `git fetch`, build, publish, and GitHub App check run updates.
+The current direction is pull-based deployment: GitHub sends webhook events to the hosting server, the server queues jobs, and a cron-run worker performs `git fetch`, build, publish, GitHub App check run updates, and bot-authored PR preview comments.
 
 This avoids relying on GitHub-hosted runners being able to open SSH/SCP connections to the hosting provider.
