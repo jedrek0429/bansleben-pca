@@ -82,10 +82,17 @@ Create the private config file and private directories under the preserved previ
 
 ```bash
 mkdir -p ../public_html/preview/.private/deploy-queue ../public_html/preview/.private/deploy-logs
+cat > ../public_html/preview/.private/.htaccess <<'EOF'
+Require all denied
+Deny from all
+EOF
 cp server/pca-deploy-config.example.json ../public_html/preview/.private/pca-deploy-config.json
+chmod 600 ../public_html/preview/.private/.htaccess
 chmod 600 ../public_html/preview/.private/pca-deploy-config.json
 chmod 600 ../public_html/preview/.private/github-app-key.pem
 ```
+
+The `.htaccess` file is important because `.private` is under the preview web root and contains deployment secrets.
 
 Edit `../public_html/preview/.private/pca-deploy-config.json` and set:
 
