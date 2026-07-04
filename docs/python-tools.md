@@ -34,7 +34,7 @@ This repository uses small Python scripts instead of a large framework. Most com
 | --- | --- | --- |
 | `tools/pages_preview_finalize.py` | Finalizes a PR preview directory served under a URL prefix. | `python tools/pages_preview_finalize.py --preview-dir pages-preview/pr-123 --url-prefix /pr-123` |
 | `tools/pages_preview_root_assets.py` | Copies shared assets from a language directory to a preview root. | `python tools/pages_preview_root_assets.py --preview-dir ../site-dist` |
-| `tools/publish_screenshots_branch.py` | Legacy helper for publishing generated screenshots to a persistent branch. | `python tools/publish_screenshots_branch.py --pr-number 123` |
+| `tools/publish_screenshots_branch.py` | Publishes generated screenshots to the persistent screenshot branch for PR review comments. | `python tools/publish_screenshots_branch.py --pr-number 123` |
 
 ## Server and deployment helpers
 
