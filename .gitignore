@@ -3,3 +3,5 @@ pca-contact-config.php
 .editor_state/
 tools/.venv
 tools/__pycache__
+.private/
+.deploy-worktrees/
