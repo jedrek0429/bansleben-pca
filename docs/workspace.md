@@ -44,7 +44,7 @@ validate_locales.py
   -> publish.py
 ```
 
-`tools/build_and_publish.py` is the canonical wrapper for that pipeline. It is intentionally mode-free: production and preview behavior is controlled by destination and URL arguments rather than a `--mode` flag.
+`tools/build_and_publish.py` is the canonical wrapper for that pipeline. Production and preview behavior is controlled by destination and URL arguments.
 
 Production-style publish:
 
