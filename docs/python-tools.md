@@ -16,36 +16,34 @@ This repository uses small Python scripts instead of a large framework. Most com
 
 | Tool | Purpose | Typical command |
 | --- | --- | --- |
-| `tools/validate_locales.py` | Validates `locales/*.json` against `config/pages.json` and `locales/en.json`. It checks enabled pages, required fields, slug/title consistency, parent coverage, and card item structure. | `python tools/validate_locales.py --root .` |
-| `tools/autofix_locales.py` | Repairs fixable locale drift, such as missing page entries, enabled flags, slugs, titles, and card image metadata. It writes `.bak` backups before modifying locale files. | `python tools/autofix_locales.py --root .` |
-| `tools/format_hyperlinks.py` | Normalizes bare URLs and email addresses in Markdown content while preserving code blocks, existing Markdown links, images, and HTML. | `python tools/format_hyperlinks.py --root .` |
-
-Use `autofix_locales.py` carefully: review the diff after running it because it edits JSON files in place.
+| `tools/validate_locales.py` | Validates `locales/*.json` against `config/pages.json` and `locales/en.json`. | `python tools/validate_locales.py --root .` |
+| `tools/autofix_locales.py` | Repairs fixable locale drift and writes `.bak` backups before modifying locale files. | `python tools/autofix_locales.py --root .` |
+| `tools/format_hyperlinks.py` | Normalizes bare URLs and email addresses in Markdown content. | `python tools/format_hyperlinks.py --root .` |
 
 ## Markdown, image, and rendering helpers
 
 | Tool | Purpose | Notes |
 | --- | --- | --- |
-| `tools/renderer.py` | Converts Markdown to HTML with Python-Markdown and PyMdown extensions. Used by `build.py`. | Not usually run directly. |
-| `tools/resolve_images.py` | Helper for rewriting relative Markdown/HTML image paths against a base path. | Library-style helper; currently not part of the main build path. |
-| `tools/common.py` | Shared console formatting, JSON loading, path display, and report helpers used by the other tools. | Library-style helper. |
+| `tools/renderer.py` | Converts Markdown to HTML with Python-Markdown and PyMdown extensions. | Used by `build.py`. |
+| `tools/resolve_images.py` | Helper for rewriting relative Markdown/HTML image paths against a base path. | Library-style helper. |
+| `tools/common.py` | Shared console formatting, JSON loading, path display, and report helpers. | Library-style helper. |
 
 ## Preview and screenshot helpers
 
 | Tool | Purpose | Typical command |
 | --- | --- | --- |
-| `tools/pages_preview_finalize.py` | Finalizes a PR preview directory served under a URL prefix. It exposes root assets, rewrites root-relative asset URLs, adds `noindex`, and writes a preview root redirect. | `python tools/pages_preview_finalize.py --preview-dir pages-preview/pr-123 --url-prefix /pr-123` |
-| `tools/pages_preview_root_assets.py` | Copies shared assets from a language directory to a preview root for local/GitHub Pages screenshot runs. | `python tools/pages_preview_root_assets.py --preview-dir ../site-dist` |
-| `tools/publish_screenshots_branch.py` | Publishes generated `desktop.png` and `mobile.png` screenshots to the persistent `site-screenshots` branch so PR comments can embed stable image URLs. | `python tools/publish_screenshots_branch.py --pr-number 123` |
+| `tools/pages_preview_finalize.py` | Finalizes a PR preview directory served under a URL prefix. | `python tools/pages_preview_finalize.py --preview-dir pages-preview/pr-123 --url-prefix /pr-123` |
+| `tools/pages_preview_root_assets.py` | Copies shared assets from a language directory to a preview root. | `python tools/pages_preview_root_assets.py --preview-dir ../site-dist` |
+| `tools/publish_screenshots_branch.py` | Legacy helper for publishing generated screenshots to a persistent branch. | `python tools/publish_screenshots_branch.py --pr-number 123` |
 
 ## Server and deployment helpers
 
 | Tool | Purpose | Typical command |
 | --- | --- | --- |
-| `tools/webhook_deploy_worker.py` | Processes queued webhook deployment jobs on the hosting server. It runs production deploys, PR preview deploys, preview cleanup, commit status updates, and PR comments. | `python tools/webhook_deploy_worker.py` |
-| `tools/dev_publish_editor.py` | Publishes the editor directory to a destination directory after verifying required editor files exist. This is separate from the static site pipeline. | `python tools/dev_publish_editor.py --dest ../public_html/en/editor` |
+| `tools/webhook_deploy_worker.py` | Processes queued deployment jobs on the hosting server, including production deploys, PR previews, cleanup, and GitHub check runs. | `python tools/webhook_deploy_worker.py` |
+| `tools/dev_publish_editor.py` | Publishes the editor directory to a destination directory after verifying required editor files exist. | `python tools/dev_publish_editor.py --dest ../public_html/en/editor` |
 
-The webhook worker expects private server config in `../public_html/.private/pca-deploy-config.json` by default. See `docs/deployment-webhook.md` for setup details.
+See `docs/deployment-webhook.md` for deployment setup details.
 
 ## Recommended command sequences
 
