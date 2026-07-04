@@ -190,6 +190,19 @@ def get_pull_request(config, pr_number):
     return data
 
 
+def upsert_pr_comment(config, pr_number, marker, body):
+    comments = github_api(config, "GET", f"/repos/{repo_full_name(config)}/issues/{pr_number}/comments?per_page=100")
+    existing_id = None
+    if isinstance(comments, list):
+        for comment in comments:
+            if isinstance(comment, dict) and marker in str(comment.get("body") or ""):
+                existing_id = comment.get("id")
+    if existing_id:
+        github_api(config, "PATCH", f"/repos/{repo_full_name(config)}/issues/comments/{existing_id}", {"body": body})
+    else:
+        github_api(config, "POST", f"/repos/{repo_full_name(config)}/issues/{pr_number}/comments", {"body": body})
+
+
 def install_requirements(config, root, log):
     requirements = root / "requirements.txt"
     if requirements.is_file():
@@ -292,12 +305,17 @@ def preview_summary(pr_number, url, log_url, status):
     return f"Preview deploy {status} for PR #{pr_number}.\n\n- Preview: {url}\n- Build log: {log_url}"
 
 
+def preview_comment_body(pr_number, status, url, log_url, marker):
+    return f"{marker}\nPreview deploy {status} for PR #{pr_number}.\n\n- Preview: {url}\n- Build log: {log_url}"
+
+
 def deploy_preview(config, job):
     job = normalize_preview_job(config, job)
     pr_number = int(job["pr_number"])
     sha = str(job.get("sha") or "") or None
     url = preview_url(config, pr_number)
     log_url = preview_log_url(config, pr_number)
+    marker = "<!-- pca-webhook-preview -->"
     log_dir(config).mkdir(parents=True, exist_ok=True)
     log_path = log_dir(config) / f"preview-pr-{pr_number}-{(sha or time.strftime('%Y%m%d-%H%M%S'))[:12]}.log"
 
@@ -329,6 +347,7 @@ def deploy_preview(config, job):
             "Preview deploy failed",
             preview_summary(pr_number, url, log_url, "failed") + f"\n\nError: `{exc}`",
         )
+        upsert_pr_comment(config, pr_number, marker, preview_comment_body(pr_number, "failed", url, log_url, marker))
         raise
 
     publish_preview_log(config, pr_number, log_path)
@@ -340,6 +359,7 @@ def deploy_preview(config, job):
         "Preview deployed",
         preview_summary(pr_number, url, log_url, "succeeded"),
     )
+    upsert_pr_comment(config, pr_number, marker, preview_comment_body(pr_number, "succeeded", url, log_url, marker))
 
 
 def cleanup_preview(config, job):
