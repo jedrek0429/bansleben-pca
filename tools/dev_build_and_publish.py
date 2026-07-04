@@ -1,151 +1,48 @@
-"""
-Run validation, hyperlink formatting, build, and publish a development/preview site.
-
-Usage: run from site source root, or specify `--root path/to/site-src`.
-
-Example:
-    python tools/dev_build_and_publish.py \
-      --url-prefix /bansleben-pca/pr-1 \
-      --dest pages-preview/pr-1 \
-      --write-preview-index
-"""
+"""Backward-compatible preview wrapper for tools/build_and_publish.py."""
 
 from __future__ import annotations
 
 import argparse
-import os
-import shutil
 import subprocess
 import sys
 from pathlib import Path
 
-from common import CLR_GREEN, CLR_RED, print_labeled
+
+BUILD_AND_PUBLISH = Path(__file__).resolve().with_name("build_and_publish.py")
 
 
-TOOLS_DIR = Path(__file__).resolve().parent
-
-
-def normalize_url_prefix(value: str) -> str:
-    value = str(value or "").strip().rstrip("/")
-    if not value:
-        return ""
-    if not value.startswith("/"):
-        value = "/" + value
-    return value
-
-
-def empty_root_index(dist: Path) -> None:
-    """Keep the generated public root index compatible with publish.py."""
-    root_index = dist / "index.html"
-    root_index.parent.mkdir(parents=True, exist_ok=True)
-    root_index.write_text("", encoding="utf-8")
-
-
-def write_preview_index(dest: Path, url_prefix: str) -> None:
-    """Write a root index.html that redirects to the English preview root."""
-    url_prefix = normalize_url_prefix(url_prefix)
-    target = f"{url_prefix}/en/" if url_prefix else "/en/"
-    dest.mkdir(parents=True, exist_ok=True)
-    (dest / "index.html").write_text(
-        "\n".join(
-            [
-                "<!doctype html>",
-                '<html lang="en">',
-                "<head>",
-                '  <meta charset="utf-8">',
-                f'  <meta http-equiv="refresh" content="0; url={target}">',
-                f'  <link rel="canonical" href="{target}">',
-                "  <title>Preview redirect</title>",
-                "</head>",
-                "<body>",
-                f'  <p><a href="{target}">Open preview</a></p>',
-                "</body>",
-                "</html>",
-                "",
-            ]
-        ),
-        encoding="utf-8",
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Publish development or preview output using the shared build pipeline."
     )
+    parser.add_argument("--root", default=".", help="site source root, default: current directory")
+    parser.add_argument("--url-prefix", default="/v2", help="URL prefix for the development build")
+    parser.add_argument("--dest", default=None, help="publish destination")
+    parser.add_argument("--write-preview-index", action="store_true", help="write preview redirect index")
+    return parser.parse_args()
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Validate locales, format hyperlinks, build the site, then publish development output."
-    )
-    parser.add_argument("--root", default=".", help="site source root, default: current directory")
-    parser.add_argument(
-        "--url-prefix",
-        default="/v2",
-        help="URL prefix for the development build, default: /v2",
-    )
-    parser.add_argument(
-        "--dest",
-        default=None,
-        help="Publish destination, default: ../public_html/en/v2 relative to root",
-    )
-    parser.add_argument(
-        "--write-preview-index",
-        action="store_true",
-        help="Write a root index.html redirecting to the English preview root after publishing.",
-    )
-    args = parser.parse_args()
-
+    args = parse_args()
     root = Path(args.root).expanduser().resolve()
-    dist = root.parent / "site-dist"
     dest = Path(args.dest).expanduser().resolve() if args.dest else root.parent / "public_html" / "en/v2"
 
-    validate_locales = TOOLS_DIR / "validate_locales.py"
-    format_hyperlinks = TOOLS_DIR / "format_hyperlinks.py"
-    build = TOOLS_DIR / "build.py"
-    publish = TOOLS_DIR / "publish.py"
-
-    for script in [validate_locales, format_hyperlinks, build, publish]:
-        if not script.is_file():
-            print_labeled("ERROR", CLR_RED, f"Required script not found: {script}")
-            sys.exit(1)
-
-    os.environ["SITE_URL_PREFIX"] = normalize_url_prefix(args.url_prefix)
-    os.environ["SITE_LANG_IN_URL"] = "1"
-
-    python_bin = sys.executable or shutil.which("python3") or shutil.which("python")
-
-    if not python_bin:
-        print_labeled("ERROR", CLR_RED, "Python executable not found.")
-        sys.exit(1)
-
-    steps = [
-        ("Validation", [python_bin, str(validate_locales), "--root", str(root)]),
-        ("Format Hyperlinks", [python_bin, str(format_hyperlinks), "--root", str(root)]),
-        ("Build", [python_bin, str(build), "--root", str(root)]),
+    command = [
+        sys.executable,
+        str(BUILD_AND_PUBLISH),
+        "--root",
+        str(root),
+        "--dest",
+        str(dest),
+        "--url-prefix",
+        args.url_prefix,
+        "--lang-in-url",
     ]
 
-    for label, command in steps:
-        rc = subprocess.run(command)
-        if rc.returncode != 0:
-            print_labeled("ERROR", CLR_RED, f"{label} failed (see output).")
-            sys.exit(1)
-
-    empty_root_index(dist)
-
-    rc = subprocess.run(
-        [
-            python_bin,
-            str(publish),
-            "--dist",
-            str(dist),
-            "--dest",
-            str(dest),
-        ]
-    )
-    if rc.returncode != 0:
-        print_labeled("ERROR", CLR_RED, "Publish failed (see output).")
-        sys.exit(1)
-
     if args.write_preview_index:
-        write_preview_index(dest, os.environ["SITE_URL_PREFIX"])
+        command.append("--write-preview-index")
 
-    print()
-    print_labeled("OK", CLR_GREEN, "validation, hyperlink formatting, build, and publish completed successfully.")
+    raise SystemExit(subprocess.run(command).returncode)
 
 
 if __name__ == "__main__":
