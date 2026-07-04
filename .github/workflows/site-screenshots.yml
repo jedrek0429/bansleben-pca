@@ -1,4 +1,4 @@
-name: Site screenshots
+name: PCA / Preview / Screenshots
 
 on:
   pull_request:
@@ -20,7 +20,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  screenshots:
+  preview-screenshots:
     runs-on: ubuntu-latest
     continue-on-error: true
 
@@ -35,8 +35,10 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install Python build dependencies
-        run: python -m pip install --upgrade pip markdown pymdown-extensions imagesize
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -69,7 +71,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: site-screenshots
+          name: pca-preview-screenshots
           path: screenshots
           if-no-files-found: ignore
 
@@ -79,7 +81,7 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
         run: python tools/publish_screenshots_branch.py --pr-number "$PR_NUMBER"
 
-      - name: Comment screenshots on PR
+      - name: Comment screenshots on pull request
         if: always() && (github.event_name == 'pull_request' || inputs.pr_number != '')
         env:
           GH_TOKEN: ${{ github.token }}
