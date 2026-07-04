@@ -40,7 +40,7 @@ DIST = DEFAULT_DIST
 DEST = DEFAULT_DEST
 
 LANGS = ["en", "fr", "hr"]
-DEFAULT_PRESERVED_ROOT_ITEMS = ["preview"]
+DEFAULT_PRESERVED_ROOT_ITEMS = ["preview", ".private", "github-webhook.php"]
 PRESERVED_ROOT_ITEMS = set(DEFAULT_PRESERVED_ROOT_ITEMS)
 
 
@@ -146,7 +146,7 @@ def rsync_exclude_args() -> list[str]:
     args = []
     for name in sorted(PRESERVED_ROOT_ITEMS):
         if name:
-            args.extend(["--exclude", f"/{name}/"])
+            args.extend(["--exclude", f"/{name}", "--exclude", f"/{name}/"])
     return args
 
 
@@ -219,7 +219,7 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_PRESERVED_ROOT_ITEMS,
         help=(
             "root-level destination item to preserve during --delete publishing. "
-            "May be passed multiple times. Defaults to preserving 'preview'."
+            "May be passed multiple times. Defaults to preserving preview, .private, and github-webhook.php."
         ),
     )
     return parser.parse_args()
