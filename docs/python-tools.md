@@ -40,7 +40,7 @@ This repository uses small Python scripts instead of a large framework. Most com
 
 | Tool | Purpose | Typical command |
 | --- | --- | --- |
-| `tools/webhook_deploy_worker.py` | Processes queued deployment jobs on the hosting server, including production deploys, PR previews, cleanup, and GitHub check runs. | `python tools/webhook_deploy_worker.py` |
+| `tools/webhook_deploy_worker.py` | Processes queued deployment jobs on the hosting server, including production deploys, PR previews, cleanup, GitHub check runs, and bot-authored PR comments. | `python tools/webhook_deploy_worker.py` |
 | `tools/dev_publish_editor.py` | Publishes the editor directory to a destination directory after verifying required editor files exist. | `python tools/dev_publish_editor.py --dest ../public_html/en/editor` |
 
 See `docs/deployment-webhook.md` for deployment setup details.
