@@ -16,7 +16,7 @@ This document explains how this repository is organized and how the build/deploy
 | `templates/page.html` | Generic page wrapper. |
 | `templates/partials/` | Reusable HTML partials for header, footer, cards, hero blocks, and inline CSS. |
 | `assets/` | Static CSS, JavaScript, image assets, and copied runtime files. |
-| `tools/` | Build, validation, publishing, and deployment helper scripts. |
+| `tools/` | Build, validation, publishing, and deployment helper scripts. See `docs/python-tools.md`. |
 | `server/` | Files that can be installed on the hosting server, such as the GitHub webhook endpoint. |
 | `docs/` | Operational notes for future maintainers. |
 
@@ -68,7 +68,7 @@ Compatibility wrappers still exist because workflows and hosting scripts may alr
 - `tools/BUILD_AND_PUBLISH.py`
 - `tools/dev_build_and_publish.py`
 
-Prefer `tools/build_and_publish.py` for new scripts.
+Prefer `tools/build_and_publish.py` for new scripts. See `docs/python-tools.md` for the full tools reference.
 
 ## Local development checklist
 
@@ -115,6 +115,7 @@ The webhook worker refuses to build previews from forked repositories unless `al
 
 Keep this disabled unless the build environment is isolated enough to run untrusted code.
 
-## Useful deploy docs
+## Useful docs
 
+- `docs/python-tools.md` documents the Python scripts under `tools/`.
 - `docs/deployment-webhook.md` explains the webhook endpoint, queue, worker, commit status updates, PR comments, and preview log URLs.
