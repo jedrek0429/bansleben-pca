@@ -116,12 +116,13 @@ def copy_assets_to(ctx, dst: Path) -> None:
 
 
 def copy_static(ctx, lang: str) -> None:
-    """Copy public PHP files and private contact config into one language output directory."""
+    """Copy public PHP files, private contact config, and language-local assets."""
     lang_root = ctx.dist / lang
     lang_root.mkdir(parents=True, exist_ok=True)
 
-    if not ctx.lang_in_url:
-        copy_assets_to(ctx, lang_root)
+    # Assets are copied into each language root in all modes so generated URLs like
+    # /en/assets/... and /preview-prefix/en/assets/... always resolve.
+    copy_assets_to(ctx, lang_root)
 
     for php_src in ctx.root.glob("*.php"):
         if php_src.name == "pca-contact-config.php":
