@@ -569,7 +569,7 @@ def load_templates():
         if not directory.exists():
             raise SystemExit(f"Missing template dir: {display_path(directory, ROOT)}")
 
-        for path in sorted(directory.glob("*.html")):
+        for path in sorted(directory.glob("*.css" if key == "css" else "*.html")):
             templates[key][path.stem] = path.read_text(encoding="utf-8")
 
     return templates
