@@ -273,6 +273,40 @@ def safe_upsert_preview_comment(config, pr_number, sha, url, log_url, status, ti
         return None
 
 
+def log_nonfatal(message: str, log=None) -> None:
+    if log is not None:
+        log.write(f"\n{message}\n")
+        log.flush()
+    else:
+        print(message, file=sys.stderr)
+
+
+def preview_trigger_comment_id(job) -> int | None:
+    if str(job.get("type") or "") != "preview_comment":
+        return None
+    try:
+        comment_id = int(job.get("comment_id") or 0)
+    except (TypeError, ValueError):
+        return None
+    return comment_id if comment_id > 0 else None
+
+
+def safe_ack_preview_trigger_comment(config, job, log=None) -> None:
+    comment_id = preview_trigger_comment_id(job)
+    if comment_id is None:
+        return
+
+    try:
+        github_api(config, "POST", f"/repos/{repo_full_name(config)}/issues/comments/{comment_id}/reactions", {"content": "eyes"})
+    except Exception as exc:
+        log_nonfatal(f"Could not add eyes reaction to /preview comment #{comment_id}: {exc}", log)
+
+    try:
+        github_api(config, "DELETE", f"/repos/{repo_full_name(config)}/issues/comments/{comment_id}")
+    except Exception as exc:
+        log_nonfatal(f"Could not delete /preview comment #{comment_id}: {exc}", log)
+
+
 def install_requirements(config, root, log):
     requirements = root / "requirements.txt"
     if requirements.is_file():
@@ -434,6 +468,7 @@ def deploy_preview(config, job):
     try:
         with log_path.open("w", encoding="utf-8") as log:
             log.write(f"Preview deploy job: {json.dumps(job, ensure_ascii=False)}\n")
+            safe_ack_preview_trigger_comment(config, job, log=log)
             safe_upsert_preview_comment(config, pr_number, sha, url, log_url, "started", "Preview deploy started.", log=log)
             root = prepare_preview_worktree(config, pr_number, log)
             install_requirements(config, root, log)
