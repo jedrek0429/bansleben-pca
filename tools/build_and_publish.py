@@ -13,7 +13,6 @@ from common import CLR_GREEN, CLR_RED, print_labeled
 
 
 TOOLS_DIR = Path(__file__).resolve().parent
-LANGS = ("en", "fr", "hr")
 
 
 def normalize_url_prefix(value: str) -> str:
@@ -29,27 +28,6 @@ def empty_root_index(dist: Path) -> None:
     root_index = dist / "index.html"
     root_index.parent.mkdir(parents=True, exist_ok=True)
     root_index.write_text("", encoding="utf-8")
-
-
-def expose_root_assets(dist: Path) -> None:
-    source = dist / "en" / "assets"
-    target = dist / "assets"
-    if not source.is_dir():
-        print_labeled("ERROR", CLR_RED, f"Missing source assets: {source}")
-        raise SystemExit(1)
-    if target.exists():
-        if target.is_dir():
-            shutil.rmtree(target)
-        else:
-            target.unlink()
-    shutil.copytree(source, target)
-
-
-def remove_language_assets(dist: Path) -> None:
-    for lang in LANGS:
-        target = dist / lang / "assets"
-        if target.exists():
-            shutil.rmtree(target)
 
 
 def write_preview_index(dest: Path, url_prefix: str) -> None:
@@ -130,10 +108,6 @@ def main() -> None:
         ("Build", [python_bin, str(scripts["Build"]), "--root", str(root)]),
     ]:
         run_required(label, command)
-
-    if args.lang_in_url:
-        expose_root_assets(dist)
-        remove_language_assets(dist)
 
     empty_root_index(dist)
 
