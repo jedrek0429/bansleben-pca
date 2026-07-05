@@ -722,7 +722,7 @@ def render_language_switcher(lang: str, locales, key: str) -> str:
         links.append(f'<a href="{href}" style="margin:0 5px;{weight}">{code.upper()}</a>')
 
     return (
-        '<div class="v2-language-switcher" style="position:fixed;right:18px;bottom:18px;z-index:99999;background:white;border:1px solid #ddd;border-radius:999px;padding:8px 10px;font-family:Arial,sans-serif;font-size:12px;box-shadow:0 8px 25px rgba(0,0,0,.12);">'
+        '<div class="pca-preview-language-switcher" style="position:fixed;right:18px;bottom:18px;z-index:99999;background:white;border:1px solid #ddd;border-radius:999px;padding:8px 10px;font-family:Arial,sans-serif;font-size:12px;box-shadow:0 8px 25px rgba(0,0,0,.12);">'
         + "\n  ".join(links)
         + "</div>"
     )

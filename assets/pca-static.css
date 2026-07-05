@@ -431,7 +431,7 @@ html.js .pca-contact .pca-button {
 html.js .pca-in-view,
 html.js .pca-card.pca-in-view .pca-button,
 html.js .pca-contact.pca-in-view .pca-button { opacity: 1; transform: none; }
-.v2-language-switcher { font-family: var(--pca-body-font) !important; }
+.pca-preview-language-switcher-switcher { font-family: var(--pca-body-font) !important; }
 
 @media (max-width: 1080px) {
   .nav-menu { gap: 14px; }
