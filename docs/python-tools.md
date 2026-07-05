@@ -6,11 +6,9 @@ This repository uses small Python scripts instead of a large framework. Most com
 
 | Tool | Purpose | Typical command |
 | --- | --- | --- |
-| `tools/build_and_publish.py` | Canonical pipeline wrapper. Runs validation, hyperlink formatting, static build, and publish. Use this for new automation. | `python tools/build_and_publish.py --root . --dest ../public_html` |
+| `tools/build_and_publish.py` | Canonical pipeline wrapper. Runs validation, hyperlink formatting, static build, and publish. Use this for automation. | `python tools/build_and_publish.py --root . --dest ../public_html` |
 | `tools/build.py` | Builds the static site into `../site-dist/` from `content/`, `locales/`, `config/`, `templates/`, and `assets/`. | `python tools/build.py --root .` |
 | `tools/publish.py` | Publishes an existing `../site-dist/` tree to a destination directory, deleting stale generated files while preserving configured runtime folders. | `python tools/publish.py --dist ../site-dist --dest ../public_html` |
-| `tools/BUILD_AND_PUBLISH.py` | Backward-compatible production entry point. Prefer `build_and_publish.py` for new scripts. | `python tools/BUILD_AND_PUBLISH.py --root .` |
-| `tools/dev_build_and_publish.py` | Backward-compatible preview/development entry point. Prefer `build_and_publish.py` for new scripts. | `python tools/dev_build_and_publish.py --root . --url-prefix /pr-123 --dest ../public_html/preview/pr-123 --write-preview-index` |
 
 ## Content and locale tools
 
@@ -28,12 +26,11 @@ This repository uses small Python scripts instead of a large framework. Most com
 | `tools/resolve_images.py` | Helper for rewriting relative Markdown/HTML image paths against a base path. | Library-style helper. |
 | `tools/common.py` | Shared console formatting, JSON loading, path display, and report helpers. | Library-style helper. |
 
-## Preview and screenshot helpers
+## Screenshot helper
 
 | Tool | Purpose | Typical command |
 | --- | --- | --- |
-| `tools/pages_preview_finalize.py` | Finalizes a PR preview directory served under a URL prefix. | `python tools/pages_preview_finalize.py --preview-dir pages-preview/pr-123 --url-prefix /pr-123` |
-| `tools/pages_preview_root_assets.py` | Copies shared assets from a language directory to a preview root. | `python tools/pages_preview_root_assets.py --preview-dir ../site-dist` |
+| `tools/pages_preview_root_assets.py` | Exposes the current PCA `assets/` directory at the local screenshot preview root. | `python tools/pages_preview_root_assets.py --preview-dir ../site-dist` |
 | `tools/publish_screenshots_branch.py` | Publishes generated screenshots to the persistent screenshot branch for PR review comments. | `python tools/publish_screenshots_branch.py --pr-number 123` |
 
 ## Server and deployment helpers
