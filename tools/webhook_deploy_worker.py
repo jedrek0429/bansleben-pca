@@ -24,6 +24,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_PUBLIC_HTML = ROOT.parent / "public_html"
 DEFAULT_PREVIEW_ROOT = DEFAULT_PUBLIC_HTML / "preview"
 DEFAULT_CONFIG = DEFAULT_PREVIEW_ROOT / ".private" / "pca-deploy-config.json"
+PREVIEW_COMMENT_MARKER = "<!-- pca-preview-deploy-comment -->"
 
 
 class DeployError(RuntimeError):
@@ -222,6 +223,56 @@ def get_pull_request(config, pr_number):
     return data
 
 
+def preview_comment_body(pr_number, sha, url, log_url, status, title, error: Exception | None = None):
+    status_emoji = {
+        "started": "🚀",
+        "succeeded": "✅",
+        "failed": "❌",
+    }.get(status, "ℹ️")
+    lines = [
+        PREVIEW_COMMENT_MARKER,
+        f"### {status_emoji} PCA Preview Deploy",
+        "",
+        title,
+        "",
+        f"- **PR:** #{pr_number}",
+        f"- **Commit:** `{(sha or 'unknown')[:12]}`",
+        f"- **Preview:** {url}",
+        f"- **Build log:** {log_url}",
+    ]
+    if error is not None:
+        lines.extend(["", f"**Error:** `{error}`"])
+    lines.extend(["", f"_Last updated: {time.strftime('%Y-%m-%d %H:%M:%S UTC', time.gmtime())}_"])
+    return "\n".join(lines)
+
+
+def upsert_preview_comment(config, pr_number, body):
+    comments = github_api(config, "GET", f"/repos/{repo_full_name(config)}/issues/{pr_number}/comments?per_page=100")
+    if isinstance(comments, list):
+        for comment in comments:
+            if not isinstance(comment, dict):
+                continue
+            comment_body = str(comment.get("body") or "")
+            comment_id = comment.get("id")
+            if PREVIEW_COMMENT_MARKER in comment_body and comment_id:
+                return github_api(config, "PATCH", f"/repos/{repo_full_name(config)}/issues/comments/{comment_id}", {"body": body})
+    return github_api(config, "POST", f"/repos/{repo_full_name(config)}/issues/{pr_number}/comments", {"body": body})
+
+
+def safe_upsert_preview_comment(config, pr_number, sha, url, log_url, status, title, error: Exception | None = None, log=None):
+    try:
+        body = preview_comment_body(pr_number, sha, url, log_url, status, title, error)
+        return upsert_preview_comment(config, pr_number, body)
+    except Exception as exc:
+        message = f"Could not upsert PR preview comment: {exc}"
+        if log is not None:
+            log.write(f"\n{message}\n")
+            log.flush()
+        else:
+            print(message, file=sys.stderr)
+        return None
+
+
 def install_requirements(config, root, log):
     requirements = root / "requirements.txt"
     if requirements.is_file():
@@ -345,6 +396,7 @@ def deploy_preview(config, job):
     try:
         with log_path.open("w", encoding="utf-8") as log:
             log.write(f"Preview deploy job: {json.dumps(job, ensure_ascii=False)}\n")
+            safe_upsert_preview_comment(config, pr_number, sha, url, log_url, "started", "Preview deploy started.", log=log)
             root = prepare_preview_worktree(config, pr_number, log)
             install_requirements(config, root, log)
             run_build_and_publish(config, root, preview_root(config) / f"pr-{pr_number}", log, [
@@ -361,6 +413,7 @@ def deploy_preview(config, job):
             "Preview deploy failed",
             preview_summary(pr_number, url, log_url, "failed") + f"\n\nError: `{exc}`",
         )
+        safe_upsert_preview_comment(config, pr_number, sha, url, log_url, "failed", "Preview deploy failed.", exc)
         raise
 
     publish_preview_log(config, pr_number, log_path)
@@ -372,6 +425,7 @@ def deploy_preview(config, job):
         "Preview deployed",
         preview_summary(pr_number, url, log_url, "succeeded"),
     )
+    safe_upsert_preview_comment(config, pr_number, sha, url, log_url, "succeeded", "Preview deploy is ready.")
 
 
 def cleanup_preview(config, job):
