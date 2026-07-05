@@ -1,4 +1,4 @@
-name: PCA / Preview / Screenshots
+name: PCA Preview Screenshots
 
 on:
   pull_request:
