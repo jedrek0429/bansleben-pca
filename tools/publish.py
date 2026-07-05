@@ -1,16 +1,20 @@
 """
 Publishes the contents of dist to public_html, or a specified destination.
 
-Expected dist layout:
+Expected dist layout for production:
     dist/
         index.html        # empty
         en/
         fr/
         hr/
 
-Production builds normally contain assets under each language directory because
-those language directories may be separate domain roots. Preview builds may
-instead contain one shared root assets directory.
+Expected dist layout for previews:
+    dist/
+        index.html        # with redirect
+        assets/
+        en/
+        fr/
+        hr/
 
 Example:
     python publish.py --dist /path/to/dist --dest /path/to/public_html
@@ -80,13 +84,19 @@ def assert_assets_ok() -> None:
     root_assets = DIST / "assets"
     language_assets = [DIST / lang / "assets" for lang in LANGS]
 
-    if root_assets.exists() or all(path.exists() for path in language_assets):
+    root_assets_exist = root_assets.exists()
+    language_assets_exist = all(path.exists() for path in language_assets)
+
+    if root_assets_exist and not language_assets_exist:
+        return
+
+    if language_assets_exist and not root_assets_exist:
         return
 
     print_group(
         "Missing build output",
         [
-            "Expected either root assets/ or assets/ under every language directory.",
+            "Expected either root assets/, or assets/ under every language directory.",
             *[display_path(path, ROOT) for path in [root_assets, *language_assets] if not path.exists()],
         ],
         "ERROR",
