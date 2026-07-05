@@ -366,7 +366,7 @@ def organization_url(schema_cfg: dict, site: str, lang: str) -> str:
 def render_schema(seo_config: dict, locales, lang: str, key: str, title: str, description: str, canonical: str) -> str:
     """Render JSON-LD structured data for the organization, website, page, and optional breadcrumbs."""
     site_name = value_from_locales(lang, "site_name", locales) or title
-    logo_src = page_prefix(lang) + (value_from_locales(lang, "brand.logo_src", locales) or "/assets/favicon.svg")
+    logo_src = value_from_locales(lang, "brand.logo_src", locales) or "/assets/favicon.svg"
     schema_cfg = seo_config.get("schema") or {}
     
     url = organization_url(schema_cfg, site_base_url(seo_config, lang, locales), lang)
@@ -446,7 +446,22 @@ def render_schema(seo_config: dict, locales, lang: str, key: str, title: str, de
 
 
 def icon_href(icons: dict, lang: str, key: str) -> str:
-    return html.escape(page_prefix(lang) + icons[key], quote=True)
+    return html.escape(asset_url(icons[key]), quote=True)
+
+
+
+def render_icons(seo_config: dict, lang: str) -> list[str]:
+    lines = []
+    icons = seo_config.get("icons") or {}
+    if icons.get("svg"):
+        lines.append(f'<link rel="icon" type="image/svg+xml" href="{icon_href(icons, lang, "svg")}">')
+    if icons.get("png_32"):
+        lines.append(f'<link rel="icon" type="image/png" sizes="32x32" href="{icon_href(icons, lang, "png_32")}">')
+    if icons.get("png_16"):
+        lines.append(f'<link rel="icon" type="image/png" sizes="16x16" href="{icon_href(icons, lang, "png_16")}">')
+    if icons.get("apple_touch"):
+        lines.append(f'<link rel="apple-touch-icon" sizes="180x180" href="{icon_href(icons, lang, "apple_touch")}">')
+    return lines
 
 
 
@@ -480,15 +495,7 @@ def render_seo_head(seo_config: dict, locales, lang: str, key: str, title: str) 
         x_default_url = absolute_page_url(seo_config, locales, x_default_lang, key)
         lines.append(f'<link rel="alternate" hreflang="x-default" href="{html.escape(x_default_url, quote=True)}">')
 
-    icons = seo_config.get("icons") or {}
-    if icons.get("svg"):
-        lines.append(f'<link rel="icon" type="image/svg+xml" href="{icon_href(icons, lang, "svg")}">')
-    if icons.get("png_32"):
-        lines.append(f'<link rel="icon" type="image/png" sizes="32x32" href="{icon_href(icons, lang, "png_32")}">')
-    if icons.get("png_16"):
-        lines.append(f'<link rel="icon" type="image/png" sizes="16x16" href="{icon_href(icons, lang, "png_16")}">')
-    if icons.get("apple_touch"):
-        lines.append(f'<link rel="apple-touch-icon" sizes="180x180" href="{icon_href(icons, lang, "apple_touch")}">')
+    lines.extend(render_icons(seo_config, lang))
 
     if seo_config.get("theme_color"):
         lines.append(f'<meta name="theme-color" content="{html.escape(str(seo_config["theme_color"]), quote=True)}">')
@@ -1159,14 +1166,7 @@ def render_404_head(seo_config: dict) -> str:
         '<meta name="description" content="Page not found.">',
     ]
 
-    if icons.get("svg"):
-        lines.append(f'<link rel="icon" type="image/svg+xml" href="{html.escape(icons["svg"], quote=True)}">')
-    if icons.get("png_32"):
-        lines.append(f'<link rel="icon" type="image/png" sizes="32x32" href="{html.escape(icons["png_32"], quote=True)}">')
-    if icons.get("png_16"):
-        lines.append(f'<link rel="icon" type="image/png" sizes="16x16" href="{html.escape(icons["png_16"], quote=True)}">')
-    if icons.get("apple_touch"):
-        lines.append(f'<link rel="apple-touch-icon" sizes="180x180" href="{html.escape(icons["apple_touch"], quote=True)}">')
+    lines.extend(render_icons(seo_config, lang))
 
     if seo_config.get("theme_color"):
         lines.append(f'<meta name="theme-color" content="{html.escape(str(seo_config["theme_color"]), quote=True)}">')
@@ -1310,7 +1310,7 @@ def write_extra_seo_files(seo_config: dict, locales) -> None:
             "theme_color": seo_config.get("theme_color") or "#317041",
             "icons": [
                 {
-                    "src": page_prefix(lang) + "/assets/apple-touch-icon.png",
+                    "src": asset_url("apple-touch-icon.png"),
                     "sizes": "180x180",
                     "type": "image/png"
                 }
