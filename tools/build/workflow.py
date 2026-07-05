@@ -120,7 +120,7 @@ def deploy(root, *, to=None, langs=None, clean_content: bool = True) -> None:
         format_content(root)
     site(root, langs=lang_list)
     empty_root_index(dist)
-    publish(dist, dest, root=root, langs=lang_list)
+    publish(dist, dest, root=root, langs=lang_list, require_private_config=True)
     write_root_htaccess(dest)
     print()
     print_labeled("OK", CLR_GREEN, "production deployment completed successfully.")
@@ -138,7 +138,7 @@ def preview(root, *, prefix: str, to=None, langs=None, clean_content: bool = Tru
     if clean_content:
         format_content(root)
     site(root, prefix=prefix, preview=True, langs=lang_list)
-    publish(dist, dest, root=root, langs=lang_list)
+    publish(dist, dest, root=root, langs=lang_list, require_private_config=False)
     write_root_htaccess(dest)
     write_preview_index(dest, prefix)
     print()
