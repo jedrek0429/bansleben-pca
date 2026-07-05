@@ -16,7 +16,7 @@ def add_common_build_options(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--root", default=DEFAULT_ROOT, help="site-src root directory")
     parser.add_argument("--dest", default=None, help="build output directory; default is root.parent/site-dist")
     parser.add_argument("--url-prefix", default=None, help="optional URL prefix, for example /pr-29")
-    parser.add_argument("--lang-in-url", action="store_true", help="enable language roots in generated URLs")
+    parser.add_argument("--lang-in-url", action="store_true", default=None, help="enable language roots in generated URLs")
     parser.add_argument("--langs", default=None, help="comma-separated language list, for example en,fr")
     parser.add_argument("--skip-webp", action="store_true", help="skip ImageMagick WebP conversion")
     parser.add_argument("--dry-run", action="store_true", help="load config/templates without writing output")
@@ -47,7 +47,7 @@ def build_parser() -> argparse.ArgumentParser:
     inspect_cmd.add_argument("--root", default=DEFAULT_ROOT, help="site-src root directory")
     inspect_cmd.add_argument("--dest", default=None, help="build output directory")
     inspect_cmd.add_argument("--url-prefix", default=None, help="optional URL prefix")
-    inspect_cmd.add_argument("--lang-in-url", action="store_true", help="enable language roots")
+    inspect_cmd.add_argument("--lang-in-url", action="store_true", default=None, help="enable language roots")
     inspect_cmd.add_argument("--langs", default=None, help="comma-separated language list")
 
     publish_cmd = subparsers.add_parser("publish", help="publish an existing build output directory")
@@ -103,7 +103,7 @@ def main(argv=None) -> None:
         root = Path(args.root).expanduser().resolve()
         dist = Path(args.dist).expanduser().resolve() if args.dist else root.parent / "site-dist"
         dest = Path(args.dest).expanduser().resolve() if args.dest else root.parent / "public_html"
-        langs = [part.strip() for part in args.langs.split(",")] if args.langs else None
+        langs = [part.strip() for part in args.langs.split(",") if part.strip()] if args.langs else None
         publish(dist, dest, root=root, langs=langs, preserve_root_item=args.preserve_root_item)
     elif command == "deploy":
         deploy(
