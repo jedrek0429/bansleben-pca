@@ -11,7 +11,7 @@ on:
       path:
         description: Site path to capture
         required: false
-        default: /en/
+        default: /preview/en/
         type: string
 
 permissions:
@@ -48,12 +48,18 @@ jobs:
       - name: Install Playwright Chromium
         run: npx --yes playwright@latest install --with-deps chromium
 
-      - name: Build static site
-        run: python tools/build_and_publish.py --root . --dest ../site-screenshot-preview
+      - name: Build preview-style static site
+        run: |
+          python tools/build_and_publish.py \
+            --root . \
+            --dest ../site-screenshot-preview/preview \
+            --url-prefix /preview \
+            --lang-in-url \
+            --write-preview-index
 
       - name: Capture desktop and mobile screenshots
         env:
-          SCREENSHOT_PATH: ${{ inputs.path || '/en/' }}
+          SCREENSHOT_PATH: ${{ inputs.path || '/preview/en/' }}
         run: |
           set -euo pipefail
           mkdir -p screenshots
@@ -83,7 +89,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
-          SCREENSHOT_PATH: ${{ inputs.path || '/en/' }}
+          SCREENSHOT_PATH: ${{ inputs.path || '/preview/en/' }}
           ARTIFACT_URL: ${{ steps.upload.outputs.artifact-url }}
         run: |
           set -euo pipefail
