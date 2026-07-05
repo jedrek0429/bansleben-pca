@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import shutil
+from pathlib import Path
 
 from common import CLR_GREEN, CLR_WHITE, color, display_path, print_labeled, print_section
 
@@ -32,26 +33,76 @@ def render_templates(ctx: BuildContext, locales) -> None:
         copy_assets_to(ctx, ctx.dist)
 
 
-def build(root) -> None:
-    """Build the static site into the sibling site-dist directory."""
-    ctx = BuildContext.from_root(root)
+def make_context(root, *, dest=None, url_prefix=None, lang_in_url=None, langs=None) -> BuildContext:
+    return BuildContext.from_root(
+        root,
+        dist=dest,
+        url_prefix=url_prefix,
+        lang_in_url=lang_in_url,
+        langs=langs,
+    )
+
+
+def inspect(root, *, dest=None, url_prefix=None, lang_in_url=None, langs=None) -> BuildContext:
+    ctx = make_context(root, dest=dest, url_prefix=url_prefix, lang_in_url=lang_in_url, langs=langs)
+    ctx.load_configs()
+    print_section("Build configuration")
+    print(color(f"Root:        {display_path(ctx.root, ctx.root.parent)}", CLR_WHITE))
+    print(color(f"Dist:        {display_path(ctx.dist, ctx.root.parent)}", CLR_WHITE))
+    print(color(f"URL prefix:  {ctx.url_prefix or '/'}", CLR_WHITE))
+    print(color(f"Lang in URL: {ctx.lang_in_url}", CLR_WHITE))
+    print(color(f"Languages:   {', '.join(ctx.langs)}", CLR_WHITE))
+    print(color(f"Pages:       {len(ctx.pages_config.get('pages', []))}", CLR_WHITE))
+    return ctx
+
+
+def clean(root, *, dest=None) -> None:
+    ctx = make_context(root, dest=dest)
+    print_section("Clean build output")
+    print(color(f"Dist: {display_path(ctx.dist, ctx.root.parent)}", CLR_WHITE))
+    if ctx.dist.exists():
+        shutil.rmtree(ctx.dist)
+        print_labeled("OK", CLR_GREEN, "removed build output.")
+    else:
+        print_labeled("OK", CLR_GREEN, "nothing to clean.")
+
+
+def build(
+    root,
+    *,
+    dest=None,
+    url_prefix=None,
+    lang_in_url=None,
+    langs=None,
+    skip_webp: bool = False,
+    dry_run: bool = False,
+) -> BuildContext:
+    """Build the static site into the selected output directory."""
+    ctx = make_context(root, dest=dest, url_prefix=url_prefix, lang_in_url=lang_in_url, langs=langs)
 
     print_section("Build static site")
     print(color(f"Root: {display_path(ctx.root, ctx.root.parent)}", CLR_WHITE))
     print(color(f"Dist: {display_path(ctx.dist, ctx.root.parent)}", CLR_WHITE))
 
+    ctx.load_configs()
+    locales = ctx.load_locales()
+
+    if dry_run:
+        print_labeled("OK", CLR_GREEN, "dry run completed; config, locales, and templates are loadable.")
+        load_templates(ctx)
+        return ctx
+
     if ctx.dist.exists():
         shutil.rmtree(ctx.dist)
     ctx.dist.mkdir(parents=True, exist_ok=True)
 
-    ctx.load_configs()
-    locales = ctx.load_locales()
     render_templates(ctx, locales)
 
     for lang in ctx.langs:
         (ctx.dist / lang).mkdir(parents=True, exist_ok=True)
 
-    redirect_target = f"/{ctx.langs[0]}/" if ctx.langs else "/en/"
+    redirect_lang = ctx.langs[0] if ctx.langs else "en"
+    redirect_target = f"{ctx.url_prefix}/{redirect_lang}/" if ctx.url_prefix else f"/{redirect_lang}/"
     (ctx.dist / "index.html").write_text(
         '<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0;url='
         + redirect_target
@@ -61,5 +112,10 @@ def build(root) -> None:
         encoding="utf-8",
     )
 
-    convert_to_webp(str(ctx.dist))
+    if not skip_webp:
+        convert_to_webp(str(ctx.dist))
+    else:
+        print_labeled("OK", CLR_GREEN, "skipped WebP conversion.")
+
     print_labeled("OK", CLR_GREEN, f"built {display_path(ctx.dist, ctx.root.parent)}")
+    return ctx
