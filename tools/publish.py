@@ -11,6 +11,7 @@ Expected dist layout for production:
 Expected dist layout for previews:
     dist/
         index.html        # with redirect
+        .private/
         assets/
         en/
         fr/
@@ -154,6 +155,11 @@ def assert_dist_ok() -> None:
         raise SystemExit(1)
 
     allowed_root_items = {*LANGS, "assets", "index.html"}
+    if (DIST / "assets").exists():
+        # Preview builds share one root-level private directory. Production keeps
+        # the contact config under the relevant language directory instead.
+        allowed_root_items.add(".private")
+
     extra_root_items = sorted(
         path.name for path in DIST.iterdir()
         if path.name not in allowed_root_items
@@ -169,7 +175,7 @@ def assert_dist_ok() -> None:
         print_labeled(
             "ERROR",
             CLR_RED,
-            "dist root may contain only: index.html, optional assets, en, fr, hr.",
+            "dist root may contain only: index.html, optional assets, optional preview .private, en, fr, hr.",
         )
         raise SystemExit(1)
 
