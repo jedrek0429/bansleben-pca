@@ -1449,12 +1449,16 @@ def copy_static(lang: str) -> None:
             continue
         copy_path(php_src, lang_root / php_src.name)
 
+    config_src = ROOT / "pca-contact-config.json"
     private_dir = lang_root / ".private"
+
+    if LANG_IN_URL:
+        private_dir = DIST / ".private"
+
     private_dir.mkdir(parents=True, exist_ok=True)
 
-    config_src = ROOT / "pca-contact-config.php"
     if config_src.exists():
-        copy_path(config_src, private_dir / "pca-contact-config.php")
+        copy_path(config_src, private_dir / "pca-contact-config.json")
 
     (private_dir / ".htaccess").write_text("Require all denied\n", encoding="utf-8")
 
