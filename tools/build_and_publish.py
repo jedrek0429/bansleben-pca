@@ -83,6 +83,7 @@ def main() -> None:
         "Validation": TOOLS_DIR / "validate_locales.py",
         "Format Hyperlinks": TOOLS_DIR / "format_hyperlinks.py",
         "Build": TOOLS_DIR / "build.py",
+        "Copy Contact Config": TOOLS_DIR / "copy_contact_config.py",
         "Publish": TOOLS_DIR / "publish.py",
     }
 
@@ -108,6 +109,18 @@ def main() -> None:
         ("Build", [python_bin, str(scripts["Build"]), "--root", str(root)]),
     ]:
         run_required(label, command)
+
+    copy_config_command = [
+        python_bin,
+        str(scripts["Copy Contact Config"]),
+        "--root",
+        str(root),
+        "--dist",
+        str(dist),
+    ]
+    if args.lang_in_url:
+        copy_config_command.append("--preview")
+    run_required("Copy Contact Config", copy_config_command)
 
     empty_root_index(dist)
 
