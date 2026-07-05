@@ -174,7 +174,7 @@ function normalize_raw_message(string $raw): string {
     return preg_replace('/^\./m', '..', $raw);
 }
 
-function send_smtp(array $cfg, string $replyEmail, string $name, string $message): bool {
+function send_smtp(array $cfg, string $replyEmail, string $name, string $lang, string $message): bool {
     $fromEmail = clean_header($cfg['from_email']);
     $fromName = clean_header($cfg['from_name']);
     $toEmail = clean_header($cfg['to_email']);
@@ -185,7 +185,7 @@ function send_smtp(array $cfg, string $replyEmail, string $name, string $message
         "Name: {$name}\n" .
         "Email: {$replyEmail}\n" .
         "IP: " . ($_SERVER['REMOTE_ADDR'] ?? '') . "\n" .
-        "Page: " . clean_header((string)($_POST['page'] ?? ($_SERVER['HTTP_REFERER'] ?? ''))) . "\n\n" .
+        "Language: {$lang}\n\n" .
         $message . "\n";
 
     $headers = [
@@ -362,7 +362,7 @@ try {
 
     log_line('Submitting form from email=' . $email . ' name=' . $name);
 
-    send_smtp($config, $email, $name, $message);
+    send_smtp($config, $email, $name, $lang, $message);
     log_line('Notification OK');
 
     send_confirmation_smtp($config, $email, $name, $lang);
