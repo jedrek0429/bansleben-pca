@@ -101,15 +101,11 @@ jobs:
           body="${marker}
           Site screenshots for \`${SCREENSHOT_PATH}\` are ready.
 
-          **Desktop**
+          <a href=\"${desktop_url}\"><img src=\"${desktop_url}\" alt=\"Desktop screenshot\" width=\"320\"></a>
 
-          ![Desktop screenshot](${desktop_url})
+          <a href=\"${mobile_url}\"><img src=\"${mobile_url}\" alt=\"Mobile screenshot\" width=\"160\"></a>
 
-          **Mobile**
-
-          ![Mobile screenshot](${mobile_url})
-
-          Links: [screenshot branch](${branch_url}) · [artifact download](${artifact_url}) · [workflow run](${run_url})"
+          Links: [screenshot branch](${branch_url}) · [artifact download](${artifact_url})"
 
           existing_id=$(gh api "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" --paginate \
             --jq ".[] | select(.user.login == \"github-actions[bot]\" and (.body | contains(\"${marker}\"))) | .id" \
