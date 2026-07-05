@@ -4,10 +4,13 @@ Publishes the contents of dist to public_html, or a specified destination.
 Expected dist layout:
     dist/
         index.html        # empty
-        assets/
         en/
         fr/
         hr/
+
+Production builds normally contain assets under each language directory because
+those language directories may be separate domain roots. Preview builds may
+instead contain one shared root assets directory.
 
 Example:
     python publish.py --dist /path/to/dist --dest /path/to/public_html
@@ -73,6 +76,25 @@ def assert_safe_paths() -> None:
         )
 
 
+def assert_assets_ok() -> None:
+    root_assets = DIST / "assets"
+    language_assets = [DIST / lang / "assets" for lang in LANGS]
+
+    if root_assets.exists() or all(path.exists() for path in language_assets):
+        return
+
+    print_group(
+        "Missing build output",
+        [
+            "Expected either root assets/ or assets/ under every language directory.",
+            *[display_path(path, ROOT) for path in [root_assets, *language_assets] if not path.exists()],
+        ],
+        "ERROR",
+        CLR_RED,
+    )
+    raise SystemExit(1)
+
+
 def assert_dist_ok() -> None:
     if not DIST.exists() or not DIST.is_dir():
         print_group(
@@ -90,13 +112,9 @@ def assert_dist_ok() -> None:
 
     required = [
         DIST / "index.html",
-        DIST / "assets",
         DIST / "en" / "index.html",
         DIST / "fr" / "index.html",
         DIST / "hr" / "index.html",
-        DIST / "en" / "assets",
-        DIST / "fr" / "assets",
-        DIST / "hr" / "assets",
         DIST / "en" / "contact.php",
         DIST / "fr" / "contact.php",
         DIST / "hr" / "contact.php",
@@ -112,6 +130,8 @@ def assert_dist_ok() -> None:
             "dist is incomplete. Run a successful build first, then publish again.",
         )
         raise SystemExit(1)
+
+    assert_assets_ok()
 
     root_index = DIST / "index.html"
     if root_index.read_text(encoding="utf-8") != "":
@@ -139,7 +159,7 @@ def assert_dist_ok() -> None:
         print_labeled(
             "ERROR",
             CLR_RED,
-            "dist root may contain only: index.html, assets, en, fr, hr.",
+            "dist root may contain only: index.html, optional assets, en, fr, hr.",
         )
         raise SystemExit(1)
 
