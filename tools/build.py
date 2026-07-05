@@ -1159,7 +1159,7 @@ def render_page(lang: str, locales, page: dict, templates, cards_config, seo_con
 
 
 
-def render_404_head(seo_config: dict) -> str:
+def render_404_head(seo_config: dict, lang: str) -> str:
     icons = seo_config.get("icons") or {}
     lines = [
         '<meta name="robots" content="noindex,follow">',
@@ -1191,7 +1191,7 @@ def render_404(lang: str, locales, templates) -> None:
         "slug": "404",
         "url": f"{page_prefix(lang)}/404.html",
         "canonical_url": "",
-        "seo_head": render_404_head(SEO_CONFIG),
+        "seo_head": render_404_head(SEO_CONFIG, lang),
         "content": f"<p>{html.escape(str(message))}</p>",
         "message": html.escape(str(message)),
         "back_url": html.escape(page_url(locales, lang, "introduction"), quote=True),
