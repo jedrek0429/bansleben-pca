@@ -1,8 +1,8 @@
 """Expose shared language assets at a GitHub Pages preview root.
 
 The static build publishes assets inside each language directory. GitHub Pages PR
-previews are served from /<repo>/pr-<number>/, so root-relative preview asset
-URLs need matching folders at that preview root too.
+screenshots serve the generated site from a preview root, so this helper exposes
+only the current PCA asset directory at that root.
 """
 
 from __future__ import annotations
@@ -12,7 +12,7 @@ import shutil
 from pathlib import Path
 
 
-ROOT_ITEMS = ("assets", "wp-content", "wp-includes")
+ROOT_ITEMS = ("assets",)
 
 
 def copy_item(src: Path, dest: Path) -> None:
