@@ -62,19 +62,9 @@ LANGS = ["en", "fr", "hr"]
 
 TOKEN_RE = re.compile(r"{{\s*([^{}]+?)\s*}}")
 
-CACHE_CSS_BY_TEMPLATE = {
-    "home": "/wp-content/et-cache/246/et-core-unified-246-17826691374398.min.css",
-    "content": "/wp-content/et-cache/125/et-core-unified-125-17826691539914.min.css",
-    "cards": "/wp-content/et-cache/372/et-core-unified-372-17826727272382.min.css",
-    "cards_with_intro": "/wp-content/et-cache/372/et-core-unified-372-17826727272382.min.css",
-    "contact": "/wp-content/et-cache/296/et-core-unified-296-17826702276405.min.css",
-    "404": "/wp-content/et-cache/246/et-core-unified-246-17826691374398.min.css",
-}
-
 PAGES_CONFIG = {}
 PAGES_BY_KEY = {}
 SEO_CONFIG = {}
-
 
 
 def load_locale(lang: str):
@@ -157,18 +147,26 @@ def page_data(locales, lang: str, key: str) -> dict:
     }
 
 
-
-def lang_prefix(lang: str) -> str:
+def page_prefix(lang: str) -> str:
     prefix = URL_PREFIX
     if LANG_IN_URL:
         prefix = f"{prefix}/{lang}" if prefix else f"/{lang}"
     return prefix.rstrip("/")
 
 
-
 def root_url(lang: str) -> str:
-    return (lang_prefix(lang) or "") + "/"
+    return (page_prefix(lang) or "") + "/"
 
+
+def asset_url(path: str) -> str:
+    value = str(path or "")
+    if not value:
+        return ""
+    if value.startswith(("http://", "https://", "data:")):
+        return value
+    if not value.startswith("/"):
+        value = "/" + value
+    return f"{URL_PREFIX}{value}" if URL_PREFIX else value
 
 
 def page_url(locales, lang: str, key: str) -> str:
@@ -183,25 +181,9 @@ def page_url(locales, lang: str, key: str) -> str:
     if not slug:
         return root_url(lang)
 
-    prefix = lang_prefix(lang)
+    prefix = page_prefix(lang)
     return f"{prefix}/{slug}/" if prefix else f"/{slug}/"
 
-
-
-def env_site_base_urls() -> dict:
-    """
-    Read optional per-language site base URLs from the SITE_BASE_URLS environment variable.
-    For example:
-    SITE_BASE_URLS='{"en":"https://polandchildabduction.pl","fr":"https://enlevementparentalpologne.pl","hr":"https://roditeljskaotmicapoljska.pl"}'
-    """
-    raw = os.environ.get("SITE_BASE_URLS", "").strip()
-    if not raw:
-        return {}
-    try:
-        data = json.loads(raw)
-    except json.JSONDecodeError:
-        return {}
-    return data if isinstance(data, dict) else {}
 
 
 def load_seo_config() -> dict:
@@ -250,13 +232,18 @@ def page_lastmod(seo_config: dict, lang: str, key: str) -> str:
         return file_lastmod_date(content_path)
 
     return ""
-    
+
+
 def site_base_url(seo_config: dict, lang: str, locales) -> str:
     """Return the absolute base URL for a language from SEO config or locale domain settings."""
-    url = (seo_config.get("site_urls") or {}).get(lang)
-    if not url:
-        url = value_from_locales(lang, "domain", locales)
-    return str(url or "").rstrip("/")
+    if not LANG_IN_URL:
+        url = (seo_config.get("site_urls") or {}).get(lang)
+        if not url:
+            url = value_from_locales(lang, "domain", locales)
+        return str(url or "").rstrip("/")
+    else:
+        url = seo_config.get("preview_site_url")
+        return str(url or "").rstrip("/")
 
 
 
@@ -458,6 +445,26 @@ def render_schema(seo_config: dict, locales, lang: str, key: str, title: str, de
 
 
 
+def icon_href(icons: dict, lang: str, key: str) -> str:
+    return html.escape(asset_url(icons[key]), quote=True)
+
+
+
+def render_icons(seo_config: dict, lang: str) -> list[str]:
+    lines = []
+    icons = seo_config.get("icons") or {}
+    if icons.get("svg"):
+        lines.append(f'<link rel="icon" type="image/svg+xml" href="{icon_href(icons, lang, "svg")}">')
+    if icons.get("png_32"):
+        lines.append(f'<link rel="icon" type="image/png" sizes="32x32" href="{icon_href(icons, lang, "png_32")}">')
+    if icons.get("png_16"):
+        lines.append(f'<link rel="icon" type="image/png" sizes="16x16" href="{icon_href(icons, lang, "png_16")}">')
+    if icons.get("apple_touch"):
+        lines.append(f'<link rel="apple-touch-icon" sizes="180x180" href="{icon_href(icons, lang, "apple_touch")}">')
+    return lines
+
+
+
 def render_seo_head(seo_config: dict, locales, lang: str, key: str, title: str) -> str:
     """Render SEO-related head tags, including description, canonical URL, hreflang links, icons, Open Graph, Twitter, and schema data."""
     description = seo_description(seo_config, lang, key)
@@ -488,15 +495,7 @@ def render_seo_head(seo_config: dict, locales, lang: str, key: str, title: str) 
         x_default_url = absolute_page_url(seo_config, locales, x_default_lang, key)
         lines.append(f'<link rel="alternate" hreflang="x-default" href="{html.escape(x_default_url, quote=True)}">')
 
-    icons = seo_config.get("icons") or {}
-    if icons.get("svg"):
-        lines.append(f'<link rel="icon" type="image/svg+xml" href="{html.escape(icons["svg"], quote=True)}">')
-    if icons.get("png_32"):
-        lines.append(f'<link rel="icon" type="image/png" sizes="32x32" href="{html.escape(icons["png_32"], quote=True)}">')
-    if icons.get("png_16"):
-        lines.append(f'<link rel="icon" type="image/png" sizes="16x16" href="{html.escape(icons["png_16"], quote=True)}">')
-    if icons.get("apple_touch"):
-        lines.append(f'<link rel="apple-touch-icon" sizes="180x180" href="{html.escape(icons["apple_touch"], quote=True)}">')
+    lines.extend(render_icons(seo_config, lang))
 
     if seo_config.get("theme_color"):
         lines.append(f'<meta name="theme-color" content="{html.escape(str(seo_config["theme_color"]), quote=True)}">')
@@ -636,7 +635,7 @@ def hero_style_for_page(lang: str, locales, key: str) -> str:
     if not src:
         return ""
 
-    src = URL_PREFIX + html.escape(str(src), quote=True)
+    src = html.escape(asset_url(str(src)), quote=True)
 
     return f' style="background-image: url({src}) !important;"'
 
@@ -748,11 +747,11 @@ def render_text(text: str, lang: str, locales, ctx=None, templates=None, depth: 
         if token == "url_prefix":
             return URL_PREFIX
 
-        if token == "lang_prefix":
-            return lang_prefix(lang)
+        if token == "home_url":
+            return page_url(locales, lang, "introduction")
 
         if token == "contact_action":
-            return f"{URL_PREFIX}/contact.php" if URL_PREFIX else "/contact.php"
+            return asset_url("contact.php")
 
         if token == "content":
             return str(ctx.get("content") or page.get("body") or page.get("main") or "")
@@ -786,7 +785,7 @@ def render_text(text: str, lang: str, locales, ctx=None, templates=None, depth: 
             return str(get_image_info(value_from_locales(lang, "brand.logo_src", locales)).get("height", ""))
         
         if token == "brand.logo_webp_src":
-            return str(get_image_info(value_from_locales(lang, "brand.logo_src", locales)).get("webp_src", ""))
+            return asset_url(get_image_info(value_from_locales(lang, "brand.logo_src", locales)).get("webp_src", ""))
 
         if token.startswith("partial."):
             name = token.split(".", 1)[1]
@@ -820,7 +819,7 @@ def render_text(text: str, lang: str, locales, ctx=None, templates=None, depth: 
             return "{{" + token + "}}"
         
         if token == "brand.logo_src":
-            return URL_PREFIX + str(value)
+            return asset_url(str(value))
 
         if isinstance(value, (dict, list)):
             return json.dumps(value, ensure_ascii=False)
@@ -922,7 +921,7 @@ def render_card(lang: str, locales, key: str, col_index: int, cols: int, templat
     """Render one card item with localized title, image metadata, URL, layout width, and read-more label."""
     title = value_from_locales(lang, f"card_items.{key}.title", locales) or page_title(lang, key, locales)
     img_src_value = value_from_locales(lang, f"card_items.{key}.image_src", locales) or ""
-    img_src = URL_PREFIX + str(img_src_value) if img_src_value else ""
+    img_src = asset_url(str(img_src_value)) if img_src_value else ""
     img_alt = value_from_locales(lang, f"card_items.{key}.image_alt", locales) or ""
     img_title = value_from_locales(lang, f"card_items.{key}.image_title", locales) or img_alt
     read_more = value_from_locales(lang, "common.read_more", locales) or "READ MORE"
@@ -1160,21 +1159,14 @@ def render_page(lang: str, locales, page: dict, templates, cards_config, seo_con
 
 
 
-def render_404_head(seo_config: dict) -> str:
+def render_404_head(seo_config: dict, lang: str) -> str:
     icons = seo_config.get("icons") or {}
     lines = [
         '<meta name="robots" content="noindex,follow">',
         '<meta name="description" content="Page not found.">',
     ]
 
-    if icons.get("svg"):
-        lines.append(f'<link rel="icon" type="image/svg+xml" href="{html.escape(icons["svg"], quote=True)}">')
-    if icons.get("png_32"):
-        lines.append(f'<link rel="icon" type="image/png" sizes="32x32" href="{html.escape(icons["png_32"], quote=True)}">')
-    if icons.get("png_16"):
-        lines.append(f'<link rel="icon" type="image/png" sizes="16x16" href="{html.escape(icons["png_16"], quote=True)}">')
-    if icons.get("apple_touch"):
-        lines.append(f'<link rel="apple-touch-icon" sizes="180x180" href="{html.escape(icons["apple_touch"], quote=True)}">')
+    lines.extend(render_icons(seo_config, lang))
 
     if seo_config.get("theme_color"):
         lines.append(f'<meta name="theme-color" content="{html.escape(str(seo_config["theme_color"]), quote=True)}">')
@@ -1197,9 +1189,9 @@ def render_404(lang: str, locales, templates) -> None:
         "key": "404",
         "title": str(title),
         "slug": "404",
-        "url": f"{lang_prefix(lang)}/404.html" if lang_prefix(lang) else "/404.html",
+        "url": f"{page_prefix(lang)}/404.html",
         "canonical_url": "",
-        "seo_head": render_404_head(SEO_CONFIG),
+        "seo_head": render_404_head(SEO_CONFIG, lang),
         "content": f"<p>{html.escape(str(message))}</p>",
         "message": html.escape(str(message)),
         "back_url": html.escape(page_url(locales, lang, "introduction"), quote=True),
@@ -1318,7 +1310,7 @@ def write_extra_seo_files(seo_config: dict, locales) -> None:
             "theme_color": seo_config.get("theme_color") or "#317041",
             "icons": [
                 {
-                    "src": "/assets/apple-touch-icon.png",
+                    "src": asset_url("apple-touch-icon.png"),
                     "sizes": "180x180",
                     "type": "image/png"
                 }
@@ -1329,12 +1321,13 @@ def write_extra_seo_files(seo_config: dict, locales) -> None:
             json.dumps(manifest, ensure_ascii=False, indent=2),
             encoding="utf-8"
         )
-   
-        
+
+
+
 def htaccess_404_path(lang: str) -> str:
     """Return the public 404 path used by Apache for this language output."""
-    prefix = lang_prefix(lang)
-    return f"{prefix}/404.html" if prefix else "/404.html"
+    prefix = page_prefix(lang)
+    return f"{prefix}/404.html"
 
 
 
@@ -1430,14 +1423,9 @@ def copy_path(src: Path, dst: Path) -> None:
 
 
 
-def copy_static(lang: str) -> None:
-    """Copy shared assets, language assets, public PHP files, and private contact config into one language output directory."""
-    lang_root = DIST / lang
-    lang_root.mkdir(parents=True, exist_ok=True)
-
-    # Copy non-common project assets into site-dist/<lang>/assets/*.
+def copy_assets_to(dst: Path) -> None:
     assets_src = ROOT / "assets"
-    assets_dst = lang_root / "assets"
+    assets_dst = dst / "assets"
 
     if assets_src.exists():
         for item in assets_src.iterdir():
@@ -1445,13 +1433,22 @@ def copy_static(lang: str) -> None:
                 continue
             copy_path(item, assets_dst / item.name)
 
-    # Copy public PHP files into each language root.
+
+
+def copy_static(lang: str) -> None:
+    """Copy public PHP files, and private contact config into one language output directory.
+    Copy assets if not LANG_IN_URL, else assets are expected to be copied later."""
+    lang_root = DIST / lang
+    lang_root.mkdir(parents=True, exist_ok=True)
+
+    if not LANG_IN_URL:
+        copy_assets_to(lang_root)
+
     for php_src in ROOT.glob("*.php"):
         if php_src.name == "pca-contact-config.php":
             continue
         copy_path(php_src, lang_root / php_src.name)
 
-    # Copy private PHP config into each language root.
     private_dir = lang_root / ".private"
     private_dir.mkdir(parents=True, exist_ok=True)
 
@@ -1486,6 +1483,9 @@ def render_templates(locales):
             render_page(lang, locales, page, templates, cards_config, SEO_CONFIG)
         render_404(lang, locales, templates)
         copy_static(lang)
+    
+    if LANG_IN_URL:
+        copy_assets_to(DIST)
 
     write_extra_seo_files(SEO_CONFIG, locales)
     write_htaccess_files(SEO_CONFIG, locales)

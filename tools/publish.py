@@ -1,9 +1,17 @@
 """
 Publishes the contents of dist to public_html, or a specified destination.
 
-Expected dist layout:
+Expected dist layout for production:
     dist/
         index.html        # empty
+        en/
+        fr/
+        hr/
+
+Expected dist layout for previews:
+    dist/
+        index.html        # with redirect
+        assets/
         en/
         fr/
         hr/
@@ -72,6 +80,31 @@ def assert_safe_paths() -> None:
         )
 
 
+def assert_assets_ok() -> None:
+    root_assets = DIST / "assets"
+    language_assets = [DIST / lang / "assets" for lang in LANGS]
+
+    root_assets_exist = root_assets.exists()
+    language_assets_exist = all(path.exists() for path in language_assets)
+
+    if root_assets_exist and not language_assets_exist:
+        return
+
+    if language_assets_exist and not root_assets_exist:
+        return
+
+    print_group(
+        "Missing build output",
+        [
+            "Expected either root assets/, or assets/ under every language directory.",
+            *[display_path(path, ROOT) for path in [root_assets, *language_assets] if not path.exists()],
+        ],
+        "ERROR",
+        CLR_RED,
+    )
+    raise SystemExit(1)
+
+
 def assert_dist_ok() -> None:
     if not DIST.exists() or not DIST.is_dir():
         print_group(
@@ -92,9 +125,6 @@ def assert_dist_ok() -> None:
         DIST / "en" / "index.html",
         DIST / "fr" / "index.html",
         DIST / "hr" / "index.html",
-        DIST / "en" / "assets",
-        DIST / "fr" / "assets",
-        DIST / "hr" / "assets",
         DIST / "en" / "contact.php",
         DIST / "fr" / "contact.php",
         DIST / "hr" / "contact.php",
@@ -111,6 +141,8 @@ def assert_dist_ok() -> None:
         )
         raise SystemExit(1)
 
+    assert_assets_ok()
+
     root_index = DIST / "index.html"
     if root_index.read_text(encoding="utf-8") != "":
         print_group(
@@ -121,7 +153,7 @@ def assert_dist_ok() -> None:
         )
         raise SystemExit(1)
 
-    allowed_root_items = {*LANGS, "index.html"}
+    allowed_root_items = {*LANGS, "assets", "index.html"}
     extra_root_items = sorted(
         path.name for path in DIST.iterdir()
         if path.name not in allowed_root_items
@@ -137,7 +169,7 @@ def assert_dist_ok() -> None:
         print_labeled(
             "ERROR",
             CLR_RED,
-            "dist root may contain only: index.html, en, fr, hr.",
+            "dist root may contain only: index.html, optional assets, en, fr, hr.",
         )
         raise SystemExit(1)
 
@@ -218,8 +250,8 @@ def parse_args() -> argparse.Namespace:
         action="append",
         default=DEFAULT_PRESERVED_ROOT_ITEMS,
         help=(
-            "root-level destination item to preserve during --delete publishing. "
-            "May be passed multiple times. Defaults to preserving preview, .private, and github-webhook.php."
+            "root-level item in the destination to preserve during publish. "
+            "May be passed multiple times. Defaults preserve preview deployment state."
         ),
     )
     return parser.parse_args()
@@ -227,21 +259,19 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    configure_paths(Path(args.dist), Path(args.dest), args.preserve_root_item)
+    configure_paths(
+        Path(args.dist),
+        Path(args.dest),
+        args.preserve_root_item,
+    )
 
-    print_section("Site Publish Report")
-    print(color(f"Source:      {display_path(DIST, ROOT)}", CLR_WHITE))
-    print(color(f"Destination: {display_path(DEST, ROOT)}", CLR_WHITE))
-    if PRESERVED_ROOT_ITEMS:
-        preserved = ", ".join(sorted(PRESERVED_ROOT_ITEMS))
-        print(color(f"Preserving:  {preserved}", CLR_WHITE))
+    print_section("Publish static site")
+    print(color(f"Dist: {display_path(DIST, ROOT)}", CLR_WHITE))
+    print(color(f"Dest: {display_path(DEST, ROOT)}", CLR_WHITE))
 
     assert_dist_ok()
-
     method = publish_dist()
-
-    print_labeled("OK", CLR_GREEN, f"published site using {method}.")
-    print_labeled("OK", CLR_GREEN, f"destination: {display_path(DEST, ROOT)}")
+    print_labeled("OK", CLR_GREEN, f"published with {method}")
 
 
 if __name__ == "__main__":

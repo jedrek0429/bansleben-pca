@@ -62,11 +62,6 @@ python tools/build_and_publish.py \
   --write-preview-index
 ```
 
-Legacy entry points are kept for compatibility with existing workflows:
-
-- `tools/BUILD_AND_PUBLISH.py`
-- `tools/dev_build_and_publish.py`
-
 ## Documentation
 
 Start here:

@@ -64,12 +64,7 @@ python tools/build_and_publish.py \
   --write-preview-index
 ```
 
-Compatibility wrappers still exist because hosting scripts may already call them:
-
-- `tools/BUILD_AND_PUBLISH.py`
-- `tools/dev_build_and_publish.py`
-
-Prefer `tools/build_and_publish.py` for new scripts. See `docs/python-tools.md` for the full tools reference.
+Use `tools/build_and_publish.py` for automation and server scripts. See `docs/python-tools.md` for the full tools reference.
 
 ## Local development checklist
 
