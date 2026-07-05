@@ -131,6 +131,15 @@ def assert_dist_ok() -> None:
         DIST / "hr" / "contact.php",
     ]
 
+    if (DIST / "assets").exists()
+        required.append(DIST / ".private" / "pca-contact-config.json")
+    else:
+        required.extend([
+            (DIST / "en" / ".private" / "pca-contact-config.json")
+            (DIST / "fr" / ".private" / "pca-contact-config.json")
+            (DIST / "hr" / ".private" / "pca-contact-config.json")
+        ])
+
     missing = [display_path(p, ROOT) for p in required if not p.exists()]
 
     if missing:
