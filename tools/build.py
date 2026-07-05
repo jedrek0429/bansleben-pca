@@ -232,13 +232,18 @@ def page_lastmod(seo_config: dict, lang: str, key: str) -> str:
         return file_lastmod_date(content_path)
 
     return ""
-    
+
+
 def site_base_url(seo_config: dict, lang: str, locales) -> str:
     """Return the absolute base URL for a language from SEO config or locale domain settings."""
-    url = (seo_config.get("site_urls") or {}).get(lang)
-    if not url:
-        url = value_from_locales(lang, "domain", locales)
-    return str(url or "").rstrip("/")
+    if not LANG_IN_URL:
+        url = (seo_config.get("site_urls") or {}).get(lang)
+        if not url:
+            url = value_from_locales(lang, "domain", locales)
+        return str(url or "").rstrip("/")
+    else:
+        url = seo_config.get("preview_site_url")
+        return str(url or "").rstrip("/")
 
 
 
@@ -361,7 +366,7 @@ def organization_url(schema_cfg: dict, site: str, lang: str) -> str:
 def render_schema(seo_config: dict, locales, lang: str, key: str, title: str, description: str, canonical: str) -> str:
     """Render JSON-LD structured data for the organization, website, page, and optional breadcrumbs."""
     site_name = value_from_locales(lang, "site_name", locales) or title
-    logo_src = value_from_locales(lang, "brand.logo_src", locales) or "/assets/favicon.svg"
+    logo_src = page_prefix(lang) + (value_from_locales(lang, "brand.logo_src", locales) or "/assets/favicon.svg")
     schema_cfg = seo_config.get("schema") or {}
     
     url = organization_url(schema_cfg, site_base_url(seo_config, lang, locales), lang)
@@ -440,6 +445,11 @@ def render_schema(seo_config: dict, locales, lang: str, key: str, title: str, de
 
 
 
+def icon_href(icons: dict, lang: str, key: str) -> str:
+    return html.escape(page_prefix(lang) + icons[key], quote=True)
+
+
+
 def render_seo_head(seo_config: dict, locales, lang: str, key: str, title: str) -> str:
     """Render SEO-related head tags, including description, canonical URL, hreflang links, icons, Open Graph, Twitter, and schema data."""
     description = seo_description(seo_config, lang, key)
@@ -472,13 +482,13 @@ def render_seo_head(seo_config: dict, locales, lang: str, key: str, title: str) 
 
     icons = seo_config.get("icons") or {}
     if icons.get("svg"):
-        lines.append(f'<link rel="icon" type="image/svg+xml" href="{html.escape(icons["svg"], quote=True)}">')
+        lines.append(f'<link rel="icon" type="image/svg+xml" href="{icon_href(icons, lang, "svg")}">')
     if icons.get("png_32"):
-        lines.append(f'<link rel="icon" type="image/png" sizes="32x32" href="{html.escape(icons["png_32"], quote=True)}">')
+        lines.append(f'<link rel="icon" type="image/png" sizes="32x32" href="{icon_href(icons, lang, "png_32")}">')
     if icons.get("png_16"):
-        lines.append(f'<link rel="icon" type="image/png" sizes="16x16" href="{html.escape(icons["png_16"], quote=True)}">')
+        lines.append(f'<link rel="icon" type="image/png" sizes="16x16" href="{icon_href(icons, lang, "png_16")}">')
     if icons.get("apple_touch"):
-        lines.append(f'<link rel="apple-touch-icon" sizes="180x180" href="{html.escape(icons["apple_touch"], quote=True)}">')
+        lines.append(f'<link rel="apple-touch-icon" sizes="180x180" href="{icon_href(icons, lang, "apple_touch")}">')
 
     if seo_config.get("theme_color"):
         lines.append(f'<meta name="theme-color" content="{html.escape(str(seo_config["theme_color"]), quote=True)}">')
@@ -1300,7 +1310,7 @@ def write_extra_seo_files(seo_config: dict, locales) -> None:
             "theme_color": seo_config.get("theme_color") or "#317041",
             "icons": [
                 {
-                    "src": "/assets/apple-touch-icon.png",
+                    "src": page_prefix(lang) + "/assets/apple-touch-icon.png",
                     "sizes": "180x180",
                     "type": "image/png"
                 }
