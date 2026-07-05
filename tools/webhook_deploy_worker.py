@@ -371,8 +371,45 @@ def prepare_preview_worktree(config, pr_number, log):
     return target
 
 
-def preview_summary(pr_number, url, log_url, status):
-    return f"Preview deploy {status} for PR #{pr_number}.\n\n- Preview: {url}\n- Build log: {log_url}"
+def preview_trigger_reason(job):
+    event = str(job.get("event") or "").strip()
+    action = str(job.get("action") or "").strip()
+    job_type = str(job.get("type") or "").strip()
+
+    if job_type == "preview_comment":
+        user = str(job.get("comment_user") or "").strip()
+        comment_id = job.get("comment_id")
+        suffix = []
+        if user:
+            suffix.append(f"by @{user}")
+        if comment_id:
+            suffix.append(f"comment #{comment_id}")
+        details = f" ({', '.join(suffix)})" if suffix else ""
+        return f"issue_comment/created /preview{details}"
+
+    if event == "pull_request" and action:
+        labels = {
+            "opened": "pull_request/opened (PR created)",
+            "synchronize": "pull_request/synchronize (new commits pushed)",
+            "reopened": "pull_request/reopened (PR reopened)",
+        }
+        return labels.get(action, f"pull_request/{action}")
+
+    if event:
+        return f"{event}/{action}" if action else event
+
+    return "unknown"
+
+
+def preview_summary(pr_number, url, log_url, status, trigger_reason):
+    lines = [
+        f"Preview deploy {status} for PR #{pr_number}.",
+        "",
+        f"- Triggered by: {trigger_reason or 'unknown'}",
+        f"- Preview: {url}",
+        f"- Build log: {log_url}",
+    ]
+    return "\n".join(lines)
 
 
 def deploy_preview(config, job):
@@ -381,6 +418,7 @@ def deploy_preview(config, job):
     sha = str(job.get("sha") or "") or None
     url = preview_url(config, pr_number)
     log_url = preview_log_url(config, pr_number)
+    trigger_reason = preview_trigger_reason(job)
     log_dir(config).mkdir(parents=True, exist_ok=True)
     log_path = log_dir(config) / f"preview-pr-{pr_number}-{(sha or time.strftime('%Y%m%d-%H%M%S'))[:12]}.log"
 
@@ -390,7 +428,7 @@ def deploy_preview(config, job):
         sha,
         url,
         "Preview deploy started",
-        preview_summary(pr_number, url, log_url, "started"),
+        preview_summary(pr_number, url, log_url, "started", trigger_reason),
         external_id=f"preview-pr-{pr_number}-{sha or int(time.time())}",
     )
     try:
@@ -411,7 +449,7 @@ def deploy_preview(config, job):
             "failure",
             log_url,
             "Preview deploy failed",
-            preview_summary(pr_number, url, log_url, "failed") + f"\n\nError: `{exc}`",
+            preview_summary(pr_number, url, log_url, "failed", trigger_reason) + f"\n\nError: `{exc}`",
         )
         safe_upsert_preview_comment(config, pr_number, sha, url, log_url, "failed", "Preview deploy failed.", exc)
         raise
@@ -423,7 +461,7 @@ def deploy_preview(config, job):
         "success",
         url,
         "Preview deployed",
-        preview_summary(pr_number, url, log_url, "succeeded"),
+        preview_summary(pr_number, url, log_url, "succeeded", trigger_reason),
     )
     safe_upsert_preview_comment(config, pr_number, sha, url, log_url, "succeeded", "Preview deploy is ready.")
 
