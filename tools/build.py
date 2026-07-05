@@ -24,14 +24,12 @@ import imagesize
 
 from common import (
     CLR_GREEN,
-    CLR_RED,
     CLR_WHITE,
     CLR_YELLOW,
     color,
     display_path,
     load_json,
     load_optional_json,
-    print_group,
     print_labeled,
     print_section,
 )
@@ -42,7 +40,6 @@ DEFAULT_ROOT = Path(__file__).resolve().parents[1]
 ROOT = DEFAULT_ROOT
 DIST = ROOT.parent / "site-dist"
 
-TERM_WIDTH = min(shutil.get_terminal_size((120, 20)).columns, 140)
 
 def configure_paths(root) -> None:
     """Set build paths from the selected site-src root."""
@@ -356,12 +353,13 @@ def schema_page_type(key: str) -> str:
     }.get(key, "WebPage")
 
 def organization_url(schema_cfg: dict, site: str, lang: str) -> str:
+    """Return the organization URL, allowing language-specific overrides from SEO config."""
     url = schema_cfg.get("url")
     if not url:
         return site
-    if lang == "hr":
-        return url + "en"
-    return url + lang 
+
+    lang_suffixes = schema_cfg.get("url_langs")
+    return url + str(lang_suffixes.get(lang, lang))
 
 def render_schema(seo_config: dict, locales, lang: str, key: str, title: str, description: str, canonical: str) -> str:
     """Render JSON-LD structured data for the organization, website, page, and optional breadcrumbs."""
@@ -616,13 +614,12 @@ def cache_css_link(page: dict, template_name: str) -> str:
 
 
 
-def hero_style_for_page(lang: str, locales, key: str) -> str:
+def hero_style_for_page(lang: str, locales, key: str, hero_images: dict | None = None) -> str:
     """Resolve the hero background image for a page and return the inline CSS style attribute."""
-    hero_images = load_optional_json(ROOT / "config" / "hero_images.json")
+    hero_images = hero_images or {}
 
-    src = (
-        (hero_images.get(key) or {}).get(lang) if isinstance(hero_images.get(key), dict) else hero_images.get(key)
-    )
+    configured = hero_images.get(key)
+    src = configured.get(lang) if isinstance(configured, dict) else configured
 
     if not src:
         src = value_from_locales(lang, f"hero_images.{key}", locales)
@@ -662,7 +659,7 @@ def render_menu_items(lang: str, locales, current_key: str, mobile: bool = False
     """Render desktop or mobile menu items for the active language, marking the current page when applicable."""
     items = []
 
-    for idx, key in enumerate(menu_keys()):
+    for key in menu_keys():
         page = page_config(key)
         if page and not is_enabled(page, lang):
             continue
@@ -737,97 +734,88 @@ def render_text(text: str, lang: str, locales, ctx=None, templates=None, depth: 
 
     ctx = ctx or {}
     templates = templates or {"partials": {}, "css": {}}
+    page = ctx.get("page", {})
+
+    def unresolved(token: str) -> str:
+        return "{{" + token + "}}"
+
+    def render_context_value(source: dict, key: str) -> str:
+        value = nested_get(source, key)
+        return "" if value is None else str(value)
+
+    def render_template_value(group: str, name: str, token: str) -> str:
+        value = templates.get(group, {}).get(name)
+        return unresolved(token) if value is None else value
+
+    def render_brand_token(name: str, token: str) -> str:
+        logo_src = value_from_locales(lang, "brand.logo_src", locales) or ""
+        if name == "logo_src":
+            return asset_url(str(logo_src))
+
+        image_info = get_image_info(str(logo_src))
+        if name == "logo_width":
+            return str(image_info.get("width", ""))
+        if name == "logo_height":
+            return str(image_info.get("height", ""))
+        if name == "logo_webp_src":
+            return asset_url(str(image_info.get("webp_src", "")))
+
+        value = value_from_locales(lang, token, locales)
+        return unresolved(token) if value is None else str(value)
+
+    direct_tokens = {
+        "lang": lambda: lang,
+        "url_prefix": lambda: URL_PREFIX,
+        "home_url": lambda: page_url(locales, lang, "introduction"),
+        "contact_action": lambda: asset_url("contact.php"),
+        "content": lambda: str(ctx.get("content") or page.get("body") or page.get("main") or ""),
+        "cards": lambda: str(ctx.get("cards") or page.get("cards") or ""),
+        "language_switcher": lambda: render_language_switcher(lang, locales, page.get("key", "introduction")),
+        "main_menu": lambda: render_main_menu(lang, locales, page.get("key", "introduction")),
+        "mobile_menu": lambda: render_mobile_menu(lang, locales, page.get("key", "introduction")),
+        "privacy_policy_url": lambda: page_url(locales, lang, "privacy_policy"),
+        "common.select_page": lambda: {
+            "en": "Select page",
+            "fr": "Sélectionner une page",
+            "hr": "Odaberite stranicu",
+        }.get(lang, "Select page"),
+    }
+
+    context_prefixes = {
+        "page": page,
+        "card": ctx.get("card", {}),
+        "row": ctx.get("row", {}),
+        "section": ctx.get("section", {}),
+    }
 
     def token_value(match):
         token = match.group(1).strip()
-        page = ctx.get("page", {})
 
-        if token == "lang":
-            return lang
+        if token in direct_tokens:
+            return direct_tokens[token]()
 
-        if token == "url_prefix":
-            return URL_PREFIX
+        if "." in token:
+            prefix, name = token.split(".", 1)
 
-        if token == "home_url":
-            return page_url(locales, lang, "introduction")
+            if prefix == "brand":
+                return render_brand_token(name, token)
 
-        if token == "contact_action":
-            return asset_url("contact.php")
+            if prefix == "partial":
+                return render_template_value("partials", name, token)
 
-        if token == "content":
-            return str(ctx.get("content") or page.get("body") or page.get("main") or "")
+            if prefix == "css":
+                return render_template_value("css", name, token)
 
-        if token == "cards":
-            return str(ctx.get("cards") or page.get("cards") or "")
+            if prefix == "content":
+                return read_content(lang, name)
 
-        if token == "language_switcher":
-            return render_language_switcher(lang, locales, page.get("key", "introduction"))
-
-        if token == "main_menu":
-            return render_main_menu(lang, locales, page.get("key", "introduction"))
-
-        if token == "mobile_menu":
-            return render_mobile_menu(lang, locales, page.get("key", "introduction"))
-
-        if token == "privacy_policy_url":
-            return page_url(locales, lang, "privacy_policy")
-
-        if token == "common.select_page":
-            return {
-                "en": "Select page",
-                "fr": "Sélectionner une page",
-                "hr": "Odaberite stranicu",
-            }.get(lang, "Select page")
-        
-        if token == "brand.logo_width":
-            return str(get_image_info(value_from_locales(lang, "brand.logo_src", locales)).get("width", ""))
-        
-        if token == "brand.logo_height":
-            return str(get_image_info(value_from_locales(lang, "brand.logo_src", locales)).get("height", ""))
-        
-        if token == "brand.logo_webp_src":
-            return asset_url(get_image_info(value_from_locales(lang, "brand.logo_src", locales)).get("webp_src", ""))
-
-        if token.startswith("partial."):
-            name = token.split(".", 1)[1]
-            partial = templates.get("partials", {}).get(name)
-            if partial is None:
-                return "{{" + token + "}}"
-            return partial
-        
-        if token.startswith("css."):
-            name = token.split(".", 1)[1]
-            css = templates.get("css", {}).get(name)
-            if css is None:
-                return "{{" + token + "}}"
-            return css
-
-        if token.startswith("page."):
-            value = nested_get(page, token.split(".", 1)[1])
-            return "" if value is None else str(value)
-
-        if token.startswith("content."):
-            return read_content(lang, token.split(".", 1)[1])
-        
-        if token.startswith("card."):
-            value = nested_get(ctx.get("card", {}), token.split(".", 1)[1])
-            return "" if value is None else str(value)
-        
-        if token.startswith("row."):
-            value = nested_get(ctx.get("row", {}), token.split(".", 1)[1])
-            return "" if value is None else str(value)
-
-        if token.startswith("section."):
-            value = nested_get(ctx.get("section", {}), token.split(".", 1)[1])
-            return "" if value is None else str(value)
+            if prefix in context_prefixes:
+                return render_context_value(context_prefixes[prefix], name)
 
         value = value_from_locales(lang, token, locales)
 
         if value is None:
-            return "{{" + token + "}}"
-        
-        if token == "brand.logo_src":
-            return asset_url(str(value))
+            return unresolved(token)
 
         if isinstance(value, (dict, list)):
             return json.dumps(value, ensure_ascii=False)
@@ -840,7 +828,6 @@ def render_text(text: str, lang: str, locales, ctx=None, templates=None, depth: 
         return render_text(rendered, lang, locales, ctx, templates, depth + 1)
 
     return rendered
-
 
 
 def render_partial(name: str, lang: str, locales, ctx, templates) -> str:
@@ -1052,36 +1039,41 @@ def wants_title(page: dict, template_name: str) -> bool:
     return page.get("title", True) is not False
 
 
-
-def section_index_for_cards(key: str, template_name: str, content_html: str) -> int:
-    """Return the historical section index for card sections based on page type and intro content."""
-    if key == "introduction":
-        return 0
-
-    if template_name == "cards":
-        return 1
-
-    if template_name == "cards_with_intro" and content_html.strip():
-        return 2
-
-    return 1
     
-def find_images_to_preload(html: str) -> list[str]:
+def first_srcset_url(srcset: str) -> str:
+    """Return the first URL from a srcset value."""
+    first_candidate = srcset.split(",", 1)[0].strip()
+    return first_candidate.split(None, 1)[0] if first_candidate else ""
+
+
+def find_images_to_preload(html_text: str) -> list[str]:
+    """Find image URLs worth preloading, deduplicating while preserving order."""
     patterns = [
-        r'<img[^>]*\bsrc=["\']([^"\']+)["\']',
-        r'<source[^>]*\bsrcset=["\']([^"\']+)["\']'
+        (r'<img[^>]*\bsrc=["\']([^"\']+)["\']', lambda value: value),
+        (r'<source[^>]*\bsrcset=["\']([^"\']+)["\']', first_srcset_url),
     ]
-    
+
     images = []
-    for pattern in patterns:
-        images.extend(re.findall(pattern, html, re.IGNORECASE))
+    seen = set()
+
+    for pattern, normalize in patterns:
+        for match in re.findall(pattern, html_text, re.IGNORECASE):
+            image = normalize(match).strip()
+            if image and image not in seen:
+                seen.add(image)
+                images.append(image)
+
     return images
+
 
 def render_preload(images: list[str]) -> str:
     """Render preload links for a list of image URLs."""
-    return "\n".join(f'<link rel="preload" href="{img}" as="image" fetchpriority=high>' for img in images)
+    return "\n".join(
+        f'<link rel="preload" href="{html.escape(img, quote=True)}" as="image" fetchpriority="high">'
+        for img in images
+    )
 
-def render_page(lang: str, locales, page: dict, templates, cards_config, seo_config) -> None:
+def render_page(lang: str, locales, page: dict, templates, cards_config, seo_config, hero_images: dict | None = None) -> None:
     """Render one localized page by combining Markdown content, cards, partials, SEO metadata, and the base template."""
     if not is_enabled(page, lang):
         return
@@ -1112,7 +1104,7 @@ def render_page(lang: str, locales, page: dict, templates, cards_config, seo_con
             templates,
         ),
         "cache_css": cache_css_link(page, template_name),
-        "hero_style": hero_style_for_page(lang, locales, key),
+        "hero_style": hero_style_for_page(lang, locales, key, hero_images),
         "hero_class": "",
         "title_section": "",
         "main": "",
@@ -1168,7 +1160,6 @@ def render_page(lang: str, locales, page: dict, templates, cards_config, seo_con
 
 
 def render_404_head(seo_config: dict, lang: str) -> str:
-    icons = seo_config.get("icons") or {}
     lines = [
         '<meta name="robots" content="noindex,follow">',
         '<meta name="description" content="Page not found.">',
@@ -1230,20 +1221,6 @@ def render_404(lang: str, locales, templates) -> None:
 
 
 
-def indexable_page_keys_for_lang(lang: str) -> list[str]:
-    """Return enabled non-404 page keys that may be used for indexable SEO outputs."""
-    keys = []
-    for page in PAGES_CONFIG.get("pages", []):
-        key = page.get("key")
-        if not key or not is_enabled(page, lang):
-            continue
-        if key == "404":
-            continue
-        keys.append(key)
-    return keys
-
-
-
 def all_enabled_page_keys_for_lang(lang: str) -> list[str]:
     """Return all enabled page keys for a language, including pages that may not be indexable."""
     keys = []
@@ -1269,8 +1246,10 @@ def render_sitemap_xml(seo_config: dict, locales, lang: str) -> str:
         lastmod = page_lastmod(seo_config, lang, key)
         if lastmod:
             rows.append(f"    <lastmod>{html.escape(lastmod)}</lastmod>")
+        
+        alt_langs = enabled_alternate_langs(key)
     
-        for alt_lang in enabled_alternate_langs(key):
+        for alt_lang in alt_langs:
             alt_url = absolute_page_url(seo_config, locales, alt_lang, key)
             hreflang = page_hreflang(seo_config, alt_lang)
             rows.append(
@@ -1278,7 +1257,7 @@ def render_sitemap_xml(seo_config: dict, locales, lang: str) -> str:
             )
 
         x_default_lang = seo_config.get("x_default") or "en"
-        if x_default_lang in enabled_alternate_langs(key):
+        if x_default_lang in alt_langs:
             x_default_url = absolute_page_url(seo_config, locales, x_default_lang, key)
             rows.append(
                 f'    <xhtml:link rel="alternate" hreflang="x-default" href="{html.escape(x_default_url)}" />'
@@ -1289,46 +1268,45 @@ def render_sitemap_xml(seo_config: dict, locales, lang: str) -> str:
     rows.append("</urlset>")
     return "\n".join(rows) + "\n"
 
+def lang_output_dir(lang: str) -> Path:
+    lang_root = DIST / lang
+    lang_root.mkdir(parents=True, exist_ok=True)
+    return lang_root
 
+def write_extra_seo_files(seo_config: dict, locales, lang: str, lang_root: Path) -> None:
+    """Write sitemap.xml, robots.txt, and site.webmanifest files into a single language output directory."""
+    base = site_base_url(seo_config, lang, locales)
 
-def write_extra_seo_files(seo_config: dict, locales) -> None:
-    """Write sitemap.xml, robots.txt, and site.webmanifest files into each language output directory."""
-    for lang in LANGS:
-        lang_root = DIST / lang
-        lang_root.mkdir(parents=True, exist_ok=True)
+    (lang_root / "sitemap.xml").write_text(
+        render_sitemap_xml(seo_config, locales, lang),
+        encoding="utf-8"
+    )
 
-        base = site_base_url(seo_config, lang, locales)
+    (lang_root / "robots.txt").write_text(
+        f"User-agent: *\nAllow: /\n\nSitemap: {base}/sitemap.xml\n",
+        encoding="utf-8"
+    )
 
-        (lang_root / "sitemap.xml").write_text(
-            render_sitemap_xml(seo_config, locales, lang),
-            encoding="utf-8"
-        )
+    manifest = {
+        "name": value_from_locales(lang, "site_name", locales) or "Poland Child Abduction",
+        "short_name": value_from_locales(lang, "site_name", locales) or "PCA",
+        "start_url": "/",
+        "display": "standalone",
+        "background_color": "#ffffff",
+        "theme_color": seo_config.get("theme_color") or "#317041",
+        "icons": [
+            {
+                "src": asset_url("apple-touch-icon.png"),
+                "sizes": "180x180",
+                "type": "image/png"
+            }
+        ]
+    }
 
-        (lang_root / "robots.txt").write_text(
-            f"User-agent: *\nAllow: /\n\nSitemap: {base}/sitemap.xml\n",
-            encoding="utf-8"
-        )
-
-        manifest = {
-            "name": value_from_locales(lang, "site_name", locales) or "Poland Child Abduction",
-            "short_name": value_from_locales(lang, "site_name", locales) or "PCA",
-            "start_url": "/",
-            "display": "standalone",
-            "background_color": "#ffffff",
-            "theme_color": seo_config.get("theme_color") or "#317041",
-            "icons": [
-                {
-                    "src": asset_url("apple-touch-icon.png"),
-                    "sizes": "180x180",
-                    "type": "image/png"
-                }
-            ]
-        }
-
-        (lang_root / "site.webmanifest").write_text(
-            json.dumps(manifest, ensure_ascii=False, indent=2),
-            encoding="utf-8"
-        )
+    (lang_root / "site.webmanifest").write_text(
+        json.dumps(manifest, ensure_ascii=False, indent=2),
+        encoding="utf-8"
+    )
 
 
 
@@ -1367,7 +1345,7 @@ Header always set X-Frame-Options "SAMEORIGIN"
 
 Header always set Content-Security-Policy "default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; font-src 'self' data:; connect-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
 
-<FilesMatch "\.(jpg|jpeg|png|gif|css|js|woff2|woff|ttf)$">
+<FilesMatch "\\.(jpg|jpeg|png|gif|css|js|woff2|woff|ttf)$">
     Header set Cache-Control "public, max-age=31536000, immutable"
 </FilesMatch>
 </IfModule>
@@ -1408,17 +1386,13 @@ Require all denied
 
 
 
-def write_htaccess_files(seo_config: dict, locales) -> None:
-    """Write one public .htaccess file into each generated language directory."""
-    for lang in LANGS:
-        lang_root = DIST / lang
-        lang_root.mkdir(parents=True, exist_ok=True)
-
-        (lang_root / ".htaccess").write_text(
-            render_htaccess(lang, seo_config, locales),
-            encoding="utf-8",
-        )
-        
+def write_htaccess_files(seo_config: dict, locales, lang: str, lang_root: Path) -> None:
+    """Write one public .htaccess file into a single language directory."""
+    (lang_root / ".htaccess").write_text(
+        render_htaccess(lang, seo_config, locales),
+        encoding="utf-8",
+    )
+    
 
 
 def copy_path(src: Path, dst: Path) -> None:
@@ -1478,8 +1452,6 @@ def render_templates(locales):
 
     pages_path = ROOT / "config" / "pages.json"
     cards_path = ROOT / "config" / "cards.json"
-    seo_path = ROOT / "config" / "seo.json"
-
     if not pages_path.exists():
         raise SystemExit(f"Missing config: {display_path(pages_path, ROOT)}")
 
@@ -1488,19 +1460,21 @@ def render_templates(locales):
 
     cards_config = load_json(cards_path) if cards_path.exists() else {}
     SEO_CONFIG = load_seo_config()
+    hero_images = load_optional_json(ROOT / "config" / "hero_images.json")
     templates = load_templates()
 
     for lang in LANGS:
         for page in PAGES_CONFIG.get("pages", []):
-            render_page(lang, locales, page, templates, cards_config, SEO_CONFIG)
+            render_page(lang, locales, page, templates, cards_config, SEO_CONFIG, hero_images)
         render_404(lang, locales, templates)
         copy_static(lang)
+
+        lang_root = lang_output_dir(lang)
+        write_extra_seo_files(SEO_CONFIG, locales, lang, lang_root)
+        write_htaccess_files(SEO_CONFIG, locales, lang, lang_root)
     
     if LANG_IN_URL:
         copy_assets_to(DIST)
-
-    write_extra_seo_files(SEO_CONFIG, locales)
-    write_htaccess_files(SEO_CONFIG, locales)
 
 
 def build(root) -> None:
