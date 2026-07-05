@@ -13,6 +13,7 @@ from common import CLR_GREEN, CLR_RED, print_labeled
 
 
 TOOLS_DIR = Path(__file__).resolve().parent
+LANGS = ("en", "fr", "hr")
 
 
 def normalize_url_prefix(value: str) -> str:
@@ -42,6 +43,13 @@ def expose_root_assets(dist: Path) -> None:
         else:
             target.unlink()
     shutil.copytree(source, target)
+
+
+def remove_language_assets(dist: Path) -> None:
+    for lang in LANGS:
+        target = dist / lang / "assets"
+        if target.exists():
+            shutil.rmtree(target)
 
 
 def write_preview_index(dest: Path, url_prefix: str) -> None:
@@ -123,7 +131,10 @@ def main() -> None:
     ]:
         run_required(label, command)
 
-    expose_root_assets(dist)
+    if args.lang_in_url:
+        expose_root_assets(dist)
+        remove_language_assets(dist)
+
     empty_root_index(dist)
 
     publish_command = [python_bin, str(scripts["Publish"]), "--dist", str(dist), "--dest", str(dest)]
