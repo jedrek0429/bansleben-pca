@@ -17,11 +17,21 @@ def normalize_url_prefix(value: str | None) -> str:
     prefix = (value or "/").strip()
     if prefix == "/":
         return ""
+    if prefix and not prefix.startswith("/"):
+        prefix = "/" + prefix
     return prefix.rstrip("/")
 
 
 def parse_bool_env(value: str | None) -> bool:
     return (value or "0").strip().lower() not in {"0", "false", "no", "off"}
+
+
+def parse_langs(value: str | list[str] | None) -> list[str]:
+    if value is None:
+        return []
+    if isinstance(value, str):
+        return [part.strip() for part in value.split(",") if part.strip()]
+    return [str(part).strip() for part in value if str(part).strip()]
 
 
 @dataclass(eq=False)
@@ -49,12 +59,30 @@ class BuildContext:
             self.dist = self.root.parent / "site-dist"
         else:
             self.dist = Path(self.dist).expanduser().resolve()
-        if not self.langs:
-            self.langs = list(DEFAULT_LANGS)
+        self.url_prefix = normalize_url_prefix(self.url_prefix)
+        self.langs = parse_langs(self.langs) or list(DEFAULT_LANGS)
 
     @classmethod
-    def from_root(cls, root: str | Path) -> "BuildContext":
-        return cls(root=Path(root))
+    def from_root(
+        cls,
+        root: str | Path,
+        *,
+        dist: str | Path | None = None,
+        url_prefix: str | None = None,
+        lang_in_url: bool | None = None,
+        langs: str | list[str] | None = None,
+    ) -> "BuildContext":
+        kwargs = {"root": Path(root)}
+        if dist is not None:
+            kwargs["dist"] = Path(dist)
+        if url_prefix is not None:
+            kwargs["url_prefix"] = normalize_url_prefix(url_prefix)
+        if lang_in_url is not None:
+            kwargs["lang_in_url"] = bool(lang_in_url)
+        parsed_langs = parse_langs(langs)
+        if parsed_langs:
+            kwargs["langs"] = parsed_langs
+        return cls(**kwargs)
 
     def load_locale(self, lang: str) -> dict[str, Any]:
         return load_json(self.root / "locales" / f"{lang}.json")
@@ -71,7 +99,7 @@ class BuildContext:
 
         self.pages_config = load_json(pages_path)
         configured_langs = self.pages_config.get("langs") or self.pages_config.get("languages")
-        if isinstance(configured_langs, list) and configured_langs:
+        if isinstance(configured_langs, list) and configured_langs and self.langs == list(DEFAULT_LANGS):
             self.langs = [str(lang) for lang in configured_langs]
 
         self.pages_by_key = {
