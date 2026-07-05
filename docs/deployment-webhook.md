@@ -168,6 +168,8 @@ The worker creates GitHub App check runs:
 - `PCA Production Deploy`
 - `PCA Preview Deploy`
 
+The production check output lists all public production sites from `config/seo.json` `site_urls`, including the English, French, and Croatian domains.
+
 For successful preview deploys, the check details URL points to the ready preview:
 
 ```text
