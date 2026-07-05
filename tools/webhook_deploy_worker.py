@@ -67,6 +67,36 @@ def preview_url(config, pr_number): return f"{base_url(config, 'preview_base_url
 def preview_log_url(config, pr_number): return f"{preview_url(config, pr_number)}_deploy.log"
 
 
+def production_site_urls(config: dict[str, Any]) -> dict[str, str]:
+    """Return language to production URL mapping for check-run summaries."""
+    fallback = {"en": production_url(config)}
+    seo_path = site_src(config) / "config" / "seo.json"
+    if not seo_path.is_file():
+        return fallback
+    try:
+        data = json.loads(seo_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return fallback
+    urls = data.get("site_urls") if isinstance(data, dict) else None
+    if not isinstance(urls, dict):
+        return fallback
+    result = {
+        str(lang): str(url).rstrip("/") + "/"
+        for lang, url in urls.items()
+        if isinstance(lang, str) and isinstance(url, str) and url.strip()
+    }
+    return result or fallback
+
+
+def production_summary(config: dict[str, Any], sha: str | None, status: str, error: Exception | None = None) -> str:
+    lines = [f"Production deploy {status} for `{sha or 'unknown'}`.", "", "Published sites:"]
+    for lang, url in production_site_urls(config).items():
+        lines.append(f"- {lang}: {url}")
+    if error is not None:
+        lines.extend(["", f"Error: `{error}`"])
+    return "\n".join(lines)
+
+
 def run(command: list[str], cwd: Path, log, check: bool = True) -> None:
     log.write("\n$ " + " ".join(command) + "\n")
     log.flush()
@@ -233,7 +263,7 @@ def deploy_production(config, job):
         sha,
         production_url(config),
         "Production deploy started",
-        f"Production deploy started for `{sha or 'unknown'}`.",
+        production_summary(config, sha, "started"),
         external_id=f"production-{sha or int(time.time())}",
     )
     try:
@@ -251,7 +281,7 @@ def deploy_production(config, job):
             "failure",
             production_url(config),
             "Production deploy failed",
-            f"Production deploy failed.\n\nError: `{exc}`",
+            production_summary(config, sha, "failed", exc),
         )
         raise
     update_check_run(
@@ -260,7 +290,7 @@ def deploy_production(config, job):
         "success",
         production_url(config),
         "Production deployed",
-        f"Production deploy completed successfully.\n\nSite: {production_url(config)}",
+        production_summary(config, sha, "succeeded"),
     )
 
 
