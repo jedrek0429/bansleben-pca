@@ -1,15 +1,14 @@
-"""High-level build app workflows."""
+"""High-level builder workflows."""
 
 from __future__ import annotations
 
-import os
 import shutil
 import subprocess
 import sys
 from pathlib import Path
 
 from common import CLR_GREEN, CLR_RED, print_labeled
-from builder import build
+from builder import site
 from context import normalize_url_prefix, parse_langs
 from publisher import publish
 
@@ -31,28 +30,28 @@ def python_bin() -> str:
     return value
 
 
-def run_legacy_tool(label: str, script_name: str, args: list[str]) -> None:
+def run_tool(label: str, script_name: str, args: list[str]) -> None:
     script = TOOLS_DIR / script_name
     if not script.is_file():
-        print_labeled("ERROR", CLR_RED, f"Required script not found for {label}: {script}")
+        print_labeled("ERROR", CLR_RED, f"Required tool not found for {label}: {script}")
         raise SystemExit(1)
     run_required(label, [python_bin(), str(script), *args])
 
 
-def validate(root, *, strict: bool = False) -> None:
-    # strict is reserved for future warning-as-error validation once validate_locales exposes structured results.
-    run_legacy_tool("Validation", "validate_locales.py", ["--root", str(Path(root).expanduser().resolve())])
+def check(root, *, strict: bool = False) -> None:
+    # strict is reserved for structured validation after validate_locales is fully folded in.
+    run_tool("Locale validation", "validate_locales.py", ["--root", str(Path(root).expanduser().resolve())])
 
 
-def format_links(root, *, no_save: bool = False, self_test: bool = False) -> None:
+def format_content(root, *, check_only: bool = False, self_test: bool = False) -> None:
     args = []
     if self_test:
         args.append("--self-test")
     else:
         args.extend(["--root", str(Path(root).expanduser().resolve())])
-        if no_save:
+        if check_only:
             args.append("--no-save")
-    run_legacy_tool("Format Hyperlinks", "format_hyperlinks.py", args)
+    run_tool("Hyperlink formatting", "format_hyperlinks.py", args)
 
 
 def empty_root_index(dist: Path) -> None:
@@ -61,9 +60,9 @@ def empty_root_index(dist: Path) -> None:
     root_index.write_text("", encoding="utf-8")
 
 
-def write_preview_index(dest: Path, url_prefix: str) -> None:
-    url_prefix = normalize_url_prefix(url_prefix)
-    target = f"{url_prefix}/en/" if url_prefix else "/en/"
+def write_preview_index(dest: Path, prefix: str) -> None:
+    prefix = normalize_url_prefix(prefix)
+    target = f"{prefix}/en/" if prefix else "/en/"
     dest.mkdir(parents=True, exist_ok=True)
     (dest / "index.html").write_text(
         "\n".join([
@@ -109,37 +108,43 @@ def write_root_htaccess(dest: Path) -> None:
     )
 
 
-def deploy(
-    root,
-    *,
-    dest=None,
-    url_prefix: str = "",
-    lang_in_url: bool = False,
-    write_preview_index_flag: bool = False,
-    preserve_root_item=None,
-    langs=None,
-    skip_webp: bool = False,
-    no_format: bool = False,
-) -> None:
+def deploy(root, *, to=None, langs=None, clean_content: bool = True) -> None:
+    """Production deployment: check, optionally format, build, and publish to public_html."""
     root = Path(root).expanduser().resolve()
     dist = root.parent / "site-dist"
-    dest = Path(dest).expanduser().resolve() if dest else root.parent / "public_html"
+    dest = Path(to).expanduser().resolve() if to else root.parent / "public_html"
     lang_list = parse_langs(langs) or ["en", "fr", "hr"]
 
-    os.environ["SITE_URL_PREFIX"] = normalize_url_prefix(url_prefix)
-    if lang_in_url:
-        os.environ["SITE_LANG_IN_URL"] = "1"
-    else:
-        os.environ.pop("SITE_LANG_IN_URL", None)
-
-    validate(root)
-    if not no_format:
-        format_links(root)
-    build(root, url_prefix=url_prefix, lang_in_url=lang_in_url, langs=lang_list, skip_webp=skip_webp)
+    check(root)
+    if clean_content:
+        format_content(root)
+    site(root, langs=lang_list)
     empty_root_index(dist)
-    publish(dist, dest, root=root, langs=lang_list, preserve_root_item=preserve_root_item)
+    publish(dist, dest, root=root, langs=lang_list)
     write_root_htaccess(dest)
-    if write_preview_index_flag:
-        write_preview_index(dest, url_prefix)
     print()
-    print_labeled("OK", CLR_GREEN, "validation, build, and publish completed successfully.")
+    print_labeled("OK", CLR_GREEN, "production deployment completed successfully.")
+
+
+def preview(root, *, prefix: str, to=None, langs=None, clean_content: bool = True) -> None:
+    """Preview deployment: check, optionally format, build with prefix, publish, and write redirect index."""
+    root = Path(root).expanduser().resolve()
+    prefix = normalize_url_prefix(prefix)
+    dist = root.parent / "site-dist"
+    dest = Path(to).expanduser().resolve() if to else root.parent / "public_html" / "preview" / prefix.strip("/")
+    lang_list = parse_langs(langs) or ["en", "fr", "hr"]
+
+    check(root)
+    if clean_content:
+        format_content(root)
+    site(root, prefix=prefix, preview=True, langs=lang_list)
+    publish(dist, dest, root=root, langs=lang_list)
+    write_root_htaccess(dest)
+    write_preview_index(dest, prefix)
+    print()
+    print_labeled("OK", CLR_GREEN, "preview deployment completed successfully.")
+
+
+# Temporary aliases for scripts that have not been removed from deployment hooks yet.
+validate = check
+format_links = format_content
