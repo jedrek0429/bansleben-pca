@@ -1,57 +1,73 @@
 # Poland Child Abduction static site
 
-This repository contains the source for the multilingual Poland Child Abduction static site.
+This repository builds and deploys the multilingual static website for Poland Child Abduction.
 
-## Public sites
+Public sites:
 
 - English: <https://polandchildabduction.pl/>
 - French: <https://enlevementparentalpologne.pl/>
 - Croatian: <https://roditeljskaotmicapoljska.pl/>
 
-## What lives where
+## What this repo does
 
-- `content/<lang>/` — Markdown page content.
-- `locales/<lang>.json` — translated labels, page titles, card text, menu labels, and shared copy.
-- `config/` — page routing, cards, SEO, and image configuration.
-- `templates/` — HTML shell, page templates, and partials.
-- `assets/` — first-party CSS, JavaScript, images, and copied static files.
-- `tools/` — validators, static-site build scripts, publish scripts, and deploy worker tooling.
-- `server/` — installable server-side helpers such as the GitHub webhook endpoint.
-- `docs/` — operational documentation for local work, deployment, and hosting behavior.
+The site is generated from Markdown content, JSON configuration, HTML templates, and static assets. The build output is copied to the hosting server's `public_html` directory.
 
-Generated output is written outside the repository by default:
+Production and pull request previews are deployed by a pull-based server worker. GitHub sends webhook events to the server, the server queues jobs, and a cron worker builds and publishes the site locally on the server.
 
-- `../site-dist/` — temporary build output.
-- `../public_html/` — production publish target on the hosting server.
-- `../public_html/preview/pr-<number>/` — pull request preview output.
+## Important folders
 
-## Common commands
+| Path | Purpose |
+| --- | --- |
+| `content/<lang>/` | Markdown page content. |
+| `locales/<lang>.json` | Translated labels, menus, cards, and shared copy. |
+| `config/` | Page routing, cards, SEO, images, and site URLs. |
+| `templates/` | HTML page structure and partials. |
+| `assets/` | CSS, JavaScript, images, and static files copied into the site. |
+| `tools/` | Build, validation, publish, and deploy scripts. |
+| `server/` | Files installed on the hosting server, including the webhook endpoint. |
+| `docs/` | Short setup and operations notes. |
 
-Install Python dependencies:
+Generated output is not edited by hand:
+
+| Path | Purpose |
+| --- | --- |
+| `../site-dist/` | Temporary build output. Safe to delete. |
+| `../public_html/` | Production web root on the server. |
+| `../public_html/preview/pr-<number>/` | Pull request preview output. |
+| `../public_html/preview/.private/` | Private deploy config, queues, logs, locks, and app key. |
+
+## Local setup
+
+From the repository root:
 
 ```sh
 python -m pip install -r requirements.txt
-```
-
-Validate Python syntax:
-
-```sh
 python -m compileall -q tools/
-```
-
-Build the static site into `../site-dist/`:
-
-```sh
+python tools/validate_locales.py --root .
 python tools/build.py --root .
 ```
 
-Build and publish production output:
+The build writes to `../site-dist/`.
+
+To test a full publish without touching production:
+
+```sh
+python tools/build_and_publish.py --root . --dest ../public_html-test
+```
+
+## Production publish command
+
+Production deploys use:
 
 ```sh
 python tools/build_and_publish.py --root . --dest ../public_html
 ```
 
-Build and publish a local preview-style output:
+This builds the site and publishes the generated language roots while preserving runtime deployment state such as `preview/`, `.private/`, and `github-webhook.php`.
+
+## Preview publish command
+
+Pull request previews use:
 
 ```sh
 python tools/build_and_publish.py \
@@ -62,21 +78,31 @@ python tools/build_and_publish.py \
   --write-preview-index
 ```
 
-Legacy entry points are kept for compatibility with existing workflows:
+## Recreate the server workspace
 
-- `tools/BUILD_AND_PUBLISH.py`
-- `tools/dev_build_and_publish.py`
+Use [`docs/workspace.md`](docs/workspace.md) for the complete checklist to recreate the hosting workspace on a new server.
 
-## Documentation
+The short version is:
 
-Start here:
+1. Clone this repo to `~/site-src` or another stable source directory.
+2. Create a Python virtual environment and install `requirements.txt`.
+3. Create `../public_html/preview/.private/` with deploy queues, logs, config, and the GitHub App key.
+4. Copy `server/github-webhook.php` to `../public_html/preview/github-webhook.php`.
+5. Configure the GitHub App webhook to call `https://preview.polandchildabduction.pl/github-webhook.php`.
+6. Add a cron job that runs `tools/webhook_deploy_worker.py` from the repo checkout.
+7. Run one production build and one preview build to confirm the paths are correct.
 
-- [`docs/workspace.md`](docs/workspace.md) — repository layout, build outputs, local workflow, and safety notes.
-- [`docs/python-tools.md`](docs/python-tools.md) — Python tools reference with usage examples.
-- [`docs/deployment-webhook.md`](docs/deployment-webhook.md) — pull-based webhook deployment and PR preview setup.
+## Daily editing workflow
 
-## Deployment model
+1. Edit Markdown in `content/<lang>/`.
+2. Edit translated labels and shared copy in `locales/<lang>.json`.
+3. Edit page routing, URLs, cards, SEO, or images in `config/`.
+4. Run `python tools/validate_locales.py --root .`.
+5. Run `python tools/build.py --root .`.
+6. Open a PR and let the preview deploy verify the rendered site.
 
-The current direction is pull-based deployment: GitHub sends webhook events to the hosting server, the server queues jobs, and a cron-run worker performs `git fetch`, build, publish, commit status updates, and PR preview comments.
+## More docs
 
-This avoids relying on GitHub-hosted runners being able to open SSH/SCP connections to the hosting provider.
+- [`docs/workspace.md`](docs/workspace.md) — server workspace recreation and deployment checklist.
+- [`docs/deployment-webhook.md`](docs/deployment-webhook.md) — webhook, GitHub App, cron worker, and preview behavior.
+- [`docs/python-tools.md`](docs/python-tools.md) — short reference for scripts under `tools/`.

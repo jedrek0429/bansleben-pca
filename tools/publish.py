@@ -1,9 +1,20 @@
 """
 Publishes the contents of dist to public_html, or a specified destination.
 
-Expected dist layout:
+Expected dist layout for production:
     dist/
         index.html        # empty
+        en/
+            .private/pca-contact-config.json
+        fr/
+            .private/pca-contact-config.json
+        hr/
+            .private/pca-contact-config.json
+
+Expected dist layout for previews:
+    dist/
+        index.html        # with redirect
+        assets/
         en/
         fr/
         hr/
@@ -72,6 +83,35 @@ def assert_safe_paths() -> None:
         )
 
 
+def dist_uses_root_assets() -> bool:
+    return (DIST / "assets").exists()
+
+
+def assert_assets_ok() -> None:
+    root_assets = DIST / "assets"
+    language_assets = [DIST / lang / "assets" for lang in LANGS]
+
+    root_assets_exist = root_assets.exists()
+    language_assets_exist = all(path.exists() for path in language_assets)
+
+    if root_assets_exist and not language_assets_exist:
+        return
+
+    if language_assets_exist and not root_assets_exist:
+        return
+
+    print_group(
+        "Missing build output",
+        [
+            "Expected either root assets/, or assets/ under every language directory.",
+            *[display_path(path, ROOT) for path in [root_assets, *language_assets] if not path.exists()],
+        ],
+        "ERROR",
+        CLR_RED,
+    )
+    raise SystemExit(1)
+
+
 def assert_dist_ok() -> None:
     if not DIST.exists() or not DIST.is_dir():
         print_group(
@@ -92,13 +132,18 @@ def assert_dist_ok() -> None:
         DIST / "en" / "index.html",
         DIST / "fr" / "index.html",
         DIST / "hr" / "index.html",
-        DIST / "en" / "assets",
-        DIST / "fr" / "assets",
-        DIST / "hr" / "assets",
         DIST / "en" / "contact.php",
         DIST / "fr" / "contact.php",
         DIST / "hr" / "contact.php",
     ]
+
+    assert_assets_ok()
+
+    if not dist_uses_root_assets():
+        required.extend(
+            DIST / lang / ".private" / "pca-contact-config.json"
+            for lang in LANGS
+        )
 
     missing = [display_path(p, ROOT) for p in required if not p.exists()]
 
@@ -121,7 +166,12 @@ def assert_dist_ok() -> None:
         )
         raise SystemExit(1)
 
-    allowed_root_items = {*LANGS, "index.html"}
+    allowed_root_items = {*LANGS, "assets", "index.html"}
+    if (DIST / ".private").exists():
+        # Private config can exist in production-like build environments, but
+        # preview builds do not have contact config and must not require it.
+        allowed_root_items.add(".private")
+
     extra_root_items = sorted(
         path.name for path in DIST.iterdir()
         if path.name not in allowed_root_items
@@ -137,7 +187,7 @@ def assert_dist_ok() -> None:
         print_labeled(
             "ERROR",
             CLR_RED,
-            "dist root may contain only: index.html, en, fr, hr.",
+            "dist root may contain only: index.html, optional assets, optional .private, en, fr, hr.",
         )
         raise SystemExit(1)
 
@@ -172,76 +222,39 @@ def copy_dist_contents() -> None:
             shutil.copy2(item, target)
 
 
-def publish_dist() -> str:
-    if DEST is None:
-        raise SystemExit("Missing required destination path.")
+def publish() -> None:
+    print_section("Publish site")
+    print_labeled("FROM", CLR_WHITE, display_path(DIST, ROOT))
+    print_labeled("TO", CLR_WHITE, display_path(DEST, ROOT))
 
     assert_safe_paths()
+    assert_dist_ok()
 
     DEST.mkdir(parents=True, exist_ok=True)
 
-    if shutil.which("rsync"):
-        subprocess.run(
-            [
-                "rsync",
-                "-a",
-                "--delete",
-                *rsync_exclude_args(),
-                str(DIST) + "/",
-                str(DEST) + "/",
-            ],
-            check=True,
-        )
-        return "rsync"
-
     remove_unpreserved_destination_items()
     copy_dist_contents()
-    return "copytree"
+
+    print_labeled("OK", CLR_GREEN, "Publish complete.")
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Publish a built dist directory to a destination directory."
-    )
-    parser.add_argument(
-        "--dist",
-        default=str(DEFAULT_DIST),
-        help=f"built dist directory to publish (default: {DEFAULT_DIST})",
-    )
-    parser.add_argument(
-        "--dest",
-        default=str(DEFAULT_DEST),
-        help=f"destination directory to publish into (default: {DEFAULT_DEST})",
-    )
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dist", default=str(DEFAULT_DIST), help="Build output directory to publish.")
+    parser.add_argument("--dest", default=str(DEFAULT_DEST), help="Destination directory to publish into.")
     parser.add_argument(
         "--preserve-root-item",
         action="append",
-        default=DEFAULT_PRESERVED_ROOT_ITEMS,
-        help=(
-            "root-level destination item to preserve during --delete publishing. "
-            "May be passed multiple times. Defaults to preserving preview, .private, and github-webhook.php."
-        ),
+        dest="preserved_root_items",
+        help="Root item in destination to preserve while deleting old output. Can be repeated.",
     )
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
-    configure_paths(Path(args.dist), Path(args.dest), args.preserve_root_item)
-
-    print_section("Site Publish Report")
-    print(color(f"Source:      {display_path(DIST, ROOT)}", CLR_WHITE))
-    print(color(f"Destination: {display_path(DEST, ROOT)}", CLR_WHITE))
-    if PRESERVED_ROOT_ITEMS:
-        preserved = ", ".join(sorted(PRESERVED_ROOT_ITEMS))
-        print(color(f"Preserving:  {preserved}", CLR_WHITE))
-
-    assert_dist_ok()
-
-    method = publish_dist()
-
-    print_labeled("OK", CLR_GREEN, f"published site using {method}.")
-    print_labeled("OK", CLR_GREEN, f"destination: {display_path(DEST, ROOT)}")
+    configure_paths(Path(args.dist), Path(args.dest), args.preserved_root_items)
+    publish()
 
 
 if __name__ == "__main__":

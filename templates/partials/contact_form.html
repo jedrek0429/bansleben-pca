@@ -3,7 +3,7 @@
     <h1 class="pca-contact__title">{{page.title}}</h1>
     <div class="pca-contact__message" aria-live="polite"></div>
 
-    <form class="static_contact_form pca-form" method="post" action="{{contact_action}}">
+    <form class="static_contact_form pca-form" method="post" action="{{contact_action}}" data-message-success="{{form.success}}" data-message-error="{{form.error}}">
       <div class="pca-form__row">
         <p class="pca-form__field pca-form__field--half">
           <label for="static_contact_name" class="pca-form__label">{{contact_form.name_label}}</label>

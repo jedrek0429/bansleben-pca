@@ -1,83 +1,121 @@
-# PCA webhook deployment
+# Webhook deployment
 
-This document describes the pull-based deployment flow used to avoid SSH/SCP timeouts from GitHub-hosted runners to LH.pl.
+The site uses pull-based deployment.
 
-## Architecture
+GitHub sends webhook events to the hosting server. The webhook endpoint writes small JSON jobs into a private queue. A cron worker on the server reads the queue, fetches the right code, builds the static site, publishes it, and reports status back to GitHub.
+
+## Flow
 
 ```text
-GitHub webhook
-  -> public_html/github-webhook.php
-  -> public_html/.private/deploy-queue/*.json
+GitHub App webhook
+  -> https://preview.polandchildabduction.pl/github-webhook.php
+  -> public_html/preview/.private/deploy-queue/*.json
   -> cron runs tools/webhook_deploy_worker.py
-  -> git fetch + local build + local publish
-  -> GitHub commit status + PR comment
+  -> git fetch + build + publish
+  -> GitHub check run + PR preview comment
 ```
 
-The webhook endpoint only validates the GitHub signature and queues a job. It returns quickly, so GitHub does not wait for the full build.
+The webhook endpoint returns quickly. The slow work happens later in the cron worker.
 
-The worker performs the slow work from the server itself:
+## What triggers deploys
 
-- `push` to `main` publishes production.
-- `pull_request` `opened`, `synchronize`, and `reopened` publish preview automatically.
-- `issue_comment` containing `/preview` forces a preview rebuild.
-- `pull_request` `closed` removes the preview directory.
+| Event | Result |
+| --- | --- |
+| Push to `main` | Publishes production. |
+| PR opened, synchronized, or reopened | Publishes a PR preview. |
+| PR comment `/preview` | Rebuilds the PR preview, adds an eyes reaction to the trigger comment, then deletes that trigger comment. |
+| PR closed | Removes that PR preview directory. |
 
-## One-time server setup
+## Server paths
 
-Copy the webhook endpoint into the public web root:
-
-```bash
-cd ~/site-src
-cp server/github-webhook.php ../public_html/github-webhook.php
-```
-
-Create the private config file:
-
-```bash
-mkdir -p ../public_html/.private/deploy-queue ../public_html/.private/deploy-logs
-cp server/pca-deploy-config.example.json ../public_html/.private/pca-deploy-config.json
-chmod 600 ../public_html/.private/pca-deploy-config.json
-```
-
-Edit `../public_html/.private/pca-deploy-config.json` and set:
-
-- `webhook_secret` to the same secret configured in GitHub webhook settings.
-- `github_token` to a token that can write commit statuses and PR comments for this repository.
-- paths if LH.pl uses different absolute paths.
-
-Keep `allow_preview_from_forks` as `false` unless the server is isolated enough to build untrusted PR code.
-
-## GitHub webhook settings
-
-Add a repository webhook pointing to:
+Default server layout:
 
 ```text
-https://polandchildabduction.pl/github-webhook.php
+site-src/                                  # repository checkout
+public_html/                              # production web root
+public_html/preview/github-webhook.php    # webhook endpoint
+public_html/preview/pr-<number>/          # PR previews
+public_html/preview/.private/             # secrets, queue, logs, locks
 ```
 
-Use content type `application/json` and configure the same secret as `webhook_secret`.
+The private directory contains:
 
-Recommended events:
+```text
+pca-deploy-config.json
+github-app-key.pem
+deploy-queue/
+deploy-logs/
+```
 
-- `Pushes`
-- `Pull requests`
-- `Issue comments`
+Do not commit anything from `.private`.
+
+## GitHub App setup
+
+Install the GitHub App only on `jedrek0429/bansleben-pca`.
+
+Required repository permissions:
+
+- Checks: read and write
+- Issues: read and write
+- Pull requests: read-only
+- Contents: read-only
+- Metadata: read-only
+
+Required webhook events:
+
+- Push
+- Pull request
+- Issue comment
+
+Webhook URL:
+
+```text
+https://preview.polandchildabduction.pl/github-webhook.php
+```
+
+The webhook secret must match `webhook_secret` in `public_html/preview/.private/pca-deploy-config.json`.
+
+## Private config
+
+Start from:
+
+```sh
+cp server/pca-deploy-config.example.json ../public_html/preview/.private/pca-deploy-config.json
+```
+
+Then set the real values:
+
+- `webhook_secret`
+- `github_app_id`
+- `github_app_installation_id`
+- `github_app_private_key_path`
+- `site_src`
+- `public_html`
+- `python`
+- `production_base_url`
+- `preview_base_url`
+- `preview_root`
+- `private_dir`
+- `queue_dir`
+- `log_dir`
+
+Keep `allow_preview_from_forks` set to `false` unless the server can safely build untrusted code.
 
 ## Cron worker
 
-Run the worker from cron, for example once per minute:
+Example:
 
 ```cron
-* * * * * cd /home/platne/serwer88382/site-src && tools/.venv/bin/python tools/webhook_deploy_worker.py >> /home/platne/serwer88382/public_html/.private/deploy-worker.log 2>&1
+* * * * * cd /home/platne/serwer88382/site-src && tools/.venv/bin/python tools/webhook_deploy_worker.py >> /home/platne/serwer88382/public_html/preview/.private/deploy-worker.log 2>&1
 ```
 
-The worker uses a lock file, so overlapping cron runs should not process the same queue concurrently.
+The worker uses a lock file so overlapping cron runs should not process the same queue twice.
 
 ## Production behavior
 
-For a push to `main`, the worker runs:
+For a push to `main`, the worker runs the production build and publish flow:
 
-```bash
+```sh
 git fetch origin main
 git checkout main
 git reset --hard origin/main
@@ -85,7 +123,7 @@ python -m pip install -r requirements.txt
 python tools/build_and_publish.py --root . --dest ../public_html
 ```
 
-`tools/publish.py` preserves root-level deployment state by default:
+Production publishes preserve root runtime state, including:
 
 - `preview/`
 - `.private/`
@@ -93,15 +131,15 @@ python tools/build_and_publish.py --root . --dest ../public_html
 
 ## Preview behavior
 
-For PR preview jobs, the worker creates a detached Git worktree under `.deploy-worktrees/pr-<number>` and builds into:
+For a PR preview, the worker creates a detached worktree and publishes to:
 
 ```text
 public_html/preview/pr-<number>/
 ```
 
-The build command is:
+The preview build command is:
 
-```bash
+```sh
 python tools/build_and_publish.py \
   --root .deploy-worktrees/pr-<number> \
   --dest ../public_html/preview/pr-<number> \
@@ -110,7 +148,13 @@ python tools/build_and_publish.py \
   --write-preview-index
 ```
 
-The worker publishes the build log next to the preview:
+Successful previews are available at:
+
+```text
+https://preview.polandchildabduction.pl/pr-<number>/
+```
+
+The public deploy log is available at:
 
 ```text
 https://preview.polandchildabduction.pl/pr-<number>/_deploy.log
@@ -118,35 +162,14 @@ https://preview.polandchildabduction.pl/pr-<number>/_deploy.log
 
 ## GitHub feedback
 
-The worker sets commit statuses:
+The worker updates GitHub with:
 
-- `pca/production`
-- `pca/preview`
+- `PCA Production Deploy` check runs
+- `PCA Preview Deploy` check runs
+- one reusable PR preview comment marked with `<!-- pca-preview-deploy-comment -->`
 
-For successful preview deploys, the status target URL points to the ready preview:
+The reusable preview comment is updated instead of creating a new comment on every push. For manual `/preview` triggers, the trigger comment is acknowledged with an eyes reaction and deleted so PR threads do not accumulate command comments.
 
-```text
-https://preview.polandchildabduction.pl/pr-<number>/
-```
+## Recreate everything on a new server
 
-If preview deployment fails, the status target URL points to the public `_deploy.log` file instead.
-
-The worker also upserts one PR comment containing both the preview URL and the build log URL.
-
-## Manual test
-
-After installing the config, a dry manual queue test can be done by creating a small job file:
-
-```bash
-cat > ../public_html/.private/deploy-queue/manual-preview.json <<'JSON'
-{
-  "type": "preview_comment",
-  "repository": "jedrek0429/bansleben-pca",
-  "pr_number": 9
-}
-JSON
-
-tools/.venv/bin/python tools/webhook_deploy_worker.py
-```
-
-Use a current open PR number for the test.
+Use [`docs/workspace.md`](workspace.md). It is the canonical checklist for rebuilding the workspace from scratch.

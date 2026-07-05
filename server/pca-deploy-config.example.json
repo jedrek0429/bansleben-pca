@@ -1,14 +1,17 @@
 {
   "repository": "jedrek0429/bansleben-pca",
   "webhook_secret": "replace-with-the-github-webhook-secret",
-  "github_token": "replace-with-a-token-that-can-write-commit-statuses-and-pr-comments",
+  "github_app_id": "replace-with-the-github-app-id",
+  "github_app_installation_id": "replace-with-the-github-app-installation-id",
+  "github_app_private_key_path": "/home/platne/serwer88382/public_html/preview/.private/github-app-key.pem",
   "site_src": "/home/platne/serwer88382/site-src",
   "public_html": "/home/platne/serwer88382/public_html",
   "python": "/home/platne/serwer88382/site-src/tools/.venv/bin/python",
   "production_base_url": "https://polandchildabduction.pl",
   "preview_base_url": "https://preview.polandchildabduction.pl",
   "preview_root": "/home/platne/serwer88382/public_html/preview",
-  "queue_dir": "/home/platne/serwer88382/public_html/.private/deploy-queue",
-  "log_dir": "/home/platne/serwer88382/public_html/.private/deploy-logs",
+  "private_dir": "/home/platne/serwer88382/public_html/preview/.private",
+  "queue_dir": "/home/platne/serwer88382/public_html/preview/.private/deploy-queue",
+  "log_dir": "/home/platne/serwer88382/public_html/preview/.private/deploy-logs",
   "allow_preview_from_forks": false
 }

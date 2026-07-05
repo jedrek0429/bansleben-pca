@@ -134,8 +134,8 @@
       var message = document.createElement('div');
       message.className = 'static-form-message';
       message.textContent = sent === '1'
-        ? 'Thank you. Your message has been sent.'
-        : 'Sorry, your message could not be sent. Please check your e-mail address and try again.';
+        ? form.dataset.messageSuccess
+        : form.dataset.messageError;
 
       form.insertBefore(message, form.firstChild);
     });
