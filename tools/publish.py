@@ -5,8 +5,11 @@ Expected dist layout for production:
     dist/
         index.html        # empty
         en/
+            .private/pca-contact-config.json
         fr/
+            .private/pca-contact-config.json
         hr/
+            .private/pca-contact-config.json
 
 Expected dist layout for previews:
     dist/
@@ -80,6 +83,10 @@ def assert_safe_paths() -> None:
         )
 
 
+def dist_uses_root_assets() -> bool:
+    return (DIST / "assets").exists()
+
+
 def assert_assets_ok() -> None:
     root_assets = DIST / "assets"
     language_assets = [DIST / lang / "assets" for lang in LANGS]
@@ -130,6 +137,14 @@ def assert_dist_ok() -> None:
         DIST / "hr" / "contact.php",
     ]
 
+    assert_assets_ok()
+
+    if not dist_uses_root_assets():
+        required.extend(
+            DIST / lang / ".private" / "pca-contact-config.json"
+            for lang in LANGS
+        )
+
     missing = [display_path(p, ROOT) for p in required if not p.exists()]
 
     if missing:
@@ -140,8 +155,6 @@ def assert_dist_ok() -> None:
             "dist is incomplete. Run a successful build first, then publish again.",
         )
         raise SystemExit(1)
-
-    assert_assets_ok()
 
     root_index = DIST / "index.html"
     if root_index.read_text(encoding="utf-8") != "":
