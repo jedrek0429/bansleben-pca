@@ -558,7 +558,7 @@ def read_content(lang: str, key: str) -> str:
 def load_templates():
     """Load the base/page templates and all partial templates required for rendering the static site."""
     template_dir = ROOT / "templates"
-    templates = {"partials": {}}
+    templates = {"partials": {}, "css": {}}
 
     for name in ["base", "page"]:
         path = template_dir / f"{name}.html"
@@ -566,12 +566,13 @@ def load_templates():
             raise SystemExit(f"Missing template: {display_path(path, ROOT)}")
         templates[name] = path.read_text(encoding="utf-8")
 
-    partial_dir = template_dir / "partials"
-    if not partial_dir.exists():
-        raise SystemExit(f"Missing template dir: {display_path(partial_dir, ROOT)}")
+    for key in ["partials", "css"]:
+        directory = template_dir / key
+        if not directory.exists():
+            raise SystemExit(f"Missing template dir: {display_path(directory, ROOT)}")
 
-    for path in sorted(partial_dir.glob("*.html")):
-        templates["partials"][path.stem] = path.read_text(encoding="utf-8")
+        for path in sorted(directory.glob("*.html")):
+            templates[key][path.stem] = path.read_text(encoding="utf-8")
 
     return templates
 
@@ -735,7 +736,7 @@ def render_text(text: str, lang: str, locales, ctx=None, templates=None, depth: 
         return text
 
     ctx = ctx or {}
-    templates = templates or {"partials": {}}
+    templates = templates or {"partials": {}, "css": {}}
 
     def token_value(match):
         token = match.group(1).strip()
@@ -793,6 +794,13 @@ def render_text(text: str, lang: str, locales, ctx=None, templates=None, depth: 
             if partial is None:
                 return "{{" + token + "}}"
             return partial
+        
+        if token.startswith("css."):
+            name = token.split(".", 1)[1]
+            css = templates.get("css", {}).get(name)
+            if css is None:
+                return "{{" + token + "}}"
+            return css
 
         if token.startswith("page."):
             value = nested_get(page, token.split(".", 1)[1])

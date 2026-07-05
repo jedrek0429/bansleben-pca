@@ -15,11 +15,11 @@
   </script>
 
   <style id="pca-static-css">
-{{partial.inline_pca_static_css}}
+    {{css.pca_static}}
   </style>
   <noscript>
     <style id="pca-no-js-css">
-{{partial.inline_pca_no_js_css}}
+      {{css.pca_no_js}}
     </style>
   </noscript>
 </head>
@@ -44,7 +44,7 @@
     </div>
   </div>
 
-  <script defer src="{{url_prefix}}/assets/pca-static.js?ver=20260703" id="pca-static-js"></script>
+  <script defer src="{{url_prefix}}/assets/pca-static.js" id="pca-static-js"></script>
 
   {{language_switcher}}
 
