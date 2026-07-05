@@ -16,7 +16,7 @@ TEMPLATE_RECURSION_LIMIT = 12
 
 
 def load_templates(ctx) -> dict:
-    """Load base/page templates, partials, and optional css template fragments."""
+    """Load base/page templates and required template fragment directories."""
     template_dir = ctx.root / "templates"
     templates = {"partials": {}, "css": {}}
 
@@ -26,16 +26,15 @@ def load_templates(ctx) -> dict:
             raise SystemExit(f"Missing template: {display_path(path, ctx.root)}")
         templates[name] = path.read_text(encoding="utf-8")
 
-    partial_dir = template_dir / "partials"
-    if not partial_dir.exists():
-        raise SystemExit(f"Missing template dir: {display_path(partial_dir, ctx.root)}")
-    for path in sorted(partial_dir.glob("*.html")):
-        templates["partials"][path.stem] = path.read_text(encoding="utf-8")
-
-    css_dir = template_dir / "css"
-    if css_dir.exists():
-        for path in sorted(css_dir.glob("*.html")):
-            templates["css"][path.stem] = path.read_text(encoding="utf-8")
+    for group, dirname, pattern in [
+        ("partials", "partials", "*.html"),
+        ("css", "css", "*.css"),
+    ]:
+        fragment_dir = template_dir / dirname
+        if not fragment_dir.exists():
+            raise SystemExit(f"Missing template dir: {display_path(fragment_dir, ctx.root)}")
+        for path in sorted(fragment_dir.glob(pattern)):
+            templates[group][path.stem] = path.read_text(encoding="utf-8")
 
     return templates
 
