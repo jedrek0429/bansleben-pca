@@ -6,6 +6,7 @@ import json
 import re
 
 from common import display_path
+from images import resolve_images
 from localization import nested_get, value_from_locales
 from menus import render_language_switcher, render_main_menu, render_mobile_menu
 from renderer import markdown_to_html
@@ -40,9 +41,12 @@ def load_templates(ctx) -> dict:
 
 
 def read_content(ctx, lang: str, key: str) -> str:
-    """Load Markdown content for a page, preferring the requested language and falling back to English."""
+    """Load Markdown content and resolve image URLs for the current output mode."""
     markdown = ctx.read_markdown(lang, key)
-    return markdown_to_html(markdown, ctx.url_prefix) if markdown else ""
+    if not markdown:
+        return ""
+    markdown = resolve_images(markdown, ctx, lang)
+    return markdown_to_html(markdown, ctx.url_prefix)
 
 
 def render_text(ctx, text: str, lang: str, locales, render_state=None, templates=None, depth: int = 0) -> str:
