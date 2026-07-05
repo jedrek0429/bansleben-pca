@@ -4,6 +4,7 @@ Publishes the contents of dist to public_html, or a specified destination.
 Expected dist layout:
     dist/
         index.html        # empty
+        assets/
         en/
         fr/
         hr/
@@ -89,6 +90,7 @@ def assert_dist_ok() -> None:
 
     required = [
         DIST / "index.html",
+        DIST / "assets",
         DIST / "en" / "index.html",
         DIST / "fr" / "index.html",
         DIST / "hr" / "index.html",
@@ -121,7 +123,7 @@ def assert_dist_ok() -> None:
         )
         raise SystemExit(1)
 
-    allowed_root_items = {*LANGS, "index.html"}
+    allowed_root_items = {*LANGS, "assets", "index.html"}
     extra_root_items = sorted(
         path.name for path in DIST.iterdir()
         if path.name not in allowed_root_items
@@ -137,7 +139,7 @@ def assert_dist_ok() -> None:
         print_labeled(
             "ERROR",
             CLR_RED,
-            "dist root may contain only: index.html, en, fr, hr.",
+            "dist root may contain only: index.html, assets, en, fr, hr.",
         )
         raise SystemExit(1)
 
@@ -218,8 +220,8 @@ def parse_args() -> argparse.Namespace:
         action="append",
         default=DEFAULT_PRESERVED_ROOT_ITEMS,
         help=(
-            "root-level destination item to preserve during --delete publishing. "
-            "May be passed multiple times. Defaults to preserving preview, .private, and github-webhook.php."
+            "root-level item in the destination to preserve during publish. "
+            "May be passed multiple times. Defaults preserve preview deployment state."
         ),
     )
     return parser.parse_args()
@@ -227,21 +229,19 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    configure_paths(Path(args.dist), Path(args.dest), args.preserve_root_item)
+    configure_paths(
+        Path(args.dist),
+        Path(args.dest),
+        args.preserve_root_item,
+    )
 
-    print_section("Site Publish Report")
-    print(color(f"Source:      {display_path(DIST, ROOT)}", CLR_WHITE))
-    print(color(f"Destination: {display_path(DEST, ROOT)}", CLR_WHITE))
-    if PRESERVED_ROOT_ITEMS:
-        preserved = ", ".join(sorted(PRESERVED_ROOT_ITEMS))
-        print(color(f"Preserving:  {preserved}", CLR_WHITE))
+    print_section("Publish static site")
+    print(color(f"Dist: {display_path(DIST, ROOT)}", CLR_WHITE))
+    print(color(f"Dest: {display_path(DEST, ROOT)}", CLR_WHITE))
 
     assert_dist_ok()
-
     method = publish_dist()
-
-    print_labeled("OK", CLR_GREEN, f"published site using {method}.")
-    print_labeled("OK", CLR_GREEN, f"destination: {display_path(DEST, ROOT)}")
+    print_labeled("OK", CLR_GREEN, f"published with {method}")
 
 
 if __name__ == "__main__":
