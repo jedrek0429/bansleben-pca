@@ -40,7 +40,14 @@ def assert_assets_ok(dist: Path, root: Path, langs: list[str]) -> None:
     raise SystemExit(1)
 
 
-def assert_dist_ok(dist: Path, root: Path, langs: list[str]) -> None:
+def private_config_paths(dist: Path, langs: list[str]) -> list[Path]:
+    root_private = dist / ".private" / "pca-contact-config.json"
+    if root_private.exists():
+        return [root_private]
+    return [dist / lang / ".private" / "pca-contact-config.json" for lang in langs]
+
+
+def assert_dist_ok(dist: Path, root: Path, langs: list[str], *, require_private_config: bool) -> None:
     if not dist.exists() or not dist.is_dir():
         print_group("Missing build output", [display_path(dist, root)], "ERROR", CLR_RED)
         print_labeled("ERROR", CLR_RED, "dist does not exist. Run a successful build first, then publish again.")
@@ -52,8 +59,8 @@ def assert_dist_ok(dist: Path, root: Path, langs: list[str]) -> None:
 
     assert_assets_ok(dist, root, langs)
 
-    if not (dist / "assets").exists():
-        required.extend(dist / lang / ".private" / "pca-contact-config.json" for lang in langs)
+    if require_private_config:
+        required.extend(private_config_paths(dist, langs))
 
     missing = [display_path(path, root) for path in required if not path.exists()]
     if missing:
@@ -91,7 +98,7 @@ def copy_dist_contents(dist: Path, dest: Path) -> None:
             shutil.copy2(item, target)
 
 
-def publish(dist, dest, *, root=None, langs=None, preserve_root_item=None) -> None:
+def publish(dist, dest, *, root=None, langs=None, preserve_root_item=None, require_private_config: bool = True) -> None:
     dist = Path(dist).expanduser().resolve()
     dest = Path(dest).expanduser().resolve()
     root = Path(root).expanduser().resolve() if root else dist.parent
@@ -103,7 +110,7 @@ def publish(dist, dest, *, root=None, langs=None, preserve_root_item=None) -> No
     print_labeled("TO", CLR_WHITE, display_path(dest, root))
 
     assert_safe_paths(dist, dest)
-    assert_dist_ok(dist, root, langs)
+    assert_dist_ok(dist, root, langs, require_private_config=require_private_config)
     dest.mkdir(parents=True, exist_ok=True)
     remove_unpreserved_destination_items(dest, preserved)
     copy_dist_contents(dist, dest)
