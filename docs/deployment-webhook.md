@@ -23,7 +23,7 @@ The webhook endpoint returns quickly. The slow work happens later in the cron wo
 | --- | --- |
 | Push to `main` | Publishes production. |
 | PR opened, synchronized, or reopened | Publishes a PR preview. |
-| PR comment `/preview` | Rebuilds the PR preview. |
+| PR comment `/preview` | Rebuilds the PR preview, adds an eyes reaction to the trigger comment, then deletes that trigger comment. |
 | PR closed | Removes that PR preview directory. |
 
 ## Server paths
@@ -168,7 +168,7 @@ The worker updates GitHub with:
 - `PCA Preview Deploy` check runs
 - one reusable PR preview comment marked with `<!-- pca-preview-deploy-comment -->`
 
-The comment is updated instead of creating a new comment on every push.
+The reusable preview comment is updated instead of creating a new comment on every push. For manual `/preview` triggers, the trigger comment is acknowledged with an eyes reaction and deleted so PR threads do not accumulate command comments.
 
 ## Recreate everything on a new server
 
