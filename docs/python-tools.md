@@ -6,7 +6,7 @@ This repository uses small Python scripts instead of a large framework. Most com
 
 | Tool | Purpose | Typical command |
 | --- | --- | --- |
-| `tools/build_and_publish.py` | Canonical pipeline wrapper. Runs validation, hyperlink formatting, static build, and publish. Use this for automation. | `python tools/build_and_publish.py --root . --dest ../public_html` |
+| `tools/build_and_publish.py` | Canonical pipeline wrapper. Runs validation, hyperlink formatting, static build, exposes root `assets/`, and publishes. Use this for automation. | `python tools/build_and_publish.py --root . --dest ../public_html` |
 | `tools/build.py` | Builds the static site into `../site-dist/` from `content/`, `locales/`, `config/`, `templates/`, and `assets/`. | `python tools/build.py --root .` |
 | `tools/publish.py` | Publishes an existing `../site-dist/` tree to a destination directory, deleting stale generated files while preserving configured runtime folders. | `python tools/publish.py --dist ../site-dist --dest ../public_html` |
 
@@ -30,7 +30,6 @@ This repository uses small Python scripts instead of a large framework. Most com
 
 | Tool | Purpose | Typical command |
 | --- | --- | --- |
-| `tools/pages_preview_root_assets.py` | Exposes the current PCA `assets/` directory at the local screenshot preview root. | `python tools/pages_preview_root_assets.py --preview-dir ../site-dist` |
 | `tools/publish_screenshots_branch.py` | Publishes generated screenshots to the persistent screenshot branch for PR review comments. | `python tools/publish_screenshots_branch.py --pr-number 123` |
 
 ## Server and deployment helpers
