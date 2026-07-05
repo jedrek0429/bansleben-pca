@@ -24,9 +24,13 @@ def parse_bool_env(value: str | None) -> bool:
     return (value or "0").strip().lower() not in {"0", "false", "no", "off"}
 
 
-@dataclass
+@dataclass(eq=False)
 class BuildContext:
-    """Shared build state passed between rendering modules."""
+    """Shared build state passed between rendering modules.
+
+    The class uses identity-based hashing so lru_cache can safely cache instance
+    method calls per build context.
+    """
 
     root: Path
     dist: Path | None = None
