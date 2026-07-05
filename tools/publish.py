@@ -131,7 +131,7 @@ def assert_dist_ok() -> None:
         DIST / "hr" / "contact.php",
     ]
 
-    if (DIST / "assets").exists()
+    if (DIST / "assets").exists():
         required.append(DIST / ".private" / "pca-contact-config.json")
     else:
         required.extend([
