@@ -15,11 +15,20 @@ python tools/build.py <command>
 | Install dependencies | `python -m pip install -r requirements.txt` |
 | Check Python syntax | `python -m compileall -q tools/` |
 | Validate translations/config | `python tools/build.py check --root .` |
+| Validate without interactive autofix prompt | `python tools/build.py check --root . --no-autofix-prompt` |
 | Build local site output | `python tools/build.py site --root .` |
 | Build local site without writing output | `python tools/build.py site --root . --dry` |
 | Show resolved config | `python tools/build.py inspect --root .` |
 | Remove generated output | `python tools/build.py clean --root .` |
 | Run deploy worker | `python tools/webhook_deploy_worker.py` |
+
+When `check` fails in an interactive terminal, it asks whether to run `utils autofix-locales`:
+
+```text
+Run utils autofix-locales now? [Y/n]
+```
+
+Deploy and preview workflows disable that prompt so automation never waits for input.
 
 ## Deployment commands
 
@@ -48,13 +57,13 @@ Utilities live under `utils` because they maintain content or assets rather than
 
 | Task | Command |
 | --- | --- |
-| Autofix locale drift | `python tools/build.py utils fix-locales --root .` |
+| Autofix locale drift | `python tools/build.py utils autofix-locales --root .` |
 | Normalize Markdown hyperlinks | `python tools/build.py utils format-links --root .` |
 | Check hyperlink formatting without writing | `python tools/build.py utils format-links --root . --check` |
 | Run hyperlink formatter self-test | `python tools/build.py utils format-links --self-test` |
 | Convert images below a directory to WebP | `python tools/build.py utils convert-images assets` |
 
-`utils fix-locales` creates `.bak` backups before writing locale JSON files. It restores missing enabled page entries, titles, slugs, parent references, card entries, and card image sources from `config/pages.json` and `locales/en.json`.
+`utils autofix-locales` creates `.bak` backups before writing locale JSON files. It restores missing enabled page entries, titles, slugs, parent references, card entries, and card image sources from `config/pages.json` and `locales/en.json`.
 
 ## Builder implementation
 
