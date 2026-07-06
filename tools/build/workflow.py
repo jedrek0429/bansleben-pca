@@ -71,7 +71,7 @@ def deploy(root, *, to=None, langs=None, clean_content: bool = True) -> None:
     dist = root.parent / "site-dist"
     dest = Path(to).expanduser().resolve() if to else root.parent / "public_html"
     lang_list = parse_langs(langs) or ["en", "fr", "hr"]
-    check(root)
+    check(root, autofix_prompt=False)
     if clean_content:
         format_content(root)
     site(root, langs=lang_list)
@@ -88,7 +88,7 @@ def preview(root, *, prefix: str, to=None, langs=None, clean_content: bool = Tru
     dist = root.parent / "site-dist"
     dest = Path(to).expanduser().resolve() if to else root.parent / "public_html" / "preview" / prefix.strip("/")
     lang_list = parse_langs(langs) or ["en", "fr", "hr"]
-    check(root)
+    check(root, autofix_prompt=False)
     if clean_content:
         format_content(root)
     site(root, prefix=prefix, preview=True, langs=lang_list)
