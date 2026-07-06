@@ -58,27 +58,90 @@ def first_srcset_url(srcset: str) -> str:
     return first_candidate.split(None, 1)[0] if first_candidate else ""
 
 
-def find_images_to_preload(html_text: str) -> list[str]:
-    patterns = [
-        (r'<img[^>]*\bsrc=["\']([^"\']+)["\']', lambda value: value),
-        (r'<source[^>]*\bsrcset=["\']([^"\']+)["\']', first_srcset_url),
+def attr_value(attrs: str, name: str) -> str:
+    match = re.search(rf'\b{name}=["\']([^"\']+)["\']', attrs, re.IGNORECASE)
+    return match.group(1).strip() if match else ""
+
+
+def image_preload(src: str = "", srcset: str = "", sizes: str = "") -> dict[str, str]:
+    href = first_srcset_url(srcset) if srcset else src.strip()
+    preload = {"href": href}
+    if srcset:
+        preload["imagesrcset"] = srcset.strip()
+    if sizes:
+        preload["imagesizes"] = sizes.strip()
+    return preload
+
+
+def img_preload(img_tag: str) -> dict[str, str]:
+    src = attr_value(img_tag, "src")
+    srcset = attr_value(img_tag, "srcset")
+    sizes = attr_value(img_tag, "sizes")
+    return image_preload(src, srcset, sizes)
+
+
+def source_preload(source_tag: str) -> dict[str, str]:
+    srcset = attr_value(source_tag, "srcset")
+    sizes = attr_value(source_tag, "sizes")
+    return image_preload(srcset=srcset, sizes=sizes)
+
+
+def best_picture_preload(picture_html: str) -> dict[str, str]:
+    sources = re.findall(r"<source\b[^>]*>", picture_html, re.IGNORECASE | re.DOTALL)
+    preferred = [
+        source for source in sources
+        if re.search(r'\btype=["\']image/(?:avif|webp)["\']', source, re.IGNORECASE)
     ]
-    images = []
+    for source in [*preferred, *sources]:
+        preload = source_preload(source)
+        if preload.get("href"):
+            return preload
+    img = re.search(r"<img\b[^>]*>", picture_html, re.IGNORECASE | re.DOTALL)
+    return img_preload(img.group(0)) if img else {}
+
+
+def find_images_to_preload(html_text: str) -> list[dict[str, str]]:
+    picture_pattern = re.compile(r"<picture\b[^>]*>.*?</picture>", re.IGNORECASE | re.DOTALL)
+    pictures = picture_pattern.findall(html_text)
+    html_without_pictures = picture_pattern.sub("", html_text)
+
+    preloads = []
     seen = set()
-    for pattern, normalize in patterns:
-        for match in re.findall(pattern, html_text, re.IGNORECASE):
-            image = normalize(match).strip()
-            if image and image not in seen:
-                seen.add(image)
-                images.append(image)
-    return images
+
+    def add(preload: dict[str, str]) -> None:
+        href = preload.get("href", "").strip()
+        if not href:
+            return
+        key = (href, preload.get("imagesrcset", ""), preload.get("imagesizes", ""))
+        if key in seen:
+            return
+        seen.add(key)
+        preloads.append(preload)
+
+    for picture in pictures:
+        add(best_picture_preload(picture))
+
+    for img in re.findall(r"<img\b[^>]*>", html_without_pictures, re.IGNORECASE | re.DOTALL):
+        add(img_preload(img))
+
+    return preloads
 
 
-def render_preload(images: list[str]) -> str:
-    return "\n".join(
-        f'<link rel="preload" href="{html.escape(img, quote=True)}" as="image" fetchpriority="high">'
-        for img in images
-    )
+def render_preload(images: list[dict[str, str]]) -> str:
+    links = []
+    for image in images:
+        attrs = [
+            'rel="preload"',
+            f'href="{html.escape(image["href"], quote=True)}"',
+            'as="image"',
+        ]
+        if image.get("imagesrcset"):
+            attrs.append(f'imagesrcset="{html.escape(image["imagesrcset"], quote=True)}"')
+        if image.get("imagesizes"):
+            attrs.append(f'imagesizes="{html.escape(image["imagesizes"], quote=True)}"')
+        attrs.append('fetchpriority="high"')
+        links.append("<link " + " ".join(attrs) + ">")
+    return "\n".join(links)
 
 
 def copy_path(src: Path, dst: Path) -> None:
