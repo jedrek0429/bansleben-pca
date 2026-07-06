@@ -48,8 +48,12 @@ jobs:
       - name: Install Playwright Chromium
         run: npx --yes playwright@latest install --with-deps chromium
 
-      - name: Build static site
-        run: python tools/build.py site --root . --out ../site-screenshot-preview
+      - name: Build screenshot preview
+        run: |
+          python tools/build.py preview \
+            --root . \
+            --to ../site-screenshot-preview \
+            --prefix ""
 
       - name: Capture desktop and mobile screenshots
         env:
@@ -87,14 +91,35 @@ jobs:
           ARTIFACT_URL: ${{ steps.upload.outputs.artifact-url }}
         with:
           script: |
+            const marker = '<!-- pca-site-screenshots -->';
             const prNumber = Number(process.env.PR_NUMBER);
             const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
             const artifactUrl = process.env.ARTIFACT_URL || runUrl;
+            const rawBase = `https://raw.githubusercontent.com/${context.repo.owner}/${context.repo.repo}/site-screenshots/pr-${prNumber}`;
+            const cache = `${context.runId}-${process.env.GITHUB_RUN_ATTEMPT}`;
+            const desktopUrl = `${rawBase}/desktop.png?cache=${cache}`;
+            const mobileUrl = `${rawBase}/mobile.png?cache=${cache}`;
             const branchUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/tree/site-screenshots/pr-${prNumber}`;
-            const body = `Site screenshots for ${process.env.SCREENSHOT_PATH} are ready.\n\nBranch: ${branchUrl}\nArtifact: ${artifactUrl}`;
-            await github.rest.issues.createComment({
+            const body = `${marker}\nSite screenshots for ${process.env.SCREENSHOT_PATH} are ready.\n\n![Desktop screenshot](${desktopUrl})\n\n![Mobile screenshot](${mobileUrl})\n\nLinks: [screenshot branch](${branchUrl}) - [artifact download](${artifactUrl})`;
+            const comments = await github.paginate(github.rest.issues.listComments, {
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: prNumber,
-              body,
+              per_page: 100,
             });
+            const existing = comments.find((comment) => comment.user.type === 'Bot' && comment.body && comment.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body,
+              });
+            }
