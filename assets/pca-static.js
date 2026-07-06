@@ -60,10 +60,6 @@
     if (phone === lastPhoneLayout) return;
     lastPhoneLayout = phone;
 
-    root.classList.toggle('pca-mobile-nav-active', phone);
-    root.classList.toggle('pca-desktop-nav-active', !phone);
-    document.body.classList.toggle('pca-mobile-nav-active', phone);
-
     if (!phone) {
       closeMobileMenu(root);
     }
