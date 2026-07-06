@@ -11,7 +11,7 @@ from pathlib import Path
 import imagesize
 
 from common import CLR_GREEN, CLR_YELLOW, print_labeled
-from constants import CARD_IMAGE_VARIANT_SUFFIX, WEBP_QUALITY
+from constants import CARD_IMAGE_VARIANT_SUFFIX, RESPONSIVE_IMAGE_SUFFIX, RESPONSIVE_IMAGE_WIDTHS, WEBP_QUALITY
 from urls import asset_url
 
 
@@ -32,27 +32,60 @@ def image_magick_command() -> list[str] | None:
     return None
 
 
+def resized_webp_path(path: Path, width: int) -> Path:
+    return path.with_name(f"{path.stem}{RESPONSIVE_IMAGE_SUFFIX.format(width=width)}.webp")
+
+
+def create_responsive_webp_variants(path: Path, command: list[str]) -> None:
+    try:
+        original_width, _ = imagesize.get(path)
+    except Exception:
+        return
+    if not original_width:
+        return
+
+    for width in RESPONSIVE_IMAGE_WIDTHS:
+        if width >= original_width:
+            continue
+        output = resized_webp_path(path, width)
+        if output.exists():
+            continue
+        try:
+            subprocess.run(
+                [*command, str(path), "-auto-orient", "-resize", f"{width}x>", "-quality", WEBP_QUALITY, str(output)],
+                check=True,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+            print_labeled("OK", CLR_GREEN, f"Created {output}")
+        except subprocess.CalledProcessError:
+            print_labeled("WARN", CLR_YELLOW, f"error resizing {path} to {width}px.")
+
+
 def convert_to_webp(directory: str) -> None:
     command = image_magick_command()
     if not command:
         print_labeled("WARN", CLR_YELLOW, "ImageMagick not found; skipped WebP conversion.")
         return
     for path in Path(directory).rglob("*.*"):
-        if path.suffix.lower() not in {".png", ".jpg", ".jpeg"}:
+        if path.suffix.lower() not in {".png", ".jpg", ".jpeg", ".webp"}:
             continue
-        webp_path = path.with_suffix(".webp")
-        if webp_path.exists():
+        if re.search(r"-\d+w$", path.stem):
             continue
-        try:
-            subprocess.run(
-                [*command, str(path), "-quality", WEBP_QUALITY, str(webp_path)],
-                check=True,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-            )
-            print_labeled("OK", CLR_GREEN, f"Converted {path}")
-        except subprocess.CalledProcessError:
-            print_labeled("WARN", CLR_YELLOW, f"error converting {path}.")
+        if path.suffix.lower() in {".png", ".jpg", ".jpeg"}:
+            webp_path = path.with_suffix(".webp")
+            if not webp_path.exists():
+                try:
+                    subprocess.run(
+                        [*command, str(path), "-auto-orient", "-quality", WEBP_QUALITY, str(webp_path)],
+                        check=True,
+                        stdout=subprocess.DEVNULL,
+                        stderr=subprocess.DEVNULL,
+                    )
+                    print_labeled("OK", CLR_GREEN, f"Converted {path}")
+                except subprocess.CalledProcessError:
+                    print_labeled("WARN", CLR_YELLOW, f"error converting {path}.")
+        create_responsive_webp_variants(path, command)
 
 
 def first_srcset_url(srcset: str) -> str:
@@ -157,14 +190,32 @@ def render_preload(images: list[dict[str, str]]) -> str:
     return "\n".join(links)
 
 
-def image_variant_paths(ctx, relative_path: str, suffix: str = ".webp") -> list[tuple[Path, int]]:
+def virtual_responsive_variant_paths(ctx, relative_path: str, suffix: str = ".webp") -> list[tuple[str, int]]:
+    original = ctx.root / str(relative_path or "").lstrip("/")
+    if not original.is_file():
+        return []
+
+    original_width, _ = imagesize.get(original)
+    if not original_width:
+        return []
+
+    entries = []
+    for width in RESPONSIVE_IMAGE_WIDTHS:
+        if width >= original_width:
+            continue
+        rel_path = "/" + resized_webp_path(original, width).relative_to(ctx.root).as_posix()
+        entries.append((rel_path, int(width)))
+    return entries
+
+
+def image_variant_paths(ctx, relative_path: str, suffix: str = ".webp") -> list[tuple[str, int]]:
     original = ctx.root / str(relative_path or "").lstrip("/")
     if not original.name:
         return []
 
     directory = original.parent
     if not directory.is_dir():
-        return []
+        return virtual_responsive_variant_paths(ctx, relative_path, suffix)
 
     original_ratio = 0.0
     if original.exists():
@@ -176,7 +227,7 @@ def image_variant_paths(ctx, relative_path: str, suffix: str = ".webp") -> list[
     candidates = [directory / f"{stem}{suffix}"]
     candidates.extend(sorted(directory.glob(f"{stem}-*{suffix}")))
 
-    by_width: dict[int, Path] = {}
+    by_width: dict[int, str] = {}
     for path in candidates:
         if not path.is_file():
             continue
@@ -185,16 +236,19 @@ def image_variant_paths(ctx, relative_path: str, suffix: str = ".webp") -> list[
             continue
         if original_ratio and abs((width / height) - original_ratio) > 0.08:
             continue
-        by_width.setdefault(int(width), path)
+        rel_path = "/" + path.relative_to(ctx.root).as_posix()
+        by_width.setdefault(int(width), rel_path)
 
-    return sorted(by_width.items())
+    for rel_path, width in virtual_responsive_variant_paths(ctx, relative_path, suffix):
+        by_width.setdefault(width, rel_path)
+
+    return [(path, width) for width, path in sorted(by_width.items())]
 
 
 def responsive_image_srcset(ctx, relative_path: str, suffix: str = ".webp") -> str:
     entries = []
-    for width, path in image_variant_paths(ctx, relative_path, suffix):
-        rel_path = "/" + path.relative_to(ctx.root).as_posix()
-        entries.append(f"{asset_url(ctx, rel_path)} {width}w")
+    for path, width in image_variant_paths(ctx, relative_path, suffix):
+        entries.append(f"{asset_url(ctx, path)} {width}w")
     return ", ".join(entries)
 
 
