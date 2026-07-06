@@ -14,15 +14,12 @@ def join_paths(base_path: str, image_path: str) -> str:
     return f"{base_path.rstrip('/')}/{image_path.lstrip('/')}"
 
 
-def content_asset_base(ctx, lang: str) -> str:
-    """Return the public asset base for content images in the current build mode."""
-    if ctx.lang_in_url:
-        prefix = ctx.url_prefix.rstrip("/")
-        return f"{prefix}/{lang}/assets" if prefix else f"/{lang}/assets"
+def content_asset_base(ctx) -> str:
+    """Return the public asset base for content images."""
     return f"{ctx.url_prefix}/assets" if ctx.url_prefix else "/assets"
 
 
-def resolve_content_image_path(ctx, lang: str, image_path: str) -> str:
+def resolve_content_image_path(ctx, image_path: str) -> str:
     value = str(image_path or "")
     if is_absolute_or_special_path(value):
         return value
@@ -30,7 +27,7 @@ def resolve_content_image_path(ctx, lang: str, image_path: str) -> str:
         value = value[len("/assets/"):]
     elif value.startswith("assets/"):
         value = value[len("assets/"):]
-    return join_paths(content_asset_base(ctx, lang), value)
+    return join_paths(content_asset_base(ctx), value)
 
 
 def resolve_images(content: str, ctx, lang: str) -> str:
@@ -39,14 +36,14 @@ def resolve_images(content: str, ctx, lang: str) -> str:
     def replace_markdown_image(match: re.Match) -> str:
         alt_text = match.group(1)
         image_path = match.group(2)
-        return f"![{alt_text}]({resolve_content_image_path(ctx, lang, image_path)})"
+        return f"![{alt_text}]({resolve_content_image_path(ctx, image_path)})"
 
     def replace_html_image(match: re.Match) -> str:
         before_src = match.group(1)
         quote = match.group(2)
         image_path = match.group(3)
         after_src = match.group(4)
-        resolved_path = resolve_content_image_path(ctx, lang, image_path)
+        resolved_path = resolve_content_image_path(ctx, image_path)
         return f"<img{before_src}src={quote}{resolved_path}{quote}{after_src}>"
 
     content = re.sub(r"!\[(.*?)\]\((.*?)\)", replace_markdown_image, content)
