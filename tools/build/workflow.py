@@ -10,6 +10,7 @@ from pathlib import Path
 from common import CLR_GREEN, CLR_RED, print_labeled
 from builder import site
 from context import normalize_url_prefix, parse_langs
+from hyperlinks import format_content
 from publisher import publish
 
 TOOLS_DIR = Path(__file__).resolve().parents[1]
@@ -39,19 +40,8 @@ def run_tool(label: str, script_name: str, args: list[str]) -> None:
 
 
 def check(root, *, strict: bool = False) -> None:
-    # strict is reserved for structured validation after validate_locales is fully folded in.
+    # TODO: fold validate_locales.py into build/validation.py, then remove this bridge.
     run_tool("Locale validation", "validate_locales.py", ["--root", str(Path(root).expanduser().resolve())])
-
-
-def format_content(root, *, check_only: bool = False, self_test: bool = False) -> None:
-    args = []
-    if self_test:
-        args.append("--self-test")
-    else:
-        args.extend(["--root", str(Path(root).expanduser().resolve())])
-        if check_only:
-            args.append("--no-save")
-    run_tool("Hyperlink formatting", "format_hyperlinks.py", args)
 
 
 def empty_root_index(dist: Path) -> None:
@@ -109,12 +99,10 @@ def write_root_htaccess(dest: Path) -> None:
 
 
 def deploy(root, *, to=None, langs=None, clean_content: bool = True) -> None:
-    """Production deployment: check, optionally format, build, and publish to public_html."""
     root = Path(root).expanduser().resolve()
     dist = root.parent / "site-dist"
     dest = Path(to).expanduser().resolve() if to else root.parent / "public_html"
     lang_list = parse_langs(langs) or ["en", "fr", "hr"]
-
     check(root)
     if clean_content:
         format_content(root)
@@ -127,13 +115,11 @@ def deploy(root, *, to=None, langs=None, clean_content: bool = True) -> None:
 
 
 def preview(root, *, prefix: str, to=None, langs=None, clean_content: bool = True) -> None:
-    """Preview deployment: check, optionally format, build with prefix, publish, and write redirect index."""
     root = Path(root).expanduser().resolve()
     prefix = normalize_url_prefix(prefix)
     dist = root.parent / "site-dist"
     dest = Path(to).expanduser().resolve() if to else root.parent / "public_html" / "preview" / prefix.strip("/")
     lang_list = parse_langs(langs) or ["en", "fr", "hr"]
-
     check(root)
     if clean_content:
         format_content(root)
@@ -145,6 +131,5 @@ def preview(root, *, prefix: str, to=None, langs=None, clean_content: bool = Tru
     print_labeled("OK", CLR_GREEN, "preview deployment completed successfully.")
 
 
-# Temporary aliases for scripts that have not been removed from deployment hooks yet.
 validate = check
 format_links = format_content
