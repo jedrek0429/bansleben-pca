@@ -4,9 +4,11 @@ from __future__ import annotations
 
 import os
 import shutil
+import sys
 from collections import defaultdict
 from pathlib import Path
 
+from autofix import autofix_locales
 from common import CLR_GREEN, CLR_RED, CLR_WHITE, CLR_YELLOW, color, display_path, load_json, print_group, print_labeled, print_section
 
 
@@ -21,7 +23,19 @@ def page_enabled(page: dict, lang: str) -> bool:
     return lang in enabled
 
 
-def validate(root, *, strict: bool = False) -> None:
+def should_prompt_for_autofix(autofix_prompt: bool) -> bool:
+    return bool(autofix_prompt and sys.stdin.isatty())
+
+
+def prompt_autofix_locales(root: Path) -> bool:
+    answer = input("Run utils autofix-locales now? [Y/n] ").strip().lower()
+    if answer in {"", "y", "yes"}:
+        autofix_locales(root)
+        return True
+    return False
+
+
+def validate(root, *, strict: bool = False, autofix_prompt: bool = True) -> None:
     root = Path(root).expanduser().resolve()
     pages_path = root / "config" / "pages.json"
     locales_dir = root / "locales"
@@ -141,6 +155,9 @@ def validate(root, *, strict: bool = False) -> None:
     print_group("Warnings", warnings, "WARN", CLR_YELLOW)
     print_group("Critical issues", errors, "ERROR", CLR_RED)
 
-    if errors or (strict and warnings):
+    failed = bool(errors or (strict and warnings))
+    if failed:
+        if should_prompt_for_autofix(autofix_prompt) and prompt_autofix_locales(root):
+            print_labeled("INFO", CLR_YELLOW, "Autofix ran. Re-run `python tools/build.py check --root .` to verify.")
         raise SystemExit(1)
     print_labeled("OK", CLR_GREEN, "site config and locales look good.")
