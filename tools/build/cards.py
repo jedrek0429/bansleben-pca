@@ -68,11 +68,13 @@ def render_card(ctx, locales, lang: str, key: str, col_index: int, cols: int, te
         )
 
     image_info = ctx.image_info(str(img_src_value))
+    webp_src_value = str(image_info.get("webp_src", ""))
+    webp_src = asset_url(ctx, webp_src_value) if webp_src_value else ""
     render_state = {
         "card": {
             "width_class": width_class,
             "last": "",
-            "webp_src": html.escape(str(image_info.get("webp_src", "")), quote=True),
+            "webp_src": html.escape(webp_src, quote=True),
             "image_src": src,
             "image_alt": html.escape(str(img_alt), quote=True),
             "image_title": html.escape(str(img_title)),
