@@ -18,6 +18,13 @@ def write_json(path: Path, data: Any) -> None:
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
+def locale_enabled_for_page(page: dict, lang: str, fallback_langs: set[str]) -> bool:
+    enabled = page.get("enabled")
+    if not enabled:
+        return lang in fallback_langs
+    return lang in set(enabled)
+
+
 def autofix_locales(root) -> None:
     root = Path(root).expanduser().resolve()
     pages_path = root / "config" / "pages.json"
@@ -39,6 +46,9 @@ def autofix_locales(root) -> None:
 
     pages_data = load_json(pages_path)
     pages = pages_data.get("pages", [])
+    configured_langs = set(pages_data.get("langs") or pages_data.get("languages") or [])
+    locale_langs = {path.stem for path in locales_dir.glob("*.json")}
+    fallback_langs = configured_langs or locale_langs
 
     en_path = locales_dir / "en.json"
     if not en_path.is_file():
@@ -65,8 +75,7 @@ def autofix_locales(root) -> None:
             key = page.get("key")
             if not key:
                 continue
-            enabled_locales = set(page.get("enabled", []))
-            if lang not in enabled_locales:
+            if not locale_enabled_for_page(page, lang, fallback_langs):
                 continue
 
             entry = pages_obj.get(key)
