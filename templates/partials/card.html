@@ -9,8 +9,8 @@
         height="{{card.image_height}}"
         {{card.srcset}}
         decoding="async"
-        fetchpriority="auto"
-        loading="eager"
+        fetchpriority="{{card.fetchpriority}}"
+        loading="{{card.loading}}"
         class="pca-card__image">
     </picture>
   </a>
