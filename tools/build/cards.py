@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import html
 
-from assets import image_300_variant
+from assets import primary_variant_url, responsive_image_srcset
 from localization import value_from_locales
 from template_engine import render_text
 from urls import asset_url, is_enabled, page_config, page_slug, page_title, page_url
@@ -42,6 +42,14 @@ def card_group_for(ctx, locales, page_key: str, lang: str) -> list[str]:
     return filtered
 
 
+def card_image_sizes(cols: int) -> str:
+    if cols == 1:
+        return "(max-width: 560px) calc(100vw - 26px), (max-width: 900px) calc(100vw - 40px), 1080px"
+    if cols == 2:
+        return "(max-width: 560px) calc(100vw - 26px), (max-width: 900px) calc(100vw - 40px), (max-width: 1080px) calc((100vw - 74px) / 2), 523px"
+    return "(max-width: 560px) calc(100vw - 26px), (max-width: 900px) calc(100vw - 40px), (max-width: 1080px) calc((100vw - 108px) / 3), 337px"
+
+
 def render_card(ctx, locales, lang: str, key: str, col_index: int, cols: int, card_index: int, templates) -> str:
     """Render one card item with localized title, image metadata, URL, layout width, and read-more label."""
     title = value_from_locales(lang, f"card_items.{key}.title", locales) or page_title(ctx, locales, lang, key)
@@ -60,18 +68,13 @@ def render_card(ctx, locales, lang: str, key: str, col_index: int, cols: int, ca
     }.get(cols, "pca-card--third")
 
     image_info = ctx.image_info(str(img_src_value))
-    webp_src_value = str(image_info.get("webp_src", ""))
-    webp_src = asset_url(ctx, webp_src_value) if webp_src_value else fallback_src
-    image_src = webp_src or fallback_src
-
+    image_src = primary_variant_url(ctx, str(img_src_value), ".webp") if img_src_value else ""
     src = html.escape(str(image_src), quote=True)
+    responsive_srcset = responsive_image_srcset(ctx, str(img_src_value), ".webp") if img_src_value else ""
+    sizes = card_image_sizes(cols)
     srcset = ""
-    if image_src:
-        srcset = (
-            f'srcset="{src} 360w, '
-            f'{html.escape(image_300_variant(str(image_src)), quote=True)} 300w" '
-            'sizes="(max-width: 360px) 100vw, 360px"'
-        )
+    if responsive_srcset:
+        srcset = f'srcset="{html.escape(responsive_srcset, quote=True)}" sizes="{html.escape(sizes, quote=True)}"'
 
     render_state = {
         "card": {
