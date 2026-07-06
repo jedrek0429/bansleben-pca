@@ -50,12 +50,10 @@ jobs:
 
       - name: Build static site
         run: |
-          python tools/build_and_publish.py \
+          python tools/build.py preview \
             --root . \
-            --dest ../site-screenshot-preview \
-            --url-prefix "" \
-            --lang-in-url \
-            --write-preview-index
+            --to ../site-screenshot-preview \
+            --prefix ""
 
       - name: Capture desktop and mobile screenshots
         env:
