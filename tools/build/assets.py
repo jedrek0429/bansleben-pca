@@ -121,6 +121,14 @@ def find_images_to_preload(html_text: str, limit: int = 1) -> list[dict[str, str
         preloads.append(preload)
         return len(preloads) >= limit
 
+    high_priority_imgs = [
+        img for img in re.findall(r"<img\b[^>]*>", html_without_pictures, re.IGNORECASE | re.DOTALL)
+        if re.search(r'\bfetchpriority=["\']high["\']', img, re.IGNORECASE)
+    ]
+    for img in high_priority_imgs:
+        if add(img_preload(img)):
+            return preloads
+
     for picture in pictures:
         if add(best_picture_preload(picture)):
             return preloads
