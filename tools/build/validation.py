@@ -158,6 +158,8 @@ def validate(root, *, strict: bool = False, autofix_prompt: bool = True) -> None
     failed = bool(errors or (strict and warnings))
     if failed:
         if should_prompt_for_autofix(autofix_prompt) and prompt_autofix_locales(root):
-            print_labeled("INFO", CLR_YELLOW, "Autofix ran. Re-run `python tools/build.py check --root .` to verify.")
+            print_labeled("INFO", CLR_YELLOW, "Autofix ran; validating again.")
+            validate(root, strict=strict, autofix_prompt=False)
+            return
         raise SystemExit(1)
     print_labeled("OK", CLR_GREEN, "site config and locales look good.")
