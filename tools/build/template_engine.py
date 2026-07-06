@@ -10,7 +10,7 @@ from images import resolve_images
 from localization import nested_get, value_from_locales
 from menus import render_language_switcher, render_main_menu, render_mobile_menu
 from renderer import markdown_to_html
-from urls import asset_url, page_url
+from urls import asset_url, page_prefix, page_url
 
 TOKEN_RE = re.compile(r"{{\s*([^{}]+?)\s*}}")
 TEMPLATE_RECURSION_LIMIT = 12
@@ -47,6 +47,11 @@ def read_content(ctx, lang: str, key: str) -> str:
         return ""
     markdown = resolve_images(markdown, ctx, lang)
     return markdown_to_html(markdown, ctx.url_prefix)
+
+
+def contact_action_url(ctx, lang: str) -> str:
+    prefix = page_prefix(ctx, lang)
+    return f"{prefix}/contact.php" if prefix else "/contact.php"
 
 
 def render_text(ctx, text: str, lang: str, locales, render_state=None, templates=None, depth: int = 0) -> str:
@@ -87,7 +92,7 @@ def render_text(ctx, text: str, lang: str, locales, render_state=None, templates
         "lang": lambda: lang,
         "url_prefix": lambda: ctx.url_prefix,
         "home_url": lambda: page_url(ctx, locales, lang, "introduction"),
-        "contact_action": lambda: asset_url(ctx, "contact.php"),
+        "contact_action": lambda: contact_action_url(ctx, lang),
         "content": lambda: str(render_state.get("content") or page.get("body") or page.get("main") or ""),
         "cards": lambda: str(render_state.get("cards") or page.get("cards") or ""),
         "language_switcher": lambda: render_language_switcher(ctx, locales, lang, page.get("key", "introduction")),
