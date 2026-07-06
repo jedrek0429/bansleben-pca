@@ -46,7 +46,7 @@ def render_card(ctx, locales, lang: str, key: str, col_index: int, cols: int, ca
     """Render one card item with localized title, image metadata, URL, layout width, and read-more label."""
     title = value_from_locales(lang, f"card_items.{key}.title", locales) or page_title(ctx, locales, lang, key)
     img_src_value = value_from_locales(lang, f"card_items.{key}.image_src", locales) or ""
-    img_src = asset_url(ctx, str(img_src_value)) if img_src_value else ""
+    fallback_src = asset_url(ctx, str(img_src_value)) if img_src_value else ""
     img_alt = value_from_locales(lang, f"card_items.{key}.image_alt", locales) or ""
     img_title = value_from_locales(lang, f"card_items.{key}.image_title", locales) or img_alt
     read_more = value_from_locales(lang, "common.read_more", locales) or "READ MORE"
@@ -59,24 +59,26 @@ def render_card(ctx, locales, lang: str, key: str, col_index: int, cols: int, ca
         3: "pca-card--third",
     }.get(cols, "pca-card--third")
 
-    src = html.escape(str(img_src), quote=True)
+    image_info = ctx.image_info(str(img_src_value))
+    webp_src_value = str(image_info.get("webp_src", ""))
+    webp_src = asset_url(ctx, webp_src_value) if webp_src_value else fallback_src
+    image_src = webp_src or fallback_src
+
+    src = html.escape(str(image_src), quote=True)
     srcset = ""
-    if img_src:
+    if image_src:
         srcset = (
             f'srcset="{src} 360w, '
-            f'{html.escape(image_300_variant(str(img_src)), quote=True)} 300w" '
+            f'{html.escape(image_300_variant(str(image_src)), quote=True)} 300w" '
             'sizes="(max-width: 360px) 100vw, 360px"'
         )
 
-    image_info = ctx.image_info(str(img_src_value))
-    webp_src_value = str(image_info.get("webp_src", ""))
-    webp_src = asset_url(ctx, webp_src_value) if webp_src_value else ""
     render_state = {
         "card": {
             "width_class": width_class,
             "last": "",
-            "webp_src": html.escape(webp_src, quote=True),
             "image_src": src,
+            "fallback_src": html.escape(str(fallback_src), quote=True),
             "image_alt": html.escape(str(img_alt), quote=True),
             "image_title": html.escape(str(img_title)),
             "image_width": html.escape(str(image_info.get("width", "")), quote=True),
