@@ -2,7 +2,7 @@
 
 The site uses pull-based deployment.
 
-GitHub sends webhook events to the hosting server. The webhook endpoint writes small JSON jobs into a private queue. A cron worker on the server reads the queue, fetches the right code, and runs the builder app.
+GitHub sends webhook events to the hosting server. The webhook endpoint writes small JSON jobs into a private queue. A cron worker on the server reads the queue, fetches the right code, runs the builder app, and reports the result back to GitHub.
 
 ## Flow
 
@@ -12,6 +12,7 @@ GitHub App webhook
   -> public_html/preview/.private/deploy-queue/*.json
   -> cron runs tools/webhook_deploy_worker.py
   -> python tools/build.py deploy or python tools/build.py preview
+  -> GitHub check run and PR comment update
 ```
 
 The webhook endpoint returns quickly. The slow work happens later in the cron worker.
@@ -20,9 +21,9 @@ The webhook endpoint returns quickly. The slow work happens later in the cron wo
 
 | Event | Result |
 | --- | --- |
-| Push to `main` | Publishes production. |
-| PR opened, synchronized, or reopened | Publishes a PR preview. |
-| PR comment `/preview` | Rebuilds the PR preview. |
+| Push to `main` | Publishes production and updates a production deploy check run. |
+| PR opened, synchronized, or reopened | Publishes a PR preview, updates a preview deploy check run, and comments with the preview URL. |
+| PR comment `/preview` | Rebuilds the PR preview, reacts to the command comment, removes the command comment, and updates the reusable preview comment. |
 | PR closed | Removes that PR preview directory. |
 
 ## Server paths
@@ -128,6 +129,8 @@ Production publishes preserve root runtime state, including:
 - `.private/`
 - `github-webhook.php`
 
+The worker creates a GitHub check run for the production deploy and marks it success or failure when the job finishes.
+
 ## Preview behavior
 
 For a PR preview, the worker creates a detached worktree and publishes to:
@@ -156,6 +159,8 @@ The public deploy log is available at:
 ```text
 https://preview.polandchildabduction.pl/pr-<number>/_deploy.log
 ```
+
+The worker creates a GitHub check run for the preview deploy and updates a reusable PR comment with the preview URL and deploy log link.
 
 ## Recreate everything on a new server
 
