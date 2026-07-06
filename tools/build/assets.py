@@ -14,6 +14,8 @@ from common import CLR_GREEN, CLR_YELLOW, print_labeled
 from constants import CARD_IMAGE_VARIANT_SUFFIX, RESPONSIVE_IMAGE_SUFFIX, RESPONSIVE_IMAGE_WIDTHS, WEBP_QUALITY
 from urls import asset_url
 
+SOURCE_IMAGE_SUFFIXES = {".png", ".jpg", ".jpeg"}
+
 
 def image_300_variant(src: str) -> str:
     match = re.match(r"^(.*?)(\.[a-zA-Z0-9]+)$", src)
@@ -36,6 +38,27 @@ def resized_webp_path(path: Path, width: int) -> Path:
     return path.with_name(f"{path.stem}{RESPONSIVE_IMAGE_SUFFIX.format(width=width)}.webp")
 
 
+def is_generated_responsive_variant(path: Path) -> bool:
+    return bool(re.search(r"-\d+w$", path.stem))
+
+
+def create_webp(path: Path, output: Path, command: list[str], width: int | None = None) -> bool:
+    args = [*command, str(path), "-auto-orient"]
+    if width:
+        args.extend(["-resize", f"{width}x>"])
+    args.extend(["-quality", WEBP_QUALITY, str(output)])
+    try:
+        subprocess.run(
+            args,
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        return True
+    except subprocess.CalledProcessError:
+        return False
+
+
 def create_responsive_webp_variants(path: Path, command: list[str]) -> None:
     try:
         original_width, _ = imagesize.get(path)
@@ -48,18 +71,14 @@ def create_responsive_webp_variants(path: Path, command: list[str]) -> None:
         if width >= original_width:
             continue
         output = resized_webp_path(path, width)
-        if output.exists():
-            continue
-        try:
-            subprocess.run(
-                [*command, str(path), "-auto-orient", "-resize", f"{width}x>", "-quality", WEBP_QUALITY, str(output)],
-                check=True,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-            )
+        if create_webp(path, output, command, width=width):
             print_labeled("OK", CLR_GREEN, f"Created {output}")
-        except subprocess.CalledProcessError:
+        else:
             print_labeled("WARN", CLR_YELLOW, f"error resizing {path} to {width}px.")
+
+
+def has_source_sibling(path: Path) -> bool:
+    return any(path.with_suffix(suffix).exists() for suffix in SOURCE_IMAGE_SUFFIXES)
 
 
 def convert_to_webp(directory: str) -> None:
@@ -67,24 +86,23 @@ def convert_to_webp(directory: str) -> None:
     if not command:
         print_labeled("WARN", CLR_YELLOW, "ImageMagick not found; skipped WebP conversion.")
         return
-    for path in Path(directory).rglob("*.*"):
-        if path.suffix.lower() not in {".png", ".jpg", ".jpeg", ".webp"}:
+    root = Path(directory)
+
+    for path in root.rglob("*.*"):
+        if path.suffix.lower() not in SOURCE_IMAGE_SUFFIXES:
             continue
-        if re.search(r"-\d+w$", path.stem):
+        if is_generated_responsive_variant(path):
             continue
-        if path.suffix.lower() in {".png", ".jpg", ".jpeg"}:
-            webp_path = path.with_suffix(".webp")
-            if not webp_path.exists():
-                try:
-                    subprocess.run(
-                        [*command, str(path), "-auto-orient", "-quality", WEBP_QUALITY, str(webp_path)],
-                        check=True,
-                        stdout=subprocess.DEVNULL,
-                        stderr=subprocess.DEVNULL,
-                    )
-                    print_labeled("OK", CLR_GREEN, f"Converted {path}")
-                except subprocess.CalledProcessError:
-                    print_labeled("WARN", CLR_YELLOW, f"error converting {path}.")
+        webp_path = path.with_suffix(".webp")
+        if create_webp(path, webp_path, command):
+            print_labeled("OK", CLR_GREEN, f"Converted {path}")
+        else:
+            print_labeled("WARN", CLR_YELLOW, f"error converting {path}.")
+        create_responsive_webp_variants(path, command)
+
+    for path in root.rglob("*.webp"):
+        if is_generated_responsive_variant(path) or has_source_sibling(path):
+            continue
         create_responsive_webp_variants(path, command)
 
 
