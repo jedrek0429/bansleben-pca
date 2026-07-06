@@ -8,6 +8,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
+import imagesize
+
 from common import CLR_GREEN, CLR_YELLOW, print_labeled
 from constants import CARD_IMAGE_VARIANT_SUFFIX, WEBP_QUALITY
 from urls import asset_url
@@ -145,6 +147,56 @@ def render_preload(images: list[dict[str, str]]) -> str:
         attrs.append('fetchpriority="high"')
         links.append("<link " + " ".join(attrs) + ">")
     return "\n".join(links)
+
+
+def image_variant_paths(ctx, relative_path: str, suffix: str = ".webp") -> list[tuple[Path, int]]:
+    original = ctx.root / str(relative_path or "").lstrip("/")
+    if not original.name:
+        return []
+
+    directory = original.parent
+    if not directory.is_dir():
+        return []
+
+    original_ratio = 0.0
+    if original.exists():
+        width, height = imagesize.get(original)
+        if width and height:
+            original_ratio = width / height
+
+    stem = original.stem
+    candidates = [directory / f"{stem}{suffix}"]
+    candidates.extend(sorted(directory.glob(f"{stem}-*{suffix}")))
+
+    by_width: dict[int, Path] = {}
+    for path in candidates:
+        if not path.is_file():
+            continue
+        width, height = imagesize.get(path)
+        if not width or not height:
+            continue
+        if original_ratio and abs((width / height) - original_ratio) > 0.08:
+            continue
+        by_width.setdefault(int(width), path)
+
+    return sorted(by_width.items())
+
+
+def responsive_image_srcset(ctx, relative_path: str, suffix: str = ".webp") -> str:
+    entries = []
+    for width, path in image_variant_paths(ctx, relative_path, suffix):
+        rel_path = "/" + path.relative_to(ctx.root).as_posix()
+        entries.append(f"{asset_url(ctx, rel_path)} {width}w")
+    return ", ".join(entries)
+
+
+def primary_variant_url(ctx, relative_path: str, suffix: str = ".webp") -> str:
+    original = ctx.root / str(relative_path or "").lstrip("/")
+    candidate = original.with_suffix(suffix)
+    if candidate.is_file():
+        rel_path = "/" + candidate.relative_to(ctx.root).as_posix()
+        return asset_url(ctx, rel_path)
+    return asset_url(ctx, str(relative_path or ""))
 
 
 def copy_path(src: Path, dst: Path) -> None:
