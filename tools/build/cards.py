@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import html
 
-from assets import image_300_variant
+from assets import primary_variant_url, responsive_image_srcset
 from localization import value_from_locales
 from template_engine import render_text
 from urls import asset_url, is_enabled, page_config, page_slug, page_title, page_url
@@ -42,15 +42,24 @@ def card_group_for(ctx, locales, page_key: str, lang: str) -> list[str]:
     return filtered
 
 
-def render_card(ctx, locales, lang: str, key: str, col_index: int, cols: int, templates) -> str:
+def card_image_sizes(cols: int) -> str:
+    if cols == 1:
+        return "(max-width: 560px) calc(100vw - 26px), (max-width: 900px) calc(100vw - 40px), 1080px"
+    if cols == 2:
+        return "(max-width: 560px) calc(100vw - 26px), (max-width: 900px) calc(100vw - 40px), (max-width: 1080px) calc((100vw - 74px) / 2), 523px"
+    return "(max-width: 560px) calc(100vw - 26px), (max-width: 900px) calc(100vw - 40px), (max-width: 1080px) calc((100vw - 108px) / 3), 337px"
+
+
+def render_card(ctx, locales, lang: str, key: str, col_index: int, cols: int, card_index: int, templates) -> str:
     """Render one card item with localized title, image metadata, URL, layout width, and read-more label."""
     title = value_from_locales(lang, f"card_items.{key}.title", locales) or page_title(ctx, locales, lang, key)
     img_src_value = value_from_locales(lang, f"card_items.{key}.image_src", locales) or ""
-    img_src = asset_url(ctx, str(img_src_value)) if img_src_value else ""
+    fallback_src = asset_url(ctx, str(img_src_value)) if img_src_value else ""
     img_alt = value_from_locales(lang, f"card_items.{key}.image_alt", locales) or ""
     img_title = value_from_locales(lang, f"card_items.{key}.image_title", locales) or img_alt
     read_more = value_from_locales(lang, "common.read_more", locales) or "READ MORE"
     href = page_url(ctx, locales, lang, key)
+    is_leading_card = card_index == 0
 
     width_class = {
         1: "pca-card--full",
@@ -58,27 +67,28 @@ def render_card(ctx, locales, lang: str, key: str, col_index: int, cols: int, te
         3: "pca-card--third",
     }.get(cols, "pca-card--third")
 
-    src = html.escape(str(img_src), quote=True)
-    srcset = ""
-    if img_src:
-        srcset = (
-            f'srcset="{src} 360w, '
-            f'{html.escape(image_300_variant(str(img_src)), quote=True)} 300w" '
-            'sizes="(max-width: 360px) 100vw, 360px"'
-        )
-
     image_info = ctx.image_info(str(img_src_value))
+    image_src = primary_variant_url(ctx, str(img_src_value), ".webp") if img_src_value else ""
+    src = html.escape(str(image_src), quote=True)
+    responsive_srcset = responsive_image_srcset(ctx, str(img_src_value), ".webp") if img_src_value else ""
+    sizes = card_image_sizes(cols)
+    srcset = ""
+    if responsive_srcset:
+        srcset = f'srcset="{html.escape(responsive_srcset, quote=True)}" sizes="{html.escape(sizes, quote=True)}"'
+
     render_state = {
         "card": {
             "width_class": width_class,
             "last": "",
-            "webp_src": html.escape(str(image_info.get("webp_src", "")), quote=True),
             "image_src": src,
+            "fallback_src": html.escape(str(fallback_src), quote=True),
             "image_alt": html.escape(str(img_alt), quote=True),
             "image_title": html.escape(str(img_title)),
             "image_width": html.escape(str(image_info.get("width", "")), quote=True),
             "image_height": html.escape(str(image_info.get("height", "")), quote=True),
             "srcset": srcset,
+            "fetchpriority": "high" if is_leading_card else "auto",
+            "loading": "eager" if is_leading_card else "lazy",
             "title": html.escape(str(title)),
             "href": href,
             "read_more": html.escape(str(read_more)),
@@ -112,12 +122,13 @@ def render_card_grid(ctx, locales, page_key: str, lang: str, templates) -> str:
         return ""
 
     rendered_rows = []
+    card_index = 0
     for row_keys in chunk_cards(keys):
         cols = len(row_keys)
-        rendered_cards = [
-            render_card(ctx, locales, lang, key, col_index, cols, templates)
-            for col_index, key in enumerate(row_keys)
-        ]
+        rendered_cards = []
+        for col_index, key in enumerate(row_keys):
+            rendered_cards.append(render_card(ctx, locales, lang, key, col_index, cols, card_index, templates))
+            card_index += 1
         row_state = {"row": {"cards": "\n".join(rendered_cards)}}
         rendered_rows.append(
             render_text(ctx, templates["partials"]["card_row"], lang, locales, row_state, templates)

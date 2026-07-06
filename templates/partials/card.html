@@ -1,18 +1,16 @@
 <article class="pca-card">
   <a class="pca-card__image-link" href="{{card.href}}" aria-label="{{card.title}}">
-    <picture class="pca-card__picture">
-      <source srcset="{{url_prefix}}{{card.webp_src}}" type="image/webp">
-      <img src="{{card.image_src}}"
-        alt="{{card.image_alt}}"
-        title="{{card.image_title}}"
-        width="{{card.image_width}}"
-        height="{{card.image_height}}"
-        {{card.srcset}}
-        decoding="async"
-        fetchpriority="auto"
-        loading="eager"
-        class="pca-card__image">
-    </picture>
+    <img src="{{card.image_src}}"
+      alt="{{card.image_alt}}"
+      title="{{card.image_title}}"
+      width="{{card.image_width}}"
+      height="{{card.image_height}}"
+      {{card.srcset}}
+      data-fallback-src="{{card.fallback_src}}"
+      decoding="async"
+      fetchpriority="{{card.fetchpriority}}"
+      loading="{{card.loading}}"
+      class="pca-card__image">
   </a>
   <div class="pca-card__body">
     <h3 class="pca-card__title"><strong>{{card.title}}</strong></h3>

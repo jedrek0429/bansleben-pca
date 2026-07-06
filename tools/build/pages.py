@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import html
 
-from assets import find_images_to_preload, render_preload
+from assets import find_images_to_preload, primary_variant_url, render_preload, responsive_image_srcset
 from cards import card_group_for, render_card_grid
 from localization import value_from_locales
 from seo import absolute_page_url, render_404_head, render_seo_head
@@ -46,7 +46,7 @@ def cache_css_link(page: dict, template_name: str) -> str:
     return ""
 
 
-def hero_style_for_page(ctx, lang: str, locales, key: str) -> str:
+def hero_src_for_page(ctx, lang: str, locales, key: str) -> str:
     configured = ctx.hero_images.get(key)
     src = configured.get(lang) if isinstance(configured, dict) else configured
     if not src:
@@ -55,10 +55,42 @@ def hero_style_for_page(ctx, lang: str, locales, key: str) -> str:
         src = value_from_locales(lang, f"pages.{key}.hero_image", locales)
     if not src:
         src = value_from_locales(lang, f"card_items.{key}.image_src", locales)
+    return str(src or "")
+
+
+def hero_image_for_page(ctx, lang: str, locales, key: str) -> str:
+    src = hero_src_for_page(ctx, lang, locales, key)
     if not src:
         return ""
-    src = html.escape(asset_url(ctx, str(src)), quote=True)
-    return f' style="background-image: url({src}) !important;"'
+
+    image_info = ctx.image_info(src)
+    image_src = primary_variant_url(ctx, src, ".webp")
+    fallback_src = asset_url(ctx, src)
+    srcset = responsive_image_srcset(ctx, src, ".webp")
+
+    attrs = [
+        f'src="{html.escape(image_src, quote=True)}"',
+        'alt=""',
+        'aria-hidden="true"',
+    ]
+    width = image_info.get("width", "")
+    height = image_info.get("height", "")
+    if width:
+        attrs.append(f'width="{html.escape(str(width), quote=True)}"')
+    if height:
+        attrs.append(f'height="{html.escape(str(height), quote=True)}"')
+    if srcset:
+        attrs.append(f'srcset="{html.escape(srcset, quote=True)}"')
+        attrs.append('sizes="100vw"')
+    if fallback_src:
+        attrs.append(f'data-fallback-src="{html.escape(fallback_src, quote=True)}"')
+    attrs.extend([
+        'decoding="async"',
+        'fetchpriority="high"',
+        'loading="eager"',
+        'class="pca-title-section__bg"',
+    ])
+    return "<img " + " ".join(attrs) + ">"
 
 
 def wants_title(page: dict, template_name: str) -> bool:
@@ -87,7 +119,7 @@ def render_localized_page(ctx, locales, lang: str, page: dict, templates) -> Non
         "content": content_html,
         "cards": render_card_grid(ctx, locales, key, lang, templates),
         "cache_css": cache_css_link(page, template_name),
-        "hero_style": hero_style_for_page(ctx, lang, locales, key),
+        "hero_image": hero_image_for_page(ctx, lang, locales, key),
         "hero_class": "",
         "title_section": "",
         "main": "",
@@ -145,7 +177,7 @@ def render_404(ctx, lang: str, locales, templates) -> None:
         "back_label": html.escape(str(back_label)),
         "cards": "",
         "cache_css": "",
-        "hero_style": "",
+        "hero_image": "",
         "hero_class": "pca-not-found",
         "title_section": "",
         "main": "",
