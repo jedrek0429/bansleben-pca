@@ -49,11 +49,7 @@ jobs:
         run: npx --yes playwright@latest install --with-deps chromium
 
       - name: Build static site
-        run: |
-          python tools/build.py preview \
-            --root . \
-            --to ../site-screenshot-preview \
-            --prefix ""
+        run: python tools/build.py site --root . --out ../site-screenshot-preview
 
       - name: Capture desktop and mobile screenshots
         env:
@@ -81,39 +77,3 @@ jobs:
         env:
           PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
         run: python tools/publish_screenshots_branch.py --pr-number "$PR_NUMBER"
-
-      - name: Comment screenshots on pull request
-        if: always() && (github.event_name == 'pull_request' || inputs.pr_number != '')
-        env:
-          GH_TOKEN: ${{ github.token }}
-          PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
-          SCREENSHOT_PATH: ${{ inputs.path || '/en/' }}
-          ARTIFACT_URL: ${{ steps.upload.outputs.artifact-url }}
-        run: |
-          set -euo pipefail
-          marker='<!-- pca-site-screenshots -->'
-          run_url="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-          artifact_url="${ARTIFACT_URL:-${run_url}}"
-          raw_base="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/site-screenshots/pr-${PR_NUMBER}"
-          cache="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-          desktop_url="${raw_base}/desktop.png?cache=${cache}"
-          mobile_url="${raw_base}/mobile.png?cache=${cache}"
-          branch_url="https://github.com/${GITHUB_REPOSITORY}/tree/site-screenshots/pr-${PR_NUMBER}"
-          body="${marker}
-          Site screenshots for \`${SCREENSHOT_PATH}\` are ready.
-
-          <a href=\"${desktop_url}\"><img src=\"${desktop_url}\" alt=\"Desktop screenshot\" width=\"320\"></a>
-
-          <a href=\"${mobile_url}\"><img src=\"${mobile_url}\" alt=\"Mobile screenshot\" width=\"160\"></a>
-
-          Links: [screenshot branch](${branch_url}) · [artifact download](${artifact_url})"
-
-          existing_id=$(gh api "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" --paginate \
-            --jq ".[] | select(.user.login == \"github-actions[bot]\" and (.body | contains(\"${marker}\"))) | .id" \
-            | tail -n 1)
-
-          if [ -n "$existing_id" ]; then
-            gh api -X PATCH "repos/${GITHUB_REPOSITORY}/issues/comments/${existing_id}" -f body="$body" >/dev/null
-          else
-            gh pr comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body "$body"
-          fi
