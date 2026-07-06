@@ -38,6 +38,7 @@ def main(argv=None) -> None:
     c = sub.add_parser("check")
     c.add_argument("--root", default=DEFAULT_ROOT)
     c.add_argument("--strict", action="store_true")
+    c.add_argument("--no-autofix-prompt", action="store_true")
 
     c = sub.add_parser("inspect")
     c.add_argument("--root", default=DEFAULT_ROOT)
@@ -58,7 +59,7 @@ def main(argv=None) -> None:
     x.add_argument("--root", default=DEFAULT_ROOT)
     x.add_argument("--check", action="store_true")
     x.add_argument("--self-test", action="store_true")
-    x = u.add_parser("fix-locales")
+    x = u.add_parser("autofix-locales")
     x.add_argument("--root", default=DEFAULT_ROOT)
 
     args = p.parse_args(argv)
@@ -69,7 +70,7 @@ def main(argv=None) -> None:
     elif args.command == "deploy":
         deploy(args.root, to=args.to, langs=args.langs, clean_content=not args.no_format)
     elif args.command == "check":
-        check(args.root, strict=args.strict)
+        check(args.root, strict=args.strict, autofix_prompt=not args.no_autofix_prompt)
     elif args.command == "inspect":
         inspect(args.root, out=args.out, prefix=args.prefix, preview=args.preview, langs=args.langs)
     elif args.command == "clean":
@@ -78,7 +79,7 @@ def main(argv=None) -> None:
         convert_to_webp(args.path)
     elif args.command == "utils" and args.utility == "format-links":
         format_content(args.root, check_only=args.check, self_test=args.self_test)
-    elif args.command == "utils" and args.utility == "fix-locales":
+    elif args.command == "utils" and args.utility == "autofix-locales":
         autofix_locales(args.root)
     else:
         raise SystemExit("Unknown command")
