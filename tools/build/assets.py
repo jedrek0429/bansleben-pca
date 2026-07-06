@@ -100,7 +100,7 @@ def best_picture_preload(picture_html: str) -> dict[str, str]:
     return img_preload(img.group(0)) if img else {}
 
 
-def find_images_to_preload(html_text: str) -> list[dict[str, str]]:
+def find_images_to_preload(html_text: str, limit: int = 1) -> list[dict[str, str]]:
     picture_pattern = re.compile(r"<picture\b[^>]*>.*?</picture>", re.IGNORECASE | re.DOTALL)
     pictures = picture_pattern.findall(html_text)
     html_without_pictures = picture_pattern.sub("", html_text)
@@ -108,21 +108,24 @@ def find_images_to_preload(html_text: str) -> list[dict[str, str]]:
     preloads = []
     seen = set()
 
-    def add(preload: dict[str, str]) -> None:
+    def add(preload: dict[str, str]) -> bool:
         href = preload.get("href", "").strip()
         if not href:
-            return
+            return False
         key = (href, preload.get("imagesrcset", ""), preload.get("imagesizes", ""))
         if key in seen:
-            return
+            return False
         seen.add(key)
         preloads.append(preload)
+        return len(preloads) >= limit
 
     for picture in pictures:
-        add(best_picture_preload(picture))
+        if add(best_picture_preload(picture)):
+            return preloads
 
     for img in re.findall(r"<img\b[^>]*>", html_without_pictures, re.IGNORECASE | re.DOTALL):
-        add(img_preload(img))
+        if add(img_preload(img)):
+            return preloads
 
     return preloads
 
