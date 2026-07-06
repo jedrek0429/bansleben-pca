@@ -215,5 +215,5 @@ Use a current open PR number for a real test.
 
 - Do not edit generated files in `../site-dist/` or `../public_html/<lang>/`.
 - Do not commit files from `public_html/preview/.private/`.
-- Production publishing preserves `preview/`, `.private/`, and `github-webhook.php`.
+- Production publishing preserves `preview/`, which contains the webhook endpoint, private deploy state, and PR previews.
 - Preview builds from forks are disabled by default for safety.
