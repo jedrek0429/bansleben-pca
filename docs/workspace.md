@@ -42,8 +42,9 @@ For a quick local check:
 
 ```sh
 tools/.venv/bin/python -m compileall -q tools/
-tools/.venv/bin/python tools/validate_locales.py --root .
-tools/.venv/bin/python tools/build.py --root .
+tools/.venv/bin/python tools/build.py check --root . --no-autofix-prompt
+tools/.venv/bin/python tools/build.py site --root . --dry
+tools/.venv/bin/python tools/build.py site --root .
 ```
 
 The build writes generated files to `../site-dist/`.
@@ -93,6 +94,8 @@ Edit `pca-deploy-config.json` and set:
 - `site_src`
 - `public_html`
 - `python`
+- `production_base_url`
+- `preview_base_url`
 - `preview_root`
 - `private_dir`
 - `queue_dir`
@@ -153,12 +156,12 @@ Example cron entry:
 
 The worker uses a lock file, so overlapping cron runs should exit safely.
 
-## 9. Verify production publish
+## 9. Verify production deploy
 
 From `site-src`:
 
 ```sh
-tools/.venv/bin/python tools/build_and_publish.py --root . --dest ../public_html
+tools/.venv/bin/python tools/build.py deploy --root . --to ../public_html
 ```
 
 Confirm the public sites load:
@@ -167,17 +170,15 @@ Confirm the public sites load:
 - <https://enlevementparentalpologne.pl/>
 - <https://roditeljskaotmicapoljska.pl/>
 
-## 10. Verify preview publish
+## 10. Verify preview deploy
 
-Run a manual preview-style publish:
+Run a manual preview-style deploy:
 
 ```sh
-tools/.venv/bin/python tools/build_and_publish.py \
+tools/.venv/bin/python tools/build.py preview \
   --root . \
-  --dest ../public_html/preview/pr-123 \
-  --url-prefix /pr-123 \
-  --lang-in-url \
-  --write-preview-index
+  --to ../public_html/preview/pr-123 \
+  --prefix pr-123
 ```
 
 Confirm this loads:
@@ -214,5 +215,5 @@ Use a current open PR number for a real test.
 
 - Do not edit generated files in `../site-dist/` or `../public_html/<lang>/`.
 - Do not commit files from `public_html/preview/.private/`.
-- Production publishing preserves `preview/`, `.private/`, and `github-webhook.php`.
+- Production publishing preserves `preview/`, which contains the webhook endpoint, private deploy state, and PR previews.
 - Preview builds from forks are disabled by default for safety.

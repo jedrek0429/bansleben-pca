@@ -2,7 +2,7 @@
 
 The site uses pull-based deployment.
 
-GitHub sends webhook events to the hosting server. The webhook endpoint writes small JSON jobs into a private queue. A cron worker on the server reads the queue, fetches the right code, builds the static site, publishes it, and reports status back to GitHub.
+GitHub sends webhook events to the hosting server. The webhook endpoint writes small JSON jobs into a private queue. A cron worker on the server reads the queue, fetches the right code, runs the builder app, and reports the result back to GitHub.
 
 ## Flow
 
@@ -11,8 +11,8 @@ GitHub App webhook
   -> https://preview.polandchildabduction.pl/github-webhook.php
   -> public_html/preview/.private/deploy-queue/*.json
   -> cron runs tools/webhook_deploy_worker.py
-  -> git fetch + build + publish
-  -> GitHub check run + PR preview comment
+  -> python tools/build.py deploy or python tools/build.py preview
+  -> GitHub check run and PR comment update
 ```
 
 The webhook endpoint returns quickly. The slow work happens later in the cron worker.
@@ -21,9 +21,9 @@ The webhook endpoint returns quickly. The slow work happens later in the cron wo
 
 | Event | Result |
 | --- | --- |
-| Push to `main` | Publishes production. |
-| PR opened, synchronized, or reopened | Publishes a PR preview. |
-| PR comment `/preview` | Rebuilds the PR preview, adds an eyes reaction to the trigger comment, then deletes that trigger comment. |
+| Push to `main` | Publishes production and updates a production deploy check run. |
+| PR opened, synchronized, or reopened | Publishes a PR preview, updates a preview deploy check run, and comments with the preview URL. |
+| PR comment `/preview` | Rebuilds the PR preview, reacts to the command comment, removes the command comment, and updates the reusable preview comment. |
 | PR closed | Removes that PR preview directory. |
 
 ## Server paths
@@ -113,14 +113,14 @@ The worker uses a lock file so overlapping cron runs should not process the same
 
 ## Production behavior
 
-For a push to `main`, the worker runs the production build and publish flow:
+For a push to `main`, the worker runs:
 
 ```sh
 git fetch origin main
 git checkout main
 git reset --hard origin/main
 python -m pip install -r requirements.txt
-python tools/build_and_publish.py --root . --dest ../public_html
+python tools/build.py deploy --root . --to ../public_html
 ```
 
 Production publishes preserve root runtime state, including:
@@ -128,6 +128,8 @@ Production publishes preserve root runtime state, including:
 - `preview/`
 - `.private/`
 - `github-webhook.php`
+
+The worker creates a GitHub check run for the production deploy and marks it success or failure when the job finishes.
 
 ## Preview behavior
 
@@ -140,12 +142,10 @@ public_html/preview/pr-<number>/
 The preview build command is:
 
 ```sh
-python tools/build_and_publish.py \
+python tools/build.py preview \
   --root .deploy-worktrees/pr-<number> \
-  --dest ../public_html/preview/pr-<number> \
-  --url-prefix /pr-<number> \
-  --lang-in-url \
-  --write-preview-index
+  --to ../public_html/preview/pr-<number> \
+  --prefix pr-<number>
 ```
 
 Successful previews are available at:
@@ -160,15 +160,7 @@ The public deploy log is available at:
 https://preview.polandchildabduction.pl/pr-<number>/_deploy.log
 ```
 
-## GitHub feedback
-
-The worker updates GitHub with:
-
-- `PCA Production Deploy` check runs
-- `PCA Preview Deploy` check runs
-- one reusable PR preview comment marked with `<!-- pca-preview-deploy-comment -->`
-
-The reusable preview comment is updated instead of creating a new comment on every push. For manual `/preview` triggers, the trigger comment is acknowledged with an eyes reaction and deleted so PR threads do not accumulate command comments.
+The worker creates a GitHub check run for the preview deploy and updates a reusable PR comment with the preview URL and deploy log link.
 
 ## Recreate everything on a new server
 

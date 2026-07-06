@@ -1,5 +1,3 @@
-"""Process queued GitHub webhook deploy jobs on the hosting server."""
-
 from __future__ import annotations
 
 import argparse
@@ -53,49 +51,16 @@ def queue_dir(config): return cfg_path(config, "queue_dir", private_dir(config) 
 def log_dir(config): return cfg_path(config, "log_dir", private_dir(config) / "deploy-logs")
 def worktree_dir(config): return cfg_path(config, "worktree_dir", site_src(config) / ".deploy-worktrees")
 def python_bin(config): return str(config.get("python") or sys.executable or shutil.which("python3") or shutil.which("python"))
-
-
-def repo_full_name(config: dict[str, Any]) -> str:
+def repo_full_name(config):
     repo = str(config.get("repository") or "").strip()
     if not repo:
         raise DeployError("Missing repository in deploy config.")
     return repo
 
-
 def base_url(config, key, default): return str(config.get(key) or default).rstrip("/")
 def production_url(config): return f"{base_url(config, 'production_base_url', 'https://polandchildabduction.pl')}/"
 def preview_url(config, pr_number): return f"{base_url(config, 'preview_base_url', 'https://preview.polandchildabduction.pl')}/pr-{pr_number}/"
 def preview_log_url(config, pr_number): return f"{preview_url(config, pr_number)}_deploy.log"
-
-
-def production_site_urls(config: dict[str, Any]) -> dict[str, str]:
-    """Return language to production URL mapping for check-run summaries."""
-    fallback = {"en": production_url(config)}
-    seo_path = site_src(config) / "config" / "seo.json"
-    if not seo_path.is_file():
-        return fallback
-    try:
-        data = json.loads(seo_path.read_text(encoding="utf-8"))
-    except json.JSONDecodeError:
-        return fallback
-    urls = data.get("site_urls") if isinstance(data, dict) else None
-    if not isinstance(urls, dict):
-        return fallback
-    result = {
-        str(lang): str(url).rstrip("/") + "/"
-        for lang, url in urls.items()
-        if isinstance(lang, str) and isinstance(url, str) and url.strip()
-    }
-    return result or fallback
-
-
-def production_summary(config: dict[str, Any], sha: str | None, status: str, error: Exception | None = None) -> str:
-    lines = [f"Production deploy {status} for `{sha or 'unknown'}`.", "", "Published sites:"]
-    for lang, url in production_site_urls(config).items():
-        lines.append(f"- {lang}: {url}")
-    if error is not None:
-        lines.extend(["", f"Error: `{error}`"])
-    return "\n".join(lines)
 
 
 def run(command: list[str], cwd: Path, log, check: bool = True) -> None:
@@ -112,7 +77,7 @@ def b64url(data: bytes) -> str:
     return base64.urlsafe_b64encode(data).decode("ascii").rstrip("=")
 
 
-def github_app_private_key(config: dict[str, Any]) -> Path:
+def github_private_key(config: dict[str, Any]) -> Path:
     value = config.get("github_app_private_key_path")
     if not value:
         raise DeployError("Missing github_app_private_key_path in deploy config.")
@@ -122,31 +87,18 @@ def github_app_private_key(config: dict[str, Any]) -> Path:
     return path
 
 
-def github_app_jwt(config: dict[str, Any]) -> str:
+def github_jwt(config: dict[str, Any]) -> str:
     app_id = str(config.get("github_app_id") or "").strip()
     if not app_id:
         raise DeployError("Missing github_app_id in deploy config.")
-
     now = int(time.time())
     header = {"alg": "RS256", "typ": "JWT"}
     payload = {"iat": now - 60, "exp": now + 540, "iss": app_id}
-    signing_input = (
-        b64url(json.dumps(header, separators=(",", ":")).encode("utf-8"))
-        + "."
-        + b64url(json.dumps(payload, separators=(",", ":")).encode("utf-8"))
-    ).encode("ascii")
-
-    completed = subprocess.run(
-        ["openssl", "dgst", "-sha256", "-sign", str(github_app_private_key(config))],
-        input=signing_input,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        check=False,
-    )
-    if completed.returncode != 0:
-        raise DeployError("Could not sign GitHub App JWT with openssl: " + completed.stderr.decode("utf-8", errors="replace"))
-
-    return signing_input.decode("ascii") + "." + b64url(completed.stdout)
+    signing_input = (b64url(json.dumps(header, separators=(",", ":")).encode()) + "." + b64url(json.dumps(payload, separators=(",", ":")).encode())).encode("ascii")
+    signed = subprocess.run(["openssl", "dgst", "-sha256", "-sign", str(github_private_key(config))], input=signing_input, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
+    if signed.returncode != 0:
+        raise DeployError("Could not sign GitHub App JWT: " + signed.stderr.decode("utf-8", errors="replace"))
+    return signing_input.decode("ascii") + "." + b64url(signed.stdout)
 
 
 def github_request(token: str, method: str, path: str, data: dict[str, Any] | None = None) -> Any:
@@ -166,48 +118,42 @@ def github_request(token: str, method: str, path: str, data: dict[str, Any] | No
         raise DeployError(f"GitHub API {method} {path} failed: {exc.code} {raw}") from exc
 
 
-def github_installation_token(config: dict[str, Any]) -> str:
-    cached = config.get("_github_installation_token")
-    if cached:
-        return str(cached)
-
+def github_token(config: dict[str, Any]) -> str:
+    if config.get("_github_token"):
+        return str(config["_github_token"])
     installation_id = str(config.get("github_app_installation_id") or "").strip()
     if not installation_id:
         raise DeployError("Missing github_app_installation_id in deploy config.")
-
-    data = github_request(github_app_jwt(config), "POST", f"/app/installations/{installation_id}/access_tokens")
+    data = github_request(github_jwt(config), "POST", f"/app/installations/{installation_id}/access_tokens")
     token = data.get("token") if isinstance(data, dict) else None
     if not token:
         raise DeployError("GitHub App installation token response did not include token.")
-
-    config["_github_installation_token"] = token
+    config["_github_token"] = token
     return str(token)
 
 
 def github_api(config, method, path, data=None):
-    return github_request(github_installation_token(config), method, path, data)
+    return github_request(github_token(config), method, path, data)
 
 
-def create_check_run(config, name, sha, details_url, title, summary, external_id=None):
+def create_check(config, name, sha, details_url, title, summary, external_id):
     if not sha:
         return None
-    payload = {
+    return github_api(config, "POST", f"/repos/{repo_full_name(config)}/check-runs", {
         "name": name,
         "head_sha": sha,
         "status": "in_progress",
         "started_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "details_url": details_url,
+        "external_id": external_id,
         "output": {"title": title, "summary": summary},
-    }
-    if external_id:
-        payload["external_id"] = external_id
-    return github_api(config, "POST", f"/repos/{repo_full_name(config)}/check-runs", payload)
+    })
 
 
-def update_check_run(config, check_run, conclusion, details_url, title, summary):
-    if not isinstance(check_run, dict) or not check_run.get("id"):
+def finish_check(config, check, conclusion, details_url, title, summary):
+    if not isinstance(check, dict) or not check.get("id"):
         return
-    github_api(config, "PATCH", f"/repos/{repo_full_name(config)}/check-runs/{check_run['id']}", {
+    github_api(config, "PATCH", f"/repos/{repo_full_name(config)}/check-runs/{check['id']}", {
         "status": "completed",
         "conclusion": conclusion,
         "completed_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
@@ -216,167 +162,11 @@ def update_check_run(config, check_run, conclusion, details_url, title, summary)
     })
 
 
-def get_pull_request(config, pr_number):
+def pr_data(config, pr_number):
     data = github_api(config, "GET", f"/repos/{repo_full_name(config)}/pulls/{pr_number}")
     if not isinstance(data, dict):
-        raise DeployError(f"Could not load PR #{pr_number} from GitHub API.")
+        raise DeployError(f"Could not load PR #{pr_number}.")
     return data
-
-
-def preview_comment_body(pr_number, sha, url, log_url, status, title, error: Exception | None = None):
-    status_emoji = {
-        "started": "🚀",
-        "succeeded": "✅",
-        "failed": "❌",
-    }.get(status, "ℹ️")
-    lines = [
-        PREVIEW_COMMENT_MARKER,
-        f"### {status_emoji} PCA Preview Deploy",
-        "",
-        title,
-        "",
-        f"- **PR:** #{pr_number}",
-        f"- **Commit:** `{(sha or 'unknown')[:12]}`",
-        f"- **Preview:** {url}",
-        f"- **Build log:** {log_url}",
-    ]
-    if error is not None:
-        lines.extend(["", f"**Error:** `{error}`"])
-    lines.extend(["", f"_Last updated: {time.strftime('%Y-%m-%d %H:%M:%S UTC', time.gmtime())}_"])
-    return "\n".join(lines)
-
-
-def upsert_preview_comment(config, pr_number, body):
-    comments = github_api(config, "GET", f"/repos/{repo_full_name(config)}/issues/{pr_number}/comments?per_page=100")
-    if isinstance(comments, list):
-        for comment in comments:
-            if not isinstance(comment, dict):
-                continue
-            comment_body = str(comment.get("body") or "")
-            comment_id = comment.get("id")
-            if PREVIEW_COMMENT_MARKER in comment_body and comment_id:
-                return github_api(config, "PATCH", f"/repos/{repo_full_name(config)}/issues/comments/{comment_id}", {"body": body})
-    return github_api(config, "POST", f"/repos/{repo_full_name(config)}/issues/{pr_number}/comments", {"body": body})
-
-
-def safe_upsert_preview_comment(config, pr_number, sha, url, log_url, status, title, error: Exception | None = None, log=None):
-    try:
-        body = preview_comment_body(pr_number, sha, url, log_url, status, title, error)
-        return upsert_preview_comment(config, pr_number, body)
-    except Exception as exc:
-        message = f"Could not upsert PR preview comment: {exc}"
-        if log is not None:
-            log.write(f"\n{message}\n")
-            log.flush()
-        else:
-            print(message, file=sys.stderr)
-        return None
-
-
-def log_nonfatal(message: str, log=None) -> None:
-    if log is not None:
-        log.write(f"\n{message}\n")
-        log.flush()
-    else:
-        print(message, file=sys.stderr)
-
-
-def preview_trigger_comment_id(job) -> int | None:
-    if str(job.get("type") or "") != "preview_comment":
-        return None
-    try:
-        comment_id = int(job.get("comment_id") or 0)
-    except (TypeError, ValueError):
-        return None
-    return comment_id if comment_id > 0 else None
-
-
-def safe_ack_preview_trigger_comment(config, job, log=None) -> None:
-    comment_id = preview_trigger_comment_id(job)
-    if comment_id is None:
-        return
-
-    try:
-        github_api(config, "POST", f"/repos/{repo_full_name(config)}/issues/comments/{comment_id}/reactions", {"content": "eyes"})
-    except Exception as exc:
-        log_nonfatal(f"Could not add eyes reaction to /preview comment #{comment_id}: {exc}", log)
-
-    try:
-        github_api(config, "DELETE", f"/repos/{repo_full_name(config)}/issues/comments/{comment_id}")
-    except Exception as exc:
-        log_nonfatal(f"Could not delete /preview comment #{comment_id}: {exc}", log)
-
-
-def install_requirements(config, root, log):
-    requirements = root / "requirements.txt"
-    if requirements.is_file():
-        py = python_bin(config)
-        run([py, "-m", "pip", "install", "--upgrade", "pip"], root, log)
-        run([py, "-m", "pip", "install", "-r", str(requirements)], root, log)
-
-
-def run_build_and_publish(config, root, dest, log, extra=None):
-    command = [python_bin(config), str(root / "tools" / "build_and_publish.py"), "--root", str(root), "--dest", str(dest)]
-    if extra:
-        command.extend(extra)
-    run(command, root, log)
-
-
-def publish_preview_log(config, pr_number, source):
-    dest = preview_root(config) / f"pr-{pr_number}"
-    dest.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(source, dest / "_deploy.log")
-
-
-def ensure_same_repo_preview(config, job):
-    if bool(config.get("allow_preview_from_forks", False)):
-        return
-    head_repo = str(job.get("head_repo") or "")
-    base_repo = str(job.get("base_repo") or job.get("repository") or repo_full_name(config))
-    if head_repo and base_repo and head_repo != base_repo:
-        raise DeployError(f"Refusing to build preview from forked repository: {head_repo}")
-
-
-def deploy_production(config, job):
-    sha = str(job.get("sha") or "") or None
-    root = site_src(config)
-    log_dir(config).mkdir(parents=True, exist_ok=True)
-    log_path = log_dir(config) / f"production-{(sha or time.strftime('%Y%m%d-%H%M%S'))[:12]}.log"
-    check_run = create_check_run(
-        config,
-        "PCA Production Deploy",
-        sha,
-        production_url(config),
-        "Production deploy started",
-        production_summary(config, sha, "started"),
-        external_id=f"production-{sha or int(time.time())}",
-    )
-    try:
-        with log_path.open("w", encoding="utf-8") as log:
-            log.write(f"Production deploy job: {json.dumps(job, ensure_ascii=False)}\n")
-            run(["git", "fetch", "origin", "main"], root, log)
-            run(["git", "checkout", "main"], root, log)
-            run(["git", "reset", "--hard", "origin/main"], root, log)
-            install_requirements(config, root, log)
-            run_build_and_publish(config, root, public_html(config), log)
-    except Exception as exc:
-        update_check_run(
-            config,
-            check_run,
-            "failure",
-            production_url(config),
-            "Production deploy failed",
-            production_summary(config, sha, "failed", exc),
-        )
-        raise
-    update_check_run(
-        config,
-        check_run,
-        "success",
-        production_url(config),
-        "Production deployed",
-        production_summary(config, sha, "succeeded"),
-    )
 
 
 def normalize_preview_job(config, job):
@@ -384,16 +174,122 @@ def normalize_preview_job(config, job):
     if pr_number <= 0:
         raise DeployError("Preview job is missing pr_number.")
     if job.get("type") == "preview_comment" or not job.get("sha"):
-        pr = get_pull_request(config, pr_number)
+        pr = pr_data(config, pr_number)
         job = dict(job)
         job["sha"] = pr.get("head", {}).get("sha")
         job["head_repo"] = pr.get("head", {}).get("repo", {}).get("full_name")
         job["base_repo"] = pr.get("base", {}).get("repo", {}).get("full_name")
-    ensure_same_repo_preview(config, job)
+    if not bool(config.get("allow_preview_from_forks", False)):
+        head_repo = str(job.get("head_repo") or "")
+        base_repo = str(job.get("base_repo") or job.get("repository") or repo_full_name(config))
+        if head_repo and base_repo and head_repo != base_repo:
+            raise DeployError(f"Refusing to build preview from forked repository: {head_repo}")
     return job
 
 
-def prepare_preview_worktree(config, pr_number, log):
+def production_summary(config, sha, status, error=None):
+    lines = [f"Production deploy {status} for `{sha or 'unknown'}`."]
+    lines.append(f"Production: {production_url(config)}")
+    if error:
+        lines.extend(["", f"Error: `{error}`"])
+    return "\n".join(lines)
+
+
+def preview_summary(pr_number, url, log_url, status, reason, error=None):
+    lines = [f"Preview deploy {status} for PR #{pr_number}.", "", f"- Triggered by: {reason or 'unknown'}", f"- Preview: {url}", f"- Build log: {log_url}"]
+    if error:
+        lines.extend(["", f"Error: `{error}`"])
+    return "\n".join(lines)
+
+
+def preview_reason(job):
+    if str(job.get("type") or "") == "preview_comment":
+        user = str(job.get("comment_user") or "").strip()
+        return f"issue_comment /preview by @{user}" if user else "issue_comment /preview"
+    event = str(job.get("event") or "").strip()
+    action = str(job.get("action") or "").strip()
+    return f"{event}/{action}" if event and action else event or "unknown"
+
+
+def preview_comment_body(pr_number, sha, url, log_url, status, title, error=None):
+    lines = [PREVIEW_COMMENT_MARKER, "### PCA Preview Deploy", "", title, "", f"- PR: #{pr_number}", f"- Commit: `{(sha or 'unknown')[:12]}`", f"- Preview: {url}", f"- Build log: {log_url}"]
+    if error:
+        lines.extend(["", f"Error: `{error}`"])
+    lines.append("")
+    lines.append(f"Last updated: {time.strftime('%Y-%m-%d %H:%M:%S UTC', time.gmtime())}")
+    return "\n".join(lines)
+
+
+def upsert_preview_comment(config, pr_number, body):
+    comments = github_api(config, "GET", f"/repos/{repo_full_name(config)}/issues/{pr_number}/comments?per_page=100")
+    if isinstance(comments, list):
+        for comment in comments:
+            if isinstance(comment, dict) and PREVIEW_COMMENT_MARKER in str(comment.get("body") or "") and comment.get("id"):
+                return github_api(config, "PATCH", f"/repos/{repo_full_name(config)}/issues/comments/{comment['id']}", {"body": body})
+    return github_api(config, "POST", f"/repos/{repo_full_name(config)}/issues/{pr_number}/comments", {"body": body})
+
+
+def safe_preview_comment(config, pr_number, sha, url, log_url, status, title, error=None, log=None):
+    try:
+        upsert_preview_comment(config, pr_number, preview_comment_body(pr_number, sha, url, log_url, status, title, error))
+    except Exception as exc:
+        message = f"Could not update PR preview comment: {exc}"
+        if log:
+            log.write("\n" + message + "\n")
+            log.flush()
+        else:
+            print(message, file=sys.stderr)
+
+
+def ack_preview_command(config, job, log=None):
+    if str(job.get("type") or "") != "preview_comment":
+        return
+    comment_id = job.get("comment_id")
+    if not comment_id:
+        return
+    try:
+        github_api(config, "POST", f"/repos/{repo_full_name(config)}/issues/comments/{comment_id}/reactions", {"content": "eyes"})
+        github_api(config, "DELETE", f"/repos/{repo_full_name(config)}/issues/comments/{comment_id}")
+    except Exception as exc:
+        if log:
+            log.write(f"\nCould not acknowledge /preview command: {exc}\n")
+            log.flush()
+
+
+def install_requirements(config, root: Path, log) -> None:
+    requirements = root / "requirements.txt"
+    if requirements.is_file():
+        py = python_bin(config)
+        run([py, "-m", "pip", "install", "--upgrade", "pip"], root, log)
+        run([py, "-m", "pip", "install", "-r", str(requirements)], root, log)
+
+
+def run_builder(config, root: Path, log, *args: str) -> None:
+    run([python_bin(config), str(root / "tools" / "build.py"), *args], root, log)
+
+
+def deploy_production(config, job: dict[str, Any]) -> None:
+    root = site_src(config)
+    sha = str(job.get("sha") or "") or None
+    short_sha = (sha or time.strftime("%Y%m%d-%H%M%S"))[:12]
+    log_dir(config).mkdir(parents=True, exist_ok=True)
+    log_path = log_dir(config) / f"production-{short_sha}.log"
+    check = create_check(config, "PCA Production Deploy", sha, production_url(config), "Production deploy started", production_summary(config, sha, "started"), f"production-{short_sha}")
+    try:
+        with log_path.open("w", encoding="utf-8") as log:
+            log.write(f"Production deploy job: {json.dumps(job, ensure_ascii=False)}\n")
+            run(["git", "fetch", "origin", "main"], root, log)
+            run(["git", "checkout", "main"], root, log)
+            run(["git", "reset", "--hard", "origin/main"], root, log)
+            install_requirements(config, root, log)
+            run_builder(config, root, log, "deploy", "--root", str(root), "--to", str(public_html(config)))
+    except Exception as exc:
+        finish_check(config, check, "failure", production_url(config), "Production deploy failed", production_summary(config, sha, "failed", exc))
+        raise
+    finish_check(config, check, "success", production_url(config), "Production deployed", production_summary(config, sha, "succeeded"))
+
+
+def prepare_preview_worktree(config, pr_number: int, log) -> Path:
     root = site_src(config)
     target = worktree_dir(config) / f"pr-{pr_number}"
     target.parent.mkdir(parents=True, exist_ok=True)
@@ -405,103 +301,43 @@ def prepare_preview_worktree(config, pr_number, log):
     return target
 
 
-def preview_trigger_reason(job):
-    event = str(job.get("event") or "").strip()
-    action = str(job.get("action") or "").strip()
-    job_type = str(job.get("type") or "").strip()
-
-    if job_type == "preview_comment":
-        user = str(job.get("comment_user") or "").strip()
-        comment_id = job.get("comment_id")
-        suffix = []
-        if user:
-            suffix.append(f"by @{user}")
-        if comment_id:
-            suffix.append(f"comment #{comment_id}")
-        details = f" ({', '.join(suffix)})" if suffix else ""
-        return f"issue_comment/created /preview{details}"
-
-    if event == "pull_request" and action:
-        labels = {
-            "opened": "pull_request/opened (PR created)",
-            "synchronize": "pull_request/synchronize (new commits pushed)",
-            "reopened": "pull_request/reopened (PR reopened)",
-        }
-        return labels.get(action, f"pull_request/{action}")
-
-    if event:
-        return f"{event}/{action}" if action else event
-
-    return "unknown"
+def publish_preview_log(config, pr_number: int, source: Path) -> None:
+    dest = preview_root(config) / f"pr-{pr_number}"
+    dest.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(source, dest / "_deploy.log")
 
 
-def preview_summary(pr_number, url, log_url, status, trigger_reason):
-    lines = [
-        f"Preview deploy {status} for PR #{pr_number}.",
-        "",
-        f"- Triggered by: {trigger_reason or 'unknown'}",
-        f"- Preview: {url}",
-        f"- Build log: {log_url}",
-    ]
-    return "\n".join(lines)
-
-
-def deploy_preview(config, job):
+def deploy_preview(config, job: dict[str, Any]) -> None:
     job = normalize_preview_job(config, job)
     pr_number = int(job["pr_number"])
     sha = str(job.get("sha") or "") or None
+    short_sha = (sha or time.strftime("%Y%m%d-%H%M%S"))[:12]
     url = preview_url(config, pr_number)
     log_url = preview_log_url(config, pr_number)
-    trigger_reason = preview_trigger_reason(job)
+    reason = preview_reason(job)
     log_dir(config).mkdir(parents=True, exist_ok=True)
-    log_path = log_dir(config) / f"preview-pr-{pr_number}-{(sha or time.strftime('%Y%m%d-%H%M%S'))[:12]}.log"
-
-    check_run = create_check_run(
-        config,
-        "PCA Preview Deploy",
-        sha,
-        url,
-        "Preview deploy started",
-        preview_summary(pr_number, url, log_url, "started", trigger_reason),
-        external_id=f"preview-pr-{pr_number}-{sha or int(time.time())}",
-    )
+    log_path = log_dir(config) / f"preview-pr-{pr_number}-{short_sha}.log"
+    check = create_check(config, "PCA Preview Deploy", sha, url, "Preview deploy started", preview_summary(pr_number, url, log_url, "started", reason), f"preview-pr-{pr_number}-{short_sha}")
     try:
         with log_path.open("w", encoding="utf-8") as log:
             log.write(f"Preview deploy job: {json.dumps(job, ensure_ascii=False)}\n")
-            safe_ack_preview_trigger_comment(config, job, log=log)
-            safe_upsert_preview_comment(config, pr_number, sha, url, log_url, "started", "Preview deploy started.", log=log)
+            ack_preview_command(config, job, log)
+            safe_preview_comment(config, pr_number, sha, url, log_url, "started", "Preview deploy started.", log=log)
             root = prepare_preview_worktree(config, pr_number, log)
             install_requirements(config, root, log)
-            run_build_and_publish(config, root, preview_root(config) / f"pr-{pr_number}", log, [
-                "--url-prefix", f"/pr-{pr_number}", "--lang-in-url", "--write-preview-index",
-            ])
+            run_builder(config, root, log, "preview", "--root", str(root), "--to", str(preview_root(config) / f"pr-{pr_number}"), "--prefix", f"pr-{pr_number}")
     except Exception as exc:
         if log_path.exists():
             publish_preview_log(config, pr_number, log_path)
-        update_check_run(
-            config,
-            check_run,
-            "failure",
-            log_url,
-            "Preview deploy failed",
-            preview_summary(pr_number, url, log_url, "failed", trigger_reason) + f"\n\nError: `{exc}`",
-        )
-        safe_upsert_preview_comment(config, pr_number, sha, url, log_url, "failed", "Preview deploy failed.", exc)
+        finish_check(config, check, "failure", log_url, "Preview deploy failed", preview_summary(pr_number, url, log_url, "failed", reason, exc))
+        safe_preview_comment(config, pr_number, sha, url, log_url, "failed", "Preview deploy failed.", exc)
         raise
-
     publish_preview_log(config, pr_number, log_path)
-    update_check_run(
-        config,
-        check_run,
-        "success",
-        url,
-        "Preview deployed",
-        preview_summary(pr_number, url, log_url, "succeeded", trigger_reason),
-    )
-    safe_upsert_preview_comment(config, pr_number, sha, url, log_url, "succeeded", "Preview deploy is ready.")
+    finish_check(config, check, "success", url, "Preview deployed", preview_summary(pr_number, url, log_url, "succeeded", reason))
+    safe_preview_comment(config, pr_number, sha, url, log_url, "succeeded", "Preview deploy is ready.")
 
 
-def cleanup_preview(config, job):
+def cleanup_preview(config, job: dict[str, Any]) -> None:
     pr_number = int(job.get("pr_number") or 0)
     if pr_number <= 0:
         raise DeployError("Cleanup job is missing pr_number.")
@@ -510,7 +346,7 @@ def cleanup_preview(config, job):
         shutil.rmtree(target)
 
 
-def handle_job(config, job):
+def handle_job(config, job: dict[str, Any]) -> None:
     job_type = str(job.get("type") or "")
     if job_type == "production":
         deploy_production(config, job)
@@ -532,7 +368,7 @@ def worker_lock(config):
         yield
 
 
-def process_queue(config, max_jobs):
+def process_queue(config, max_jobs: int) -> int:
     directory = queue_dir(config)
     directory.mkdir(parents=True, exist_ok=True)
     count = 0
@@ -557,15 +393,16 @@ def process_queue(config, max_jobs):
     return count
 
 
-def main():
-    parser = argparse.ArgumentParser(description="Process queued PCA deploy webhook jobs.")
-    parser.add_argument("--config", default=str(DEFAULT_CONFIG), help="deploy config JSON path")
-    parser.add_argument("--max-jobs", type=int, default=10, help="maximum queued jobs to process in one run")
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Process queued PCA deploy jobs.")
+    parser.add_argument("--config", default=str(DEFAULT_CONFIG))
+    parser.add_argument("--max-jobs", type=int, default=5)
     args = parser.parse_args()
     config = load_config(Path(args.config).expanduser().resolve())
     with worker_lock(config):
-        count = process_queue(config, args.max_jobs)
-    print(f"Processed deploy jobs: {count}")
+        processed = process_queue(config, args.max_jobs)
+    if processed:
+        print(f"Processed {processed} deploy job(s).")
 
 
 if __name__ == "__main__":

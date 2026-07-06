@@ -31,6 +31,9 @@
   "schema": {
     "legal_name": "Kancelaria Adwokacka Elżbieta Bansleben",
     "url": "https://bansleben.pl/",
+    "url_langs": {
+      "hr": "en"
+    },
     "same_as": [
       "https://www.facebook.com/p/El%C5%BCbieta-Bansleben-Kancelaria-Adwokacka-100057481958300",
       "https://linkedin.com/in/elżbieta-bansleben-1ab1ba35"

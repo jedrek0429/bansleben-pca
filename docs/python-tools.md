@@ -1,46 +1,91 @@
-# Python tools
+# Builder app
 
-Run commands from the repository root. Use `tools/.venv/bin/python` on the server if the virtual environment is installed there.
+Run commands from the repository root. On the server, use the project virtual environment when available, for example `tools/.venv/bin/python`.
 
-## Commands most people need
+The canonical entrypoint is:
+
+```sh
+python tools/build.py <command>
+```
+
+## Main commands
 
 | Task | Command |
 | --- | --- |
 | Install dependencies | `python -m pip install -r requirements.txt` |
 | Check Python syntax | `python -m compileall -q tools/` |
-| Validate translations | `python tools/validate_locales.py --root .` |
-| Build site | `python tools/build.py --root .` |
-| Production publish | `python tools/build_and_publish.py --root . --dest ../public_html` |
-| Preview publish | `python tools/build_and_publish.py --root . --dest ../public_html/preview/pr-123 --url-prefix /pr-123 --lang-in-url --write-preview-index` |
+| Validate translations/config | `python tools/build.py check --root .` |
+| Validate without interactive autofix prompt | `python tools/build.py check --root . --no-autofix-prompt` |
+| Build local site output | `python tools/build.py site --root .` |
+| Build local site without writing output | `python tools/build.py site --root . --dry` |
+| Show resolved config | `python tools/build.py inspect --root .` |
+| Remove generated output | `python tools/build.py clean --root .` |
 | Run deploy worker | `python tools/webhook_deploy_worker.py` |
 
-## Main scripts
+When `check` fails in an interactive terminal, it asks whether to run `utils autofix-locales`:
 
-| Script | Purpose |
+```text
+Run utils autofix-locales now? [Y/n]
+```
+
+Deploy and preview workflows disable that prompt so automation never waits for input.
+
+## Deployment commands
+
+Production:
+
+```sh
+python tools/build.py deploy \
+  --root . \
+  --to ../public_html
+```
+
+Preview:
+
+```sh
+python tools/build.py preview \
+  --root . \
+  --to ../public_html/preview/pr-123 \
+  --prefix pr-123
+```
+
+`preview` owns preview-specific URL rewriting. It does not expose production-only options. Content images resolve to `/pr-123/assets/...` in preview output.
+
+## Utilities
+
+Utilities live under `utils` because they maintain content or assets rather than define deployment modes.
+
+| Task | Command |
 | --- | --- |
-| `tools/build_and_publish.py` | Canonical build and publish wrapper. Use this for production, previews, and automation. |
-| `tools/build.py` | Builds the static site into `../site-dist/`. |
-| `tools/publish.py` | Publishes an existing `../site-dist/` tree to a destination and removes stale generated files. |
-| `tools/validate_locales.py` | Checks locale files against the English locale and page config. |
-| `tools/autofix_locales.py` | Repairs fixable locale drift and writes `.bak` backups. |
-| `tools/format_hyperlinks.py` | Normalizes bare URLs and email addresses in Markdown content. |
-| `tools/webhook_deploy_worker.py` | Processes queued production and preview deploy jobs on the server. |
-| `tools/publish_screenshots_branch.py` | Publishes generated screenshots for PR review comments. |
+| Autofix locale drift | `python tools/build.py utils autofix-locales --root .` |
+| Normalize Markdown hyperlinks | `python tools/build.py utils format-links --root .` |
+| Check hyperlink formatting without writing | `python tools/build.py utils format-links --root . --check` |
+| Run hyperlink formatter self-test | `python tools/build.py utils format-links --self-test` |
+| Convert images below a directory to WebP | `python tools/build.py utils convert-images assets` |
 
-## Library/helper files
+`utils autofix-locales` creates `.bak` backups before writing locale JSON files. It restores missing enabled page entries, titles, slugs, parent references, card entries, and card image sources from `config/pages.json` and `locales/en.json`.
 
-These are used by the scripts above and are not usually run directly:
+## Builder implementation
 
-- `tools/common.py`
-- `tools/renderer.py`
-- `tools/resolve_images.py`
+| Path | Purpose |
+| --- | --- |
+| `tools/build.py` | Small app launcher. |
+| `tools/build/runner.py` | Command-line parser and command dispatch. |
+| `tools/build/builder.py` | Site build orchestration. |
+| `tools/build/workflow.py` | Preview and production workflows. |
+| `tools/build/publisher.py` | Safe publish/copy checks. |
+| `tools/build/validation.py` | Locale and config validation. |
+| `tools/build/autofix.py` | Locale autofix utility. |
+| `tools/build/hyperlinks.py` | Markdown hyperlink normalization utility. |
+| `tools/build/images.py` | Markdown and HTML content image URL resolution. |
 
 ## Recommended checks before opening a PR
 
 ```sh
 python -m compileall -q tools/
-python tools/validate_locales.py --root .
-python tools/build.py --root .
+python tools/build.py check --root .
+python tools/build.py site --root . --dry
+python tools/build.py site --root .
 ```
 
 For server setup and deploy behavior, start with [`docs/workspace.md`](workspace.md).
