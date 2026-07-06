@@ -175,6 +175,14 @@ img { height: auto; }
   font-weight: 500;
 }
 
+.pca-article-section,
+.pca-card-section,
+.pca-hague-block,
+.site-footer {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 720px;
+}
+
 .pca-content { max-width: 900px; }
 .pca-content--center { max-width: 760px; text-align: center; }
 

@@ -81,7 +81,7 @@ def hero_image_for_page(ctx, lang: str, locales, key: str) -> str:
         attrs.append(f'height="{html.escape(str(height), quote=True)}"')
     if srcset:
         attrs.append(f'srcset="{html.escape(srcset, quote=True)}"')
-        attrs.append('sizes="100vw"')
+        attrs.append('sizes="(max-width: 560px) calc(100vw - 26px), (max-width: 900px) calc(100vw - 40px), 1080px"')
     if fallback_src:
         attrs.append(f'data-fallback-src="{html.escape(fallback_src, quote=True)}"')
     attrs.extend([

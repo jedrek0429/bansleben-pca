@@ -2,6 +2,11 @@
 (function () {
   var PHONE_MAX_WIDTH = 900;
   var REVEAL_SELECTOR = '.pca-reveal, .pca-card, .pca-contact';
+  var cachedHeader = null;
+  var cachedScrollButtons = null;
+  var lastPhoneLayout = null;
+  var lastCompactHeader = null;
+  var lastScrollTopVisible = null;
 
   function ready(callback) {
     if (document.readyState === 'loading') {
@@ -27,7 +32,15 @@
   }
 
   function header() {
-    return document.getElementById('main-header');
+    if (!cachedHeader) cachedHeader = document.getElementById('main-header');
+    return cachedHeader;
+  }
+
+  function scrollButtons() {
+    if (!cachedScrollButtons) {
+      cachedScrollButtons = Array.prototype.slice.call(document.querySelectorAll('.pca-scroll-top'));
+    }
+    return cachedScrollButtons;
   }
 
   function closeMobileMenu(root) {
@@ -44,9 +57,8 @@
     if (!root) return;
 
     var phone = isPhoneLayout();
-    root.classList.toggle('pca-mobile-nav-active', phone);
-    root.classList.toggle('pca-desktop-nav-active', !phone);
-    document.body.classList.toggle('pca-mobile-nav-active', phone);
+    if (phone === lastPhoneLayout) return;
+    lastPhoneLayout = phone;
 
     if (!phone) {
       closeMobileMenu(root);
@@ -56,10 +68,19 @@
   function updateFixedHeader() {
     var root = header();
     if (!root) return;
-    root.classList.toggle('pca-header-compact', window.scrollY > 10);
 
-    document.querySelectorAll('.pca-scroll-top').forEach(function (button) {
-      button.classList.toggle('is-visible', window.scrollY > 400);
+    var compact = window.scrollY > 10;
+    if (compact !== lastCompactHeader) {
+      lastCompactHeader = compact;
+      root.classList.toggle('pca-header-compact', compact);
+    }
+
+    var visible = window.scrollY > 400;
+    if (visible === lastScrollTopVisible) return;
+    lastScrollTopVisible = visible;
+
+    scrollButtons().forEach(function (button) {
+      button.classList.toggle('is-visible', visible);
     });
   }
 
@@ -85,7 +106,7 @@
   }
 
   function initScrollTop() {
-    document.querySelectorAll('.pca-scroll-top').forEach(function (button) {
+    scrollButtons().forEach(function (button) {
       if (button.dataset.pcaBound === '1') return;
       button.dataset.pcaBound = '1';
       button.addEventListener('click', function () {
@@ -154,14 +175,10 @@
     refresh();
 
     var refreshLater = rafDebounce(refresh);
-    window.addEventListener('scroll', updateFixedHeader, { passive: true });
+    var scrollLater = rafDebounce(updateFixedHeader);
+    window.addEventListener('scroll', scrollLater, { passive: true });
     window.addEventListener('resize', refreshLater, { passive: true });
     window.addEventListener('orientationchange', refreshLater);
-    window.addEventListener('load', refreshLater);
-
-    if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(refreshLater);
-    }
   }
 
   ready(init);
