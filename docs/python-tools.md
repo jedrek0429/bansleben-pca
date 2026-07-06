@@ -58,7 +58,7 @@ Utilities live under `utils` because they maintain content or assets rather than
 | Path | Purpose |
 | --- | --- |
 | `tools/build.py` | Small app launcher. |
-| `tools/build/cli.py` | Command-line parser and command dispatch. |
+| `tools/build/app.py` | Command-line parser and command dispatch. |
 | `tools/build/builder.py` | Site build orchestration. |
 | `tools/build/workflow.py` | Preview and production workflows. |
 | `tools/build/publisher.py` | Safe publish/copy checks. |
