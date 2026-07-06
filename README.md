@@ -6,7 +6,7 @@ Public sites:
 
 - English: <https://polandchildabduction.pl/>
 - French: <https://enlevementparentalpologne.pl/>
-- Croatian: <https://roditeljskaotmicapoljska.pl/>
+- Croatian: <https://roditeljskaotmicapolskapolska.pl/>
 
 ## What this repo does
 
@@ -68,11 +68,15 @@ python tools/build.py site --root . --dry
 | --- | --- |
 | Build local site output | `python tools/build.py site --root .` |
 | Validate locale/config consistency | `python tools/build.py check --root .` |
+| Validate without interactive autofix prompt | `python tools/build.py check --root . --no-autofix-prompt` |
+| Autofix locale drift | `python tools/build.py utils autofix-locales --root .` |
 | Normalize Markdown links | `python tools/build.py utils format-links --root .` |
 | Check Markdown link formatting without writing | `python tools/build.py utils format-links --root . --check` |
 | Convert images below a directory to WebP | `python tools/build.py utils convert-images assets` |
 | Remove generated output | `python tools/build.py clean --root .` |
 | Show resolved config | `python tools/build.py inspect --root .` |
+
+When `check` fails in an interactive terminal, it asks whether to run `utils autofix-locales`.
 
 ## Production deploy command
 
