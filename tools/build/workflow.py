@@ -2,46 +2,14 @@
 
 from __future__ import annotations
 
-import shutil
-import subprocess
-import sys
 from pathlib import Path
 
-from common import CLR_GREEN, CLR_RED, print_labeled
+from common import CLR_GREEN, print_labeled
 from builder import site
 from context import normalize_url_prefix, parse_langs
 from hyperlinks import format_content
 from publisher import publish
-
-TOOLS_DIR = Path(__file__).resolve().parents[1]
-
-
-def run_required(label: str, command: list[str]) -> None:
-    rc = subprocess.run(command)
-    if rc.returncode != 0:
-        print_labeled("ERROR", CLR_RED, f"{label} failed (see output).")
-        raise SystemExit(rc.returncode)
-
-
-def python_bin() -> str:
-    value = sys.executable or shutil.which("python3") or shutil.which("python")
-    if not value:
-        print_labeled("ERROR", CLR_RED, "Python executable not found.")
-        raise SystemExit(1)
-    return value
-
-
-def run_tool(label: str, script_name: str, args: list[str]) -> None:
-    script = TOOLS_DIR / script_name
-    if not script.is_file():
-        print_labeled("ERROR", CLR_RED, f"Required tool not found for {label}: {script}")
-        raise SystemExit(1)
-    run_required(label, [python_bin(), str(script), *args])
-
-
-def check(root, *, strict: bool = False) -> None:
-    # TODO: fold validate_locales.py into build/validation.py, then remove this bridge.
-    run_tool("Locale validation", "validate_locales.py", ["--root", str(Path(root).expanduser().resolve())])
+from validation import validate as check
 
 
 def empty_root_index(dist: Path) -> None:
