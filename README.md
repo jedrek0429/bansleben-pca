@@ -6,7 +6,7 @@ Public sites:
 
 - English: <https://polandchildabduction.pl/>
 - French: <https://enlevementparentalpologne.pl/>
-- Croatian: <https://roditeljskaotmicapolskapolska.pl/>
+- Croatian: <https://roditeljskaotmicapoljska.pl/>
 
 ## What this repo does
 
