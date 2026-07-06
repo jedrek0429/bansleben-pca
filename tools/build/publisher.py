@@ -7,7 +7,7 @@ from pathlib import Path
 
 from common import CLR_GREEN, CLR_RED, CLR_WHITE, display_path, print_group, print_labeled, print_section
 
-DEFAULT_PRESERVED_ROOT_ITEMS = ["preview", ".private", "github-webhook.php"]
+DEFAULT_PRESERVED_ROOT_ITEMS = ["preview", ".private"]
 
 
 def assert_safe_paths(dist: Path, dest: Path) -> None:
