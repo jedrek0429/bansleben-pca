@@ -100,7 +100,7 @@ jobs:
             const desktopUrl = `${rawBase}/desktop.png?cache=${cache}`;
             const mobileUrl = `${rawBase}/mobile.png?cache=${cache}`;
             const branchUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/tree/site-screenshots/pr-${prNumber}`;
-            const body = `${marker}\nSite screenshots for ${process.env.SCREENSHOT_PATH} are ready.\n\n![Desktop screenshot](${desktopUrl})\n\n![Mobile screenshot](${mobileUrl})\n\nLinks: [screenshot branch](${branchUrl}) - [artifact download](${artifactUrl})`;
+            const body = `${marker}\nSite screenshots for ${process.env.SCREENSHOT_PATH} are ready.\n\n<a href="${desktopUrl}"><img src="${desktopUrl}" alt="Desktop screenshot" width="320"></a>\n\n<a href="${mobileUrl}"><img src="${mobileUrl}" alt="Mobile screenshot" width="160"></a>\n\nLinks: [screenshot branch](${branchUrl}) - [artifact download](${artifactUrl})`;
             const comments = await github.paginate(github.rest.issues.listComments, {
               owner: context.repo.owner,
               repo: context.repo.repo,
