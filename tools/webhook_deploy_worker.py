@@ -51,16 +51,43 @@ def queue_dir(config): return cfg_path(config, "queue_dir", private_dir(config) 
 def log_dir(config): return cfg_path(config, "log_dir", private_dir(config) / "deploy-logs")
 def worktree_dir(config): return cfg_path(config, "worktree_dir", site_src(config) / ".deploy-worktrees")
 def python_bin(config): return str(config.get("python") or sys.executable or shutil.which("python3") or shutil.which("python"))
+
+
 def repo_full_name(config):
     repo = str(config.get("repository") or "").strip()
     if not repo:
         raise DeployError("Missing repository in deploy config.")
     return repo
 
+
 def base_url(config, key, default): return str(config.get(key) or default).rstrip("/")
 def production_url(config): return f"{base_url(config, 'production_base_url', 'https://polandchildabduction.pl')}/"
 def preview_url(config, pr_number): return f"{base_url(config, 'preview_base_url', 'https://preview.polandchildabduction.pl')}/pr-{pr_number}/"
 def preview_log_url(config, pr_number): return f"{preview_url(config, pr_number)}_deploy.log"
+
+
+def with_trailing_slash(url: str) -> str:
+    return str(url).strip().rstrip("/") + "/"
+
+
+def production_site_urls(config: dict[str, Any]) -> dict[str, str]:
+    fallback = {"en": production_url(config)}
+    seo_path = site_src(config) / "config" / "seo.json"
+    if not seo_path.is_file():
+        return fallback
+    try:
+        seo = json.loads(seo_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return fallback
+    site_urls = seo.get("site_urls") if isinstance(seo, dict) else None
+    if not isinstance(site_urls, dict):
+        return fallback
+    urls = {
+        str(lang): with_trailing_slash(str(url))
+        for lang, url in site_urls.items()
+        if str(lang).strip() and str(url).strip()
+    }
+    return urls or fallback
 
 
 def run(command: list[str], cwd: Path, log, check: bool = True) -> None:
@@ -94,8 +121,18 @@ def github_jwt(config: dict[str, Any]) -> str:
     now = int(time.time())
     header = {"alg": "RS256", "typ": "JWT"}
     payload = {"iat": now - 60, "exp": now + 540, "iss": app_id}
-    signing_input = (b64url(json.dumps(header, separators=(",", ":")).encode()) + "." + b64url(json.dumps(payload, separators=(",", ":")).encode())).encode("ascii")
-    signed = subprocess.run(["openssl", "dgst", "-sha256", "-sign", str(github_private_key(config))], input=signing_input, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
+    signing_input = (
+        b64url(json.dumps(header, separators=(",", ":")).encode())
+        + "."
+        + b64url(json.dumps(payload, separators=(",", ":")).encode())
+    ).encode("ascii")
+    signed = subprocess.run(
+        ["openssl", "dgst", "-sha256", "-sign", str(github_private_key(config))],
+        input=signing_input,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
     if signed.returncode != 0:
         raise DeployError("Could not sign GitHub App JWT: " + signed.stderr.decode("utf-8", errors="replace"))
     return signing_input.decode("ascii") + "." + b64url(signed.stdout)
@@ -188,15 +225,22 @@ def normalize_preview_job(config, job):
 
 
 def production_summary(config, sha, status, error=None):
-    lines = [f"Production deploy {status} for `{sha or 'unknown'}`."]
-    lines.append(f"Production: {production_url(config)}")
+    lines = [f"Production deploy {status} for `{sha or 'unknown'}`.", "", "Published sites:"]
+    for lang, url in production_site_urls(config).items():
+        lines.append(f"- {lang}: {url}")
     if error:
         lines.extend(["", f"Error: `{error}`"])
     return "\n".join(lines)
 
 
 def preview_summary(pr_number, url, log_url, status, reason, error=None):
-    lines = [f"Preview deploy {status} for PR #{pr_number}.", "", f"- Triggered by: {reason or 'unknown'}", f"- Preview: {url}", f"- Build log: {log_url}"]
+    lines = [
+        f"Preview deploy {status} for PR #{pr_number}.",
+        "",
+        f"- Triggered by: {reason or 'unknown'}",
+        f"- Preview: {url}",
+        f"- Build log: {log_url}",
+    ]
     if error:
         lines.extend(["", f"Error: `{error}`"])
     return "\n".join(lines)
@@ -212,7 +256,17 @@ def preview_reason(job):
 
 
 def preview_comment_body(pr_number, sha, url, log_url, status, title, error=None):
-    lines = [PREVIEW_COMMENT_MARKER, "### PCA Preview Deploy", "", title, "", f"- PR: #{pr_number}", f"- Commit: `{(sha or 'unknown')[:12]}`", f"- Preview: {url}", f"- Build log: {log_url}"]
+    lines = [
+        PREVIEW_COMMENT_MARKER,
+        "### PCA Preview Deploy",
+        "",
+        title,
+        "",
+        f"- PR: #{pr_number}",
+        f"- Commit: `{(sha or 'unknown')[:12]}`",
+        f"- Preview: {url}",
+        f"- Build log: {log_url}",
+    ]
     if error:
         lines.extend(["", f"Error: `{error}`"])
     lines.append("")
@@ -274,7 +328,15 @@ def deploy_production(config, job: dict[str, Any]) -> None:
     short_sha = (sha or time.strftime("%Y%m%d-%H%M%S"))[:12]
     log_dir(config).mkdir(parents=True, exist_ok=True)
     log_path = log_dir(config) / f"production-{short_sha}.log"
-    check = create_check(config, "PCA Production Deploy", sha, production_url(config), "Production deploy started", production_summary(config, sha, "started"), f"production-{short_sha}")
+    check = create_check(
+        config,
+        "PCA Production Deploy",
+        sha,
+        production_url(config),
+        "Production deploy started",
+        production_summary(config, sha, "started"),
+        f"production-{short_sha}",
+    )
     try:
         with log_path.open("w", encoding="utf-8") as log:
             log.write(f"Production deploy job: {json.dumps(job, ensure_ascii=False)}\n")
