@@ -102,7 +102,9 @@ def copy_assets_to(ctx, dst: Path) -> None:
 def copy_static(ctx, lang: str) -> None:
     lang_root = ctx.dist / lang
     lang_root.mkdir(parents=True, exist_ok=True)
-    if not ctx.lang_in_url:
+    if ctx.lang_in_url:
+        copy_assets_to(ctx, ctx.dist)
+    else:
         copy_assets_to(ctx, lang_root)
     for php_src in ctx.root.glob("*.php"):
         if php_src.name == "pca-contact-config.php":
