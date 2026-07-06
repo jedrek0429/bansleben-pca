@@ -16,6 +16,13 @@ def locale_files(locales_dir: Path) -> list[Path]:
     return sorted(locales_dir / name for name in os.listdir(locales_dir) if name.endswith(".json"))
 
 
+def locale_set(page: dict, fallback_langs: set[str]) -> set[str]:
+    enabled = page.get("enabled")
+    if not enabled:
+        return set(fallback_langs)
+    return {str(lang) for lang in enabled}
+
+
 def page_enabled(page: dict, lang: str) -> bool:
     enabled = page.get("enabled")
     if not enabled:
@@ -91,6 +98,7 @@ def validate(root, *, strict: bool = False, autofix_prompt: bool = True) -> None
     if "en" not in locales:
         errors.append("locales/en.json is required")
 
+    fallback_langs = set(expected_langs or locales.keys())
     for page in pages:
         key = page.get("key")
         if not key:
@@ -99,8 +107,8 @@ def validate(root, *, strict: bool = False, autofix_prompt: bool = True) -> None
         if parent and parent not in page_by_key:
             errors.append(f"Page '{key}' references missing parent '{parent}'")
         if parent and parent in page_by_key:
-            child_langs = set(page.get("enabled", []) or [])
-            parent_langs = set(page_by_key[parent].get("enabled", []) or [])
+            child_langs = locale_set(page, fallback_langs)
+            parent_langs = locale_set(page_by_key[parent], fallback_langs)
             missing = child_langs - parent_langs
             if missing:
                 errors.append(f"Parent '{parent}' is not enabled for locales {sorted(missing)} required by child '{key}'")
