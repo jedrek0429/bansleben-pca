@@ -15,13 +15,11 @@ from common import CLR_GREEN, CLR_RED, CLR_BLUE, CLR_WHITE, color, display_path,
 DEFAULT_ROOT = Path(__file__).parents[2].resolve()
 DEFAULT_PUBLIC_HTML = DEFAULT_ROOT / "public_html"
 DEFAULT_EDITOR = DEFAULT_PUBLIC_HTML / "editor"
-PROTECTED_PUBLIC_HTML_DIRS = ("ochronapacjenta.pl",)
 
 ROOT = DEFAULT_ROOT
 PUBLIC_HTML = DEFAULT_PUBLIC_HTML
 EDITOR = DEFAULT_EDITOR
 DEST = None
-
 
 def configure_paths(editor: Path, dest: Path) -> None:
     global EDITOR, DEST, ROOT, PUBLIC_HTML
@@ -55,30 +53,6 @@ def assert_dist_ok() -> None:
         raise SystemExit(1)
 
 
-def protected_rsync_args() -> list[str]:
-    if DEST is None:
-        return []
-    if DEST != PUBLIC_HTML and PUBLIC_HTML not in DEST.parents:
-        return []
-
-    return [
-        arg
-        for dirname in PROTECTED_PUBLIC_HTML_DIRS
-        for arg in (f"--exclude=/{dirname}/", f"--filter=P /{dirname}/***")
-    ]
-
-
-def assert_dest_can_be_replaced() -> None:
-    if DEST is None:
-        raise SystemExit("Missing required destination path.")
-    if DEST == PUBLIC_HTML:
-        protected = ", ".join(PROTECTED_PUBLIC_HTML_DIRS)
-        raise SystemExit(
-            f"Refusing to replace public_html directly because it contains protected directories: {protected}. "
-            "Use rsync or publish into a subdirectory instead."
-        )
-
-
 def publish_editor() -> str:
     if DEST is None:
         raise SystemExit("Missing required destination path.")
@@ -87,12 +61,11 @@ def publish_editor() -> str:
 
     if shutil.which("rsync"):
         subprocess.run(
-            ["rsync", "-a", "--delete", *protected_rsync_args(), str(EDITOR) + "/", str(DEST) + "/"],
+            ["rsync", "-a", "--delete", str(EDITOR) + "/", str(DEST) + "/"],
             check=True,
         )
         return "rsync"
 
-    assert_dest_can_be_replaced()
     if DEST.exists():
         shutil.rmtree(DEST)
 
