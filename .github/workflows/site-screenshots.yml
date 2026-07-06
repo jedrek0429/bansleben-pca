@@ -77,3 +77,24 @@ jobs:
         env:
           PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
         run: python tools/publish_screenshots_branch.py --pr-number "$PR_NUMBER"
+
+      - name: Comment screenshots on pull request
+        if: always() && (github.event_name == 'pull_request' || inputs.pr_number != '')
+        uses: actions/github-script@v7
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
+          SCREENSHOT_PATH: ${{ inputs.path || '/en/' }}
+          ARTIFACT_URL: ${{ steps.upload.outputs.artifact-url }}
+        with:
+          script: |
+            const prNumber = Number(process.env.PR_NUMBER);
+            const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const artifactUrl = process.env.ARTIFACT_URL || runUrl;
+            const branchUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/tree/site-screenshots/pr-${prNumber}`;
+            const body = `Site screenshots for ${process.env.SCREENSHOT_PATH} are ready.\n\nBranch: ${branchUrl}\nArtifact: ${artifactUrl}`;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body,
+            });
