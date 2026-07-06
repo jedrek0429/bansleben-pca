@@ -42,7 +42,7 @@ def card_group_for(ctx, locales, page_key: str, lang: str) -> list[str]:
     return filtered
 
 
-def render_card(ctx, locales, lang: str, key: str, col_index: int, cols: int, templates) -> str:
+def render_card(ctx, locales, lang: str, key: str, col_index: int, cols: int, card_index: int, templates) -> str:
     """Render one card item with localized title, image metadata, URL, layout width, and read-more label."""
     title = value_from_locales(lang, f"card_items.{key}.title", locales) or page_title(ctx, locales, lang, key)
     img_src_value = value_from_locales(lang, f"card_items.{key}.image_src", locales) or ""
@@ -51,6 +51,7 @@ def render_card(ctx, locales, lang: str, key: str, col_index: int, cols: int, te
     img_title = value_from_locales(lang, f"card_items.{key}.image_title", locales) or img_alt
     read_more = value_from_locales(lang, "common.read_more", locales) or "READ MORE"
     href = page_url(ctx, locales, lang, key)
+    is_leading_card = card_index == 0
 
     width_class = {
         1: "pca-card--full",
@@ -81,6 +82,8 @@ def render_card(ctx, locales, lang: str, key: str, col_index: int, cols: int, te
             "image_width": html.escape(str(image_info.get("width", "")), quote=True),
             "image_height": html.escape(str(image_info.get("height", "")), quote=True),
             "srcset": srcset,
+            "fetchpriority": "high" if is_leading_card else "auto",
+            "loading": "eager" if is_leading_card else "lazy",
             "title": html.escape(str(title)),
             "href": href,
             "read_more": html.escape(str(read_more)),
@@ -114,12 +117,13 @@ def render_card_grid(ctx, locales, page_key: str, lang: str, templates) -> str:
         return ""
 
     rendered_rows = []
+    card_index = 0
     for row_keys in chunk_cards(keys):
         cols = len(row_keys)
-        rendered_cards = [
-            render_card(ctx, locales, lang, key, col_index, cols, templates)
-            for col_index, key in enumerate(row_keys)
-        ]
+        rendered_cards = []
+        for col_index, key in enumerate(row_keys):
+            rendered_cards.append(render_card(ctx, locales, lang, key, col_index, cols, card_index, templates))
+            card_index += 1
         row_state = {"row": {"cards": "\n".join(rendered_cards)}}
         rendered_rows.append(
             render_text(ctx, templates["partials"]["card_row"], lang, locales, row_state, templates)
