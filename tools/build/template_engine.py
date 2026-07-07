@@ -14,6 +14,99 @@ from urls import asset_url, page_prefix, page_url
 
 TOKEN_RE = re.compile(r"{{\s*([^{}]+?)\s*}}")
 TEMPLATE_RECURSION_LIMIT = 12
+CSS_COMPACT_CHARS = set("{}:;,>()")
+
+
+def strip_css_comments(css: str) -> str:
+    """Remove block comments while preserving quoted strings."""
+    result = []
+    index = 0
+    quote = ""
+    escaped = False
+
+    while index < len(css):
+        char = css[index]
+        next_char = css[index + 1] if index + 1 < len(css) else ""
+
+        if quote:
+            result.append(char)
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == quote:
+                quote = ""
+            index += 1
+            continue
+
+        if char in {'"', "'"}:
+            quote = char
+            result.append(char)
+            index += 1
+            continue
+
+        if char == "/" and next_char == "*":
+            index += 2
+            while index + 1 < len(css) and not (css[index] == "*" and css[index + 1] == "/"):
+                index += 1
+            index += 2 if index + 1 < len(css) else 0
+            continue
+
+        result.append(char)
+        index += 1
+
+    return "".join(result)
+
+
+def collapse_css_whitespace(css: str) -> str:
+    """Collapse insignificant whitespace while preserving quoted strings."""
+    result = []
+    quote = ""
+    escaped = False
+    pending_space = False
+
+    for char in css:
+        if quote:
+            result.append(char)
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == quote:
+                quote = ""
+            continue
+
+        if char in {'"', "'"}:
+            if pending_space and result and result[-1] not in CSS_COMPACT_CHARS:
+                result.append(" ")
+            pending_space = False
+            quote = char
+            result.append(char)
+            continue
+
+        if char.isspace():
+            pending_space = True
+            continue
+
+        if char in CSS_COMPACT_CHARS:
+            while result and result[-1] == " ":
+                result.pop()
+            result.append(char)
+            pending_space = False
+            continue
+
+        if pending_space and result and result[-1] not in CSS_COMPACT_CHARS:
+            result.append(" ")
+        result.append(char)
+        pending_space = False
+
+    return "".join(result).strip()
+
+
+def minify_css(css: str) -> str:
+    """Minify CSS enough for inline output without requiring extra dependencies."""
+    minified = collapse_css_whitespace(strip_css_comments(css))
+    return minified.replace(";}", "}")
 
 
 def load_templates(ctx) -> dict:
@@ -35,7 +128,8 @@ def load_templates(ctx) -> dict:
         if not fragment_dir.exists():
             raise SystemExit(f"Missing template dir: {display_path(fragment_dir, ctx.root)}")
         for path in sorted(fragment_dir.glob(pattern)):
-            templates[group][path.stem] = path.read_text(encoding="utf-8")
+            content = path.read_text(encoding="utf-8")
+            templates[group][path.stem] = minify_css(content) if group == "css" else content
 
     return templates
 
