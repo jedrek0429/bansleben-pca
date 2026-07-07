@@ -14,7 +14,8 @@ from urls import asset_url, page_prefix, page_url
 
 TOKEN_RE = re.compile(r"{{\s*([^{}]+?)\s*}}")
 TEMPLATE_RECURSION_LIMIT = 12
-CSS_COMPACT_CHARS = set("{}:;,>()")
+CSS_COMPACT_BEFORE_CHARS = set("{};,>()")
+CSS_COMPACT_AFTER_CHARS = set("{}:;,>()")
 
 
 def strip_css_comments(css: str) -> str:
@@ -77,7 +78,7 @@ def collapse_css_whitespace(css: str) -> str:
             continue
 
         if char in {'"', "'"}:
-            if pending_space and result and result[-1] not in CSS_COMPACT_CHARS:
+            if pending_space and result and result[-1] not in CSS_COMPACT_AFTER_CHARS:
                 result.append(" ")
             pending_space = False
             quote = char
@@ -88,14 +89,14 @@ def collapse_css_whitespace(css: str) -> str:
             pending_space = True
             continue
 
-        if char in CSS_COMPACT_CHARS:
+        if char in CSS_COMPACT_BEFORE_CHARS:
             while result and result[-1] == " ":
                 result.pop()
             result.append(char)
             pending_space = False
             continue
 
-        if pending_space and result and result[-1] not in CSS_COMPACT_CHARS:
+        if pending_space and result and result[-1] not in CSS_COMPACT_AFTER_CHARS:
             result.append(" ")
         result.append(char)
         pending_space = False
