@@ -97,7 +97,6 @@ def site(root, *, out=None, langs=None, dry: bool = False, prefix: str | None = 
         encoding="utf-8",
     )
 
-    convert_to_webp(str(ctx.dist))
     print_labeled("OK", CLR_GREEN, f"built {display_path(ctx.dist, ctx.root.parent)}")
     return ctx
 
