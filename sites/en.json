@@ -1,0 +1,8 @@
+{
+  "extra_pages": [
+    {"key": "national_law_uk", "parent": "individual_national_laws", "template": "content"},
+    {"key": "national_law_us", "parent": "individual_national_laws", "template": "content"},
+    {"key": "national_law_canada", "parent": "individual_national_laws", "template": "content"},
+    {"key": "national_law_poland", "parent": "individual_national_laws", "template": "content"}
+  ]
+}
