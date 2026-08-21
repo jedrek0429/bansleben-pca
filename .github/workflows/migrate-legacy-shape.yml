@@ -1,0 +1,48 @@
+name: One-shot locale shape migration
+
+on:
+  push:
+    branches:
+      - refactor/remove-legacy-translation-shape
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: refactor/remove-legacy-translation-shape
+      - name: Rewrite locale page metadata
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          for path in sorted(Path('locales').glob('*.json')):
+              data = json.loads(path.read_text(encoding='utf-8'))
+              data.pop('domain', None)
+              pages = data.get('pages', {})
+              for key in list(pages):
+                  page = pages[key]
+                  if not isinstance(page, dict):
+                      continue
+                  page.pop('parent', None)
+                  slug = str(page.get('slug') or '')
+                  if '/' in slug:
+                      page['slug'] = slug.rstrip('/').rsplit('/', 1)[-1]
+                  if page.get('enabled') is False:
+                      del pages[key]
+              path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          PY
+      - name: Commit migrated locale files
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add locales
+          git diff --cached --quiet && exit 0
+          git commit -m 'Remove legacy locale structure'
+          git push origin HEAD:refactor/remove-legacy-translation-shape
