@@ -18,7 +18,7 @@
     "error": "Nie udało się wysłać wiadomości. Sprawdź adres e-mail i spróbuj ponownie."
   },
   "common": {
-    "read_more": "Czytaj więcej",
+    "read_more": "Więcej informacji",
     "back": "Wstecz",
     "home": "Początek",
     "select_page": "Wybierz stronę",
@@ -32,7 +32,7 @@
   "hague_footer": {
     "title": "Konwencja haska",
     "text": "Serwis dotyczy Konwencji dotyczącej cywilnych aspektów uprowadzenia dziecka za granicę, sporządzonej w Hadze 25 października 1980 r.",
-    "link_label": "Czytaj więcej",
+    "link_label": "Więcej informacji",
     "page": "the_hague_convention"
   },
   "pages": {
@@ -76,7 +76,7 @@
       "citation": "Artykuł 1 Konwencji haskiej z 25 października 1980 r."
     }
   },
-  "cards": {"read_more": "Czytaj więcej"},
+  "cards": {"read_more": "Więcej informacji"},
   "brand": {
     "logo_text": "Uprowadzenie rodzicielskie",
     "logo_alt": "Uprowadzenie rodzicielskie",
