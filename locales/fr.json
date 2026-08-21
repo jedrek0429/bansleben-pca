@@ -1,7 +1,6 @@
 {
   "lang": "fr",
   "site_name": "Enlèvement Parental Pologne",
-  "domain": "https://enlevementparentalpologne.pl",
   "menu": {
     "introduction": "ACCUEIL",
     "whom_to_contact": "QUI CONTACTER ?",
@@ -39,170 +38,127 @@
     "introduction": {
       "enabled": true,
       "title": "Accueil",
-      "slug": "",
-      "parent": null
+      "slug": ""
     },
     "whom_to_contact": {
       "enabled": true,
       "title": "Qui contacter ?",
-      "slug": "qui-contacter",
-      "parent": null
+      "slug": "qui-contacter"
     },
     "jurisprudence": {
       "enabled": true,
       "title": "Jurisprudence",
-      "slug": "jurisprudence",
-      "parent": null
+      "slug": "jurisprudence"
     },
     "contact": {
       "enabled": true,
       "title": "Formulaire",
-      "slug": "formulaire",
-      "parent": null
+      "slug": "formulaire"
     },
     "who_we_are": {
       "enabled": true,
       "title": "Qui sommes-nous ?",
-      "slug": "qui-sommes-nous",
-      "parent": null
+      "slug": "qui-sommes-nous"
     },
     "privacy_policy": {
       "enabled": true,
       "title": "Politique de confidentialité",
-      "slug": "politique-de-confidentialite",
-      "parent": null
+      "slug": "politique-de-confidentialite"
     },
     "parental_child_abduction": {
       "enabled": true,
       "title": "Enlèvement parental",
-      "slug": "enlevement-parental",
-      "parent": null
+      "slug": "enlevement-parental"
     },
     "within_the_law": {
       "enabled": true,
       "title": "Que dit la loi ?",
-      "slug": "que-dit-la-loi",
-      "parent": null
+      "slug": "que-dit-la-loi"
     },
     "international_laws": {
       "enabled": true,
       "title": "Législation internationale",
-      "slug": "que-dit-la-loi/legislation-internationale",
-      "parent": "within_the_law"
+      "slug": "legislation-internationale"
     },
     "individual_national_laws": {
       "enabled": true,
       "title": "Législations nationales",
-      "slug": "que-dit-la-loi/legislations-nationales",
-      "parent": "within_the_law"
-    },
-    "national_law_uk": {
-      "enabled": false,
-      "title": "",
-      "slug": "",
-      "parent": "individual_national_laws"
-    },
-    "national_law_us": {
-      "enabled": false,
-      "title": "",
-      "slug": "",
-      "parent": "individual_national_laws"
+      "slug": "legislations-nationales"
     },
     "national_law_france": {
       "enabled": true,
       "title": "Française",
-      "slug": "que-dit-la-loi/legislations-nationales/francaise",
-      "parent": "individual_national_laws"
+      "slug": "francaise"
     },
     "national_law_belgium": {
       "enabled": true,
       "title": "Belge",
-      "slug": "que-dit-la-loi/legislations-nationales/belge",
-      "parent": "individual_national_laws"
+      "slug": "belge"
     },
     "national_law_canada": {
       "enabled": true,
       "title": "Canadienne",
-      "slug": "que-dit-la-loi/legislations-nationales/canadienne",
-      "parent": "individual_national_laws"
-    },
-    "national_law_croatia": {
-      "enabled": false,
-      "title": "",
-      "slug": "",
-      "parent": "individual_national_laws"
+      "slug": "canadienne"
     },
     "national_law_poland": {
       "enabled": true,
       "title": "Polonaise",
-      "slug": "que-dit-la-loi/legislations-nationales/polonaise",
-      "parent": "individual_national_laws"
+      "slug": "polonaise"
     },
     "what_should_i_do": {
       "enabled": true,
       "title": "Que puis-je faire ?",
-      "slug": "que-puis-je-faire",
-      "parent": null
+      "slug": "que-puis-je-faire"
     },
     "steps_to_follow": {
       "enabled": true,
       "title": "Étapes à suivre",
-      "slug": "que-puis-je-faire/etapes-a-suivre",
-      "parent": "what_should_i_do"
+      "slug": "etapes-a-suivre"
     },
     "parents_in_contact": {
       "enabled": true,
       "title": "Si vous êtes en contact avec l’autre parent et que vous savez qu’il est en Pologne.",
-      "slug": "que-puis-je-faire/parents-en-contact",
-      "parent": "what_should_i_do"
+      "slug": "parents-en-contact"
     },
     "parental_non_cooperation": {
       "enabled": true,
       "title": "Si l’autre parent refuse la médiation",
-      "slug": "que-puis-je-faire/non-cooperation-parentale",
-      "parent": "what_should_i_do"
+      "slug": "non-cooperation-parentale"
     },
     "conflict_with_the_other_parent": {
       "enabled": true,
       "title": "Conflit avec l’autre parent",
-      "slug": "conflit-avec-lautre-parent",
-      "parent": null
+      "slug": "conflit-avec-lautre-parent"
     },
     "criminal_consequences": {
       "enabled": true,
       "title": "Conséquences pénales de l’enlèvement international d’enfant",
-      "slug": "conflit-avec-lautre-parent/consequences-penales",
-      "parent": "going_abroad_with_my_child"
+      "slug": "consequences-penales"
     },
     "why_remain_in_poland": {
       "enabled": true,
       "title": "Pourquoi votre enfant et son deuxième parent pourrait rester en Pologne ?",
-      "slug": "conflit-avec-lautre-parent/pourquoi-rester-en-pologne",
-      "parent": "conflict_with_the_other_parent"
+      "slug": "pourquoi-rester-en-pologne"
     },
     "going_abroad_with_my_child": {
       "enabled": true,
       "title": "Je veux partir à l’étranger avec mon enfant",
-      "slug": "je-veux-partir-a-letranger-avec-mon-enfant",
-      "parent": null
+      "slug": "je-veux-partir-a-letranger-avec-mon-enfant"
     },
     "is_it_possible": {
       "enabled": true,
       "title": "Est-ce possible ?",
-      "slug": "je-veux-partir-a-letranger-avec-mon-enfant/est-ce-possible",
-      "parent": "going_abroad_with_my_child"
+      "slug": "est-ce-possible"
     },
     "filial_relationship": {
       "enabled": true,
       "title": "Rappel sur la filiation et l’autorité parentale.",
-      "slug": "je-veux-partir-a-letranger-avec-mon-enfant/la-filiation-et-lautorite-parentale",
-      "parent": "conflict_with_the_other_parent"
+      "slug": "la-filiation-et-lautorite-parentale"
     },
     "the_hague_convention": {
       "enabled": true,
       "title": "Convention de La Haye",
-      "slug": "mieux-connaitre-la-convention-de-la-haye",
-      "parent": null
+      "slug": "mieux-connaitre-la-convention-de-la-haye"
     }
   },
   "shared_blocks": {
@@ -382,5 +338,35 @@
     "name_label": "Nom",
     "email_label": "E-mail",
     "message_label": "Message"
+  },
+  "seo": {
+    "default_description": "Informations pour les parents confrontés à un enlèvement parental international, un déplacement ou non-retour illicite d’enfant en Pologne, et aux procédures de retour fondées sur la Convention de La Haye.",
+    "descriptions": {
+      "introduction": "Informations pratiques sur l’enlèvement parental vers ou depuis la Pologne, les demandes de retour d’enfant au titre de la Convention de La Haye, les juridictions polonaises et les démarches urgentes.",
+      "whom_to_contact": "Découvrez quelles autorités, institutions et professionnels du droit contacter lorsqu’un enfant a été déplacé ou retenu illicitement en Pologne.",
+      "jurisprudence": "Sélection de jurisprudence sur l’enlèvement parental international, les procédures de retour fondées sur la Convention de La Haye et les affaires familiales impliquant la Pologne.",
+      "contact": "Contactez-nous au sujet d’un enlèvement parental urgent, d’un non-retour illicite ou d’une procédure de retour d’enfant impliquant la Pologne.",
+      "who_we_are": "Découvrez qui se trouve derrière Enlèvement Parental Pologne et comment une assistance juridique peut aider les parents dans les affaires transfrontalières impliquant la Pologne.",
+      "privacy_policy": "Consultez la politique de confidentialité du site Enlèvement Parental Pologne, y compris les informations relatives au formulaire de contact et aux données personnelles.",
+      "parental_child_abduction": "Explication de l’enlèvement parental, du déplacement illicite et du non-retour illicite au sens de la Convention de La Haye, avec un accent sur les affaires impliquant la Pologne.",
+      "within_the_law": "Aperçu des règles juridiques internationales et nationales pouvant s’appliquer lorsqu’un enfant est déplacé ou retenu illicitement en Pologne.",
+      "international_laws": "Cadre juridique international applicable aux affaires d’enlèvement parental, notamment la Convention de La Haye et les procédures transfrontalières de retour impliquant la Pologne.",
+      "individual_national_laws": "Guide des législations nationales sélectionnées pouvant influencer les affaires d’enlèvement parental, de garde et de retour d’enfant impliquant la Pologne.",
+      "national_law_france": "Aperçu des questions de droit français pouvant se poser dans les affaires d’enlèvement parental international et de retour d’enfant impliquant la Pologne.",
+      "national_law_belgium": "Aperçu des questions de droit belge pouvant se poser dans les affaires d’enlèvement parental international et de retour d’enfant impliquant la Pologne.",
+      "national_law_canada": "Aperçu des questions de droit canadien pouvant se poser dans les affaires d’enlèvement parental international et de retour d’enfant impliquant la Pologne.",
+      "national_law_poland": "Aperçu des règles du droit polonais relatives à la garde, à l’autorité parentale et aux affaires d’enlèvement international d’enfant devant les autorités et juridictions polonaises.",
+      "what_should_i_do": "Premières démarches lorsqu’un enfant a été emmené ou retenu en Pologne sans consentement : documents, délais et options juridiques.",
+      "steps_to_follow": "Étapes pratiques à suivre lorsqu’un enfant a été déplacé ou retenu illicitement en Pologne : preuves, autorités et démarches juridiques.",
+      "parents_in_contact": "Conseils lorsque les parents restent en contact et que l’enfant ou l’autre parent se trouve en Pologne : discussion, médiation et garanties juridiques.",
+      "parental_non_cooperation": "Options juridiques lorsque l’autre parent refuse la médiation ou la coopération après qu’un enfant a été emmené ou retenu en Pologne.",
+      "conflict_with_the_other_parent": "Informations pour les parents en conflit sur la garde, les voyages, la résidence et les risques d’enlèvement international d’enfant impliquant la Pologne.",
+      "criminal_consequences": "Aperçu des conséquences pénales possibles dans les affaires d’enlèvement international d’enfant et de l’importance d’un conseil juridique rapide lorsque la Pologne est concernée.",
+      "why_remain_in_poland": "Explication des raisons pour lesquelles l’enfant et chaque parent peuvent devoir rester en Pologne pendant une procédure familiale, une médiation ou une demande de retour fondée sur la Convention de La Haye.",
+      "going_abroad_with_my_child": "Informations pour les parents envisageant un voyage ou un déménagement à l’étranger avec un enfant : consentement, garde et risques d’enlèvement parental impliquant la Pologne.",
+      "is_it_possible": "Un parent peut-il partir à l’étranger avec son enfant ? Consentement, droits de garde et limites juridiques avant un voyage ou un déménagement impliquant la Pologne.",
+      "filial_relationship": "Rappel sur la filiation, l’autorité parentale et les questions de garde pertinentes en cas de voyage international et de risque d’enlèvement d’enfant impliquant la Pologne.",
+      "the_hague_convention": "Guide de la Convention de La Haye sur les aspects civils de l’enlèvement international d’enfants et du fonctionnement des procédures de retour en Pologne."
+    }
   }
 }

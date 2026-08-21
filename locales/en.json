@@ -1,7 +1,6 @@
 {
   "lang": "en",
   "site_name": "Poland Child Abduction",
-  "domain": "https://polandchildabduction.pl",
   "menu": {
     "introduction": "INTRODUCTION",
     "whom_to_contact": "WHOM TO CONTACT?",
@@ -38,170 +37,127 @@
     "introduction": {
       "enabled": true,
       "title": "Introduction",
-      "slug": "",
-      "parent": null
+      "slug": ""
     },
     "whom_to_contact": {
       "enabled": true,
       "title": "Whom to Contact?",
-      "slug": "whom-to-contact",
-      "parent": null
+      "slug": "whom-to-contact"
     },
     "jurisprudence": {
       "enabled": true,
       "title": "Jurisprudence",
-      "slug": "jurisprudence",
-      "parent": null
+      "slug": "jurisprudence"
     },
     "contact": {
       "enabled": true,
       "title": "Contact",
-      "slug": "contact",
-      "parent": null
+      "slug": "contact"
     },
     "who_we_are": {
       "enabled": true,
       "title": "Who We Are",
-      "slug": "who-we-are",
-      "parent": null
+      "slug": "who-we-are"
     },
     "privacy_policy": {
       "enabled": true,
       "title": "Privacy Policy",
-      "slug": "privacy-policy",
-      "parent": null
+      "slug": "privacy-policy"
     },
     "parental_child_abduction": {
       "enabled": true,
       "title": "Parental Child Abduction",
-      "slug": "parental-child-abduction",
-      "parent": null
+      "slug": "parental-child-abduction"
     },
     "within_the_law": {
       "enabled": true,
       "title": "Within the Law",
-      "slug": "within-the-law",
-      "parent": null
+      "slug": "within-the-law"
     },
     "international_laws": {
       "enabled": true,
       "title": "International Laws",
-      "slug": "within-the-law/international-laws",
-      "parent": "within_the_law"
+      "slug": "international-laws"
     },
     "individual_national_laws": {
       "enabled": true,
       "title": "Individual National Laws",
-      "slug": "within-the-law/individual-national-laws",
-      "parent": "within_the_law"
+      "slug": "individual-national-laws"
     },
     "national_law_uk": {
       "enabled": true,
       "title": "British",
-      "slug": "within-the-law/individual-national-laws/british",
-      "parent": "individual_national_laws"
+      "slug": "british"
     },
     "national_law_us": {
       "enabled": true,
       "title": "American",
-      "slug": "within-the-law/individual-national-laws/american",
-      "parent": "individual_national_laws"
-    },
-    "national_law_france": {
-      "enabled": false,
-      "title": "",
-      "slug": "",
-      "parent": "individual_national_laws"
-    },
-    "national_law_belgium": {
-      "enabled": false,
-      "title": "",
-      "slug": "",
-      "parent": "individual_national_laws"
+      "slug": "american"
     },
     "national_law_canada": {
       "enabled": true,
       "title": "Canadian",
-      "slug": "within-the-law/individual-national-laws/canadian",
-      "parent": "individual_national_laws"
-    },
-    "national_law_croatia": {
-      "enabled": false,
-      "title": "",
-      "slug": "",
-      "parent": "individual_national_laws"
+      "slug": "canadian"
     },
     "national_law_poland": {
       "enabled": true,
       "title": "Polish",
-      "slug": "within-the-law/individual-national-laws/polish",
-      "parent": "individual_national_laws"
+      "slug": "polish"
     },
     "what_should_i_do": {
       "enabled": true,
       "title": "What Should I Do?",
-      "slug": "what-should-i-do",
-      "parent": null
+      "slug": "what-should-i-do"
     },
     "steps_to_follow": {
       "enabled": true,
       "title": "Steps to Follow",
-      "slug": "what-should-i-do/steps-to-follow",
-      "parent": "what_should_i_do"
+      "slug": "steps-to-follow"
     },
     "parents_in_contact": {
       "enabled": true,
       "title": "If Parents Remain in Contact and are Both in Poland",
-      "slug": "what-should-i-do/parents-in-contact",
-      "parent": "what_should_i_do"
+      "slug": "parents-in-contact"
     },
     "parental_non_cooperation": {
       "enabled": true,
       "title": "If the Other Parent Refuses Mediation",
-      "slug": "what-should-i-do/parental-non-cooperation",
-      "parent": "what_should_i_do"
+      "slug": "parental-non-cooperation"
     },
     "conflict_with_the_other_parent": {
       "enabled": true,
       "title": "Conflict with the Other Parent",
-      "slug": "conflict-with-the-other-parent",
-      "parent": null
+      "slug": "conflict-with-the-other-parent"
     },
     "criminal_consequences": {
       "enabled": true,
       "title": "Criminal Consequences of International Child Abduction",
-      "slug": "conflict-with-the-other-parent/criminal-consequences",
-      "parent": "going_abroad_with_my_child"
+      "slug": "criminal-consequences"
     },
     "why_remain_in_poland": {
       "enabled": true,
       "title": "Why Should the Child and Each Parent Remain within Poland?",
-      "slug": "conflict-with-the-other-parent/why-remain-in-poland",
-      "parent": "conflict_with_the_other_parent"
+      "slug": "why-remain-in-poland"
     },
     "going_abroad_with_my_child": {
       "enabled": true,
       "title": "Going Abroad with My Child",
-      "slug": "going-abroad-with-my-child",
-      "parent": null
+      "slug": "going-abroad-with-my-child"
     },
     "is_it_possible": {
       "enabled": true,
       "title": "Is It Possible?",
-      "slug": "going-abroad-with-my-child/is-it-possible",
-      "parent": "going_abroad_with_my_child"
+      "slug": "is-it-possible"
     },
     "filial_relationship": {
       "enabled": true,
       "title": "The Filial Relationship and Parental Authority",
-      "slug": "going-abroad-with-my-child/filial-relationship",
-      "parent": "conflict_with_the_other_parent"
+      "slug": "filial-relationship"
     },
     "the_hague_convention": {
       "enabled": true,
       "title": "The Hague Convention",
-      "slug": "the-hague-convention",
-      "parent": null
+      "slug": "the-hague-convention"
     }
   },
   "shared_blocks": {
@@ -381,5 +337,35 @@
     "name_label": "Name",
     "email_label": "E-mail",
     "message_label": "Message"
+  },
+  "seo": {
+    "default_description": "Information for parents dealing with international parental child abduction, wrongful removal or retention of a child in Poland, and Hague Convention return proceedings.",
+    "descriptions": {
+      "introduction": "Practical legal information on parental child abduction to or from Poland, Hague Convention child return cases, Polish courts, and urgent steps for parents.",
+      "whom_to_contact": "Find out which authorities, institutions and legal professionals to contact when a child has been wrongfully removed to or retained in Poland.",
+      "jurisprudence": "Selected case law on international parental child abduction, Hague Convention return proceedings and family law issues involving Poland.",
+      "contact": "Contact us about an urgent parental child abduction, wrongful retention or Hague Convention child return case involving Poland.",
+      "who_we_are": "Learn who is behind Poland Child Abduction and how legal assistance can support parents in cross-border child abduction cases involving Poland.",
+      "privacy_policy": "Read the privacy policy for Poland Child Abduction, including information about contact form data, personal information and website use.",
+      "parental_child_abduction": "Explanation of parental child abduction, wrongful removal and wrongful retention under the Hague Convention, with a focus on cases involving Poland.",
+      "within_the_law": "Overview of the international and national legal rules that may apply when a child is wrongfully removed to or retained in Poland.",
+      "international_laws": "International legal framework for parental child abduction cases, including the Hague Convention and cross-border child return procedures involving Poland.",
+      "individual_national_laws": "Guide to selected national laws that may affect international parental child abduction, custody and child return cases involving Poland.",
+      "national_law_uk": "Overview of British legal issues that may arise in international parental child abduction and child return cases involving Poland.",
+      "national_law_us": "Overview of American legal issues that may arise in international parental child abduction and child return cases involving Poland.",
+      "national_law_canada": "Overview of Canadian legal issues that may arise in international parental child abduction and child return cases involving Poland.",
+      "national_law_poland": "Overview of Polish legal rules relevant to custody, parental authority and international child abduction cases before Polish authorities and courts.",
+      "what_should_i_do": "First steps for a parent when a child has been taken to Poland or kept in Poland without consent, including documents, deadlines and legal options.",
+      "steps_to_follow": "Practical steps to take after a child has been wrongfully removed to or retained in Poland, including evidence, authorities and legal action.",
+      "parents_in_contact": "Guidance for parents who remain in contact and know the child or the other parent is in Poland, including negotiation, mediation and legal safeguards.",
+      "parental_non_cooperation": "Legal options when the other parent refuses mediation or cooperation after a child has been taken to or retained in Poland.",
+      "conflict_with_the_other_parent": "Information for parents in conflict about custody, travel, residence and international child abduction risks involving Poland.",
+      "criminal_consequences": "Overview of possible criminal consequences in international child abduction cases and why urgent legal advice is important when Poland is involved.",
+      "why_remain_in_poland": "Explanation of why a child and each parent may need to remain in Poland during family proceedings, mediation or Hague Convention child return cases.",
+      "going_abroad_with_my_child": "Information for parents considering international travel or relocation with a child, including consent, custody and child abduction risks involving Poland.",
+      "is_it_possible": "Can a parent go abroad with a child? Learn about consent, custody rights and legal limits before travel or relocation involving Poland.",
+      "filial_relationship": "Explanation of the parent-child relationship, parental authority and custody issues relevant to international travel and child abduction risks involving Poland.",
+      "the_hague_convention": "Guide to the Hague Convention on the Civil Aspects of International Child Abduction and how child return proceedings work in Poland."
+    }
   }
 }

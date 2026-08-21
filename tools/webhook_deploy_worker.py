@@ -72,21 +72,18 @@ def with_trailing_slash(url: str) -> str:
 
 def production_site_urls(config: dict[str, Any]) -> dict[str, str]:
     fallback = {"en": production_url(config)}
-    seo_path = site_src(config) / "config" / "seo.json"
-    if not seo_path.is_file():
+    sites_dir = site_src(config) / "sites"
+    if not sites_dir.is_dir():
         return fallback
-    try:
-        seo = json.loads(seo_path.read_text(encoding="utf-8"))
-    except json.JSONDecodeError:
-        return fallback
-    site_urls = seo.get("site_urls") if isinstance(seo, dict) else None
-    if not isinstance(site_urls, dict):
-        return fallback
-    urls = {
-        str(lang): with_trailing_slash(str(url))
-        for lang, url in site_urls.items()
-        if str(lang).strip() and str(url).strip()
-    }
+    urls = {}
+    for path in sorted(sites_dir.glob("*.json")):
+        try:
+            site = json.loads(path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            continue
+        url = site.get("url") if isinstance(site, dict) else None
+        if str(url or "").strip():
+            urls[path.stem] = with_trailing_slash(str(url))
     return urls or fallback
 
 

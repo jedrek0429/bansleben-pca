@@ -1,6 +1,19 @@
 {
+  "url": "https://roditeljskaotmicapoljska.pl",
+  "hreflang": "hr",
+  "og_locale": "hr_HR",
+  "social_image": "/assets/social/og-hr.jpg",
   "extra_pages": [
-    {"key": "national_law_croatia", "parent": "individual_national_laws", "template": "content"},
-    {"key": "national_law_poland", "parent": "individual_national_laws", "template": "content"}
-  ]
+    {
+      "key": "national_law_croatia",
+      "parent": "individual_national_laws",
+      "template": "content"
+    },
+    {
+      "key": "national_law_poland",
+      "parent": "individual_national_laws",
+      "template": "content"
+    }
+  ],
+  "organization_url_language_override": "en"
 }

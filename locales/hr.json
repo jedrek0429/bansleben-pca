@@ -1,7 +1,6 @@
 {
   "lang": "hr",
   "site_name": "Roditeljska otmica djeteta — Poljska",
-  "domain": "",
   "menu": {
     "introduction": "UVOD",
     "whom_to_contact": "KOME SE OBRATITI?",
@@ -39,170 +38,117 @@
     "introduction": {
       "enabled": true,
       "title": "Uvod",
-      "slug": "",
-      "parent": null
+      "slug": ""
     },
     "whom_to_contact": {
       "enabled": true,
       "title": "Kome se obratiti?",
-      "slug": "kome-se-obratiti",
-      "parent": null
+      "slug": "kome-se-obratiti"
     },
     "jurisprudence": {
       "enabled": true,
       "title": "Sudska praksa",
-      "slug": "sudska-praksa",
-      "parent": null
+      "slug": "sudska-praksa"
     },
     "contact": {
       "enabled": true,
       "title": "Kontakt",
-      "slug": "kontakt",
-      "parent": null
+      "slug": "kontakt"
     },
     "who_we_are": {
       "enabled": true,
       "title": "Tko smo mi?",
-      "slug": "tko-smo-mi",
-      "parent": null
+      "slug": "tko-smo-mi"
     },
     "privacy_policy": {
       "enabled": true,
       "title": "Politika privatnosti",
-      "slug": "politika-privatnosti",
-      "parent": null
+      "slug": "politika-privatnosti"
     },
     "parental_child_abduction": {
       "enabled": true,
       "title": "Roditeljska otmica djeteta",
-      "slug": "roditeljska-otmica-djeteta",
-      "parent": null
+      "slug": "roditeljska-otmica-djeteta"
     },
     "within_the_law": {
       "enabled": true,
       "title": "Što kaže zakon?",
-      "slug": "sto-kaze-zakon",
-      "parent": null
+      "slug": "sto-kaze-zakon"
     },
     "international_laws": {
       "enabled": true,
       "title": "Međunarodno pravo",
-      "slug": "sto-kaze-zakon/medunarodno-pravo",
-      "parent": "within_the_law"
+      "slug": "medunarodno-pravo"
     },
     "individual_national_laws": {
       "enabled": true,
       "title": "Nacionalna prava",
-      "slug": "sto-kaze-zakon/nacionalna-prava",
-      "parent": "within_the_law"
-    },
-    "national_law_uk": {
-      "enabled": false,
-      "title": "",
-      "slug": "",
-      "parent": "individual_national_laws"
-    },
-    "national_law_us": {
-      "enabled": false,
-      "title": "",
-      "slug": "",
-      "parent": "individual_national_laws"
-    },
-    "national_law_france": {
-      "enabled": false,
-      "title": "",
-      "slug": "",
-      "parent": "individual_national_laws"
-    },
-    "national_law_belgium": {
-      "enabled": false,
-      "title": "",
-      "slug": "",
-      "parent": "individual_national_laws"
-    },
-    "national_law_canada": {
-      "enabled": false,
-      "title": "",
-      "slug": "",
-      "parent": "individual_national_laws"
+      "slug": "nacionalna-prava"
     },
     "national_law_croatia": {
       "enabled": true,
       "title": "Hrvatska",
-      "slug": "sto-kaze-zakon/nacionalna-prava/hrvatska",
-      "parent": "individual_national_laws"
+      "slug": "hrvatska"
     },
     "national_law_poland": {
       "enabled": true,
       "title": "Poljska",
-      "slug": "sto-kaze-zakon/nacionalna-prava/poljska",
-      "parent": "individual_national_laws"
+      "slug": "poljska"
     },
     "what_should_i_do": {
       "enabled": true,
       "title": "Što mogu učiniti?",
-      "slug": "sto-mogu-uciniti",
-      "parent": null
+      "slug": "sto-mogu-uciniti"
     },
     "steps_to_follow": {
       "enabled": true,
       "title": "Koraci koje treba poduzeti",
-      "slug": "sto-mogu-uciniti/koraci-koje-treba-poduzeti",
-      "parent": "what_should_i_do"
+      "slug": "koraci-koje-treba-poduzeti"
     },
     "parents_in_contact": {
       "enabled": true,
       "title": "Ako ste u kontaktu s drugim roditeljem i znate da se nalazi u Poljskoj.",
-      "slug": "sto-mogu-uciniti/roditelji-u-kontaktu",
-      "parent": "what_should_i_do"
+      "slug": "roditelji-u-kontaktu"
     },
     "parental_non_cooperation": {
       "enabled": true,
       "title": "Ako drugi roditelj odbije sredstva za medijaciju",
-      "slug": "sto-mogu-uciniti/nesuradnja-drugog-roditelja",
-      "parent": "what_should_i_do"
+      "slug": "nesuradnja-drugog-roditelja"
     },
     "conflict_with_the_other_parent": {
       "enabled": true,
       "title": "Sukob s drugim roditeljem",
-      "slug": "sukob-s-drugim-roditeljem",
-      "parent": null
+      "slug": "sukob-s-drugim-roditeljem"
     },
     "criminal_consequences": {
       "enabled": true,
       "title": "Kaznena odgovornost u slučaju međunarodne otmice djeteta",
-      "slug": "sukob-s-drugim-roditeljem/kaznena-odgovornost",
-      "parent": "going_abroad_with_my_child"
+      "slug": "kaznena-odgovornost"
     },
     "why_remain_in_poland": {
       "enabled": true,
       "title": "Zašto bi dijete i svaki roditelj trebali ostati u Poljskoj?",
-      "slug": "sukob-s-drugim-roditeljem/zasto-ostati-u-poljskoj",
-      "parent": "conflict_with_the_other_parent"
+      "slug": "zasto-ostati-u-poljskoj"
     },
     "going_abroad_with_my_child": {
       "enabled": true,
       "title": "Želim otići u inozemstvo s djetetom",
-      "slug": "zelim-otici-u-inozemstvo-s-djetetom",
-      "parent": null
+      "slug": "zelim-otici-u-inozemstvo-s-djetetom"
     },
     "is_it_possible": {
       "enabled": true,
       "title": "Je li to moguće?",
-      "slug": "zelim-otici-u-inozemstvo-s-djetetom/je-li-to-moguce",
-      "parent": "going_abroad_with_my_child"
+      "slug": "je-li-to-moguce"
     },
     "filial_relationship": {
       "enabled": true,
       "title": "Veza između roditelja i djeteta te roditeljska nadležnost",
-      "slug": "zelim-otici-u-inozemstvo-s-djetetom/veza-izmedu-roditelja-i-djeteta",
-      "parent": "conflict_with_the_other_parent"
+      "slug": "veza-izmedu-roditelja-i-djeteta"
     },
     "the_hague_convention": {
       "enabled": true,
       "title": "Haška konvencija",
-      "slug": "haska-konvencija",
-      "parent": null
+      "slug": "haska-konvencija"
     }
   },
   "shared_blocks": {
@@ -213,7 +159,7 @@
       "title": "Ciljevi ove Konvencije su:",
       "items": [
         "osigurati što brži povratak djece protupravno odvedene ili zadržane u nekoj državi ugovornici; i",
-	"osigurati da se pravo na skrb o djetetu i pravo na kontakte prema pravu jedne države ugovornice učinkovito poštuju u drugim državama."
+        "osigurati da se pravo na skrb o djetetu i pravo na kontakte prema pravu jedne države ugovornice učinkovito poštuju u drugim državama."
       ],
       "citation": "Članak 1. Haške konvencije od 25. listopada 1980."
     }
@@ -370,5 +316,33 @@
     "name_label": "Ime i prezime",
     "email_label": "E-mail",
     "message_label": "Poruka"
+  },
+  "seo": {
+    "default_description": "Informacije za roditelje u slučajevima međunarodne roditeljske otmice, protupravnog odvođenja ili zadržavanja djeteta u Poljskoj te postupaka povratka prema Haškoj konvenciji.",
+    "descriptions": {
+      "introduction": "Praktične pravne informacije o roditeljskoj otmici djece u Poljsku ili iz Poljske, postupcima povratka prema Haškoj konvenciji, poljskim sudovima i hitnim koracima za roditelje.",
+      "whom_to_contact": "Saznajte kojim se tijelima, ustanovama i pravnim stručnjacima obratiti ako je dijete protupravno odvedeno ili zadržano u Poljskoj.",
+      "jurisprudence": "Odabrana sudska praksa o međunarodnoj roditeljskoj otmici djece, postupcima povratka prema Haškoj konvenciji i obiteljskim predmetima povezanim s Poljskom.",
+      "contact": "Kontaktirajte nas u vezi s hitnom roditeljskom otmicom, protupravnim zadržavanjem ili postupkom povratka djeteta prema Haškoj konvenciji koji uključuje Poljsku.",
+      "who_we_are": "Saznajte tko stoji iza stranice Roditeljska otmica djeteta — Poljska i kako pravna pomoć može podržati roditelje u prekograničnim predmetima.",
+      "privacy_policy": "Pročitajte politiku privatnosti stranice Roditeljska otmica djeteta — Poljska, uključujući informacije o obrascu za kontakt i osobnim podacima.",
+      "parental_child_abduction": "Objašnjenje roditeljske otmice, protupravnog odvođenja i protupravnog zadržavanja prema Haškoj konvenciji, s naglaskom na predmete povezane s Poljskom.",
+      "within_the_law": "Pregled međunarodnih i nacionalnih pravnih pravila koja se mogu primijeniti kada je dijete protupravno odvedeno ili zadržano u Poljskoj.",
+      "international_laws": "Međunarodni pravni okvir za slučajeve roditeljske otmice djece, uključujući Hašku konvenciju i prekogranične postupke povratka povezane s Poljskom.",
+      "individual_national_laws": "Vodič kroz odabrana nacionalna prava koja mogu utjecati na međunarodnu roditeljsku otmicu, roditeljsku skrb i povratak djeteta u predmetima povezanim s Poljskom.",
+      "national_law_croatia": "Pregled hrvatskih pravnih pitanja koja se mogu pojaviti u međunarodnim slučajevima roditeljske otmice i povratka djeteta povezanima s Poljskom.",
+      "national_law_poland": "Pregled poljskih pravnih pravila važnih za roditeljsku skrb, roditeljske ovlasti i međunarodnu otmicu djece pred poljskim tijelima i sudovima.",
+      "what_should_i_do": "Prvi koraci kada je dijete odvedeno u Poljsku ili zadržano u Poljskoj bez suglasnosti: dokumenti, rokovi i pravne mogućnosti.",
+      "steps_to_follow": "Praktični koraci nakon što je dijete protupravno odvedeno ili zadržano u Poljskoj, uključujući dokaze, nadležna tijela i pravne radnje.",
+      "parents_in_contact": "Smjernice za roditelje koji su i dalje u kontaktu i znaju da se dijete ili drugi roditelj nalazi u Poljskoj, uključujući dogovor, medijaciju i pravnu zaštitu.",
+      "parental_non_cooperation": "Pravne mogućnosti kada drugi roditelj odbija medijaciju ili suradnju nakon što je dijete odvedeno ili zadržano u Poljskoj.",
+      "conflict_with_the_other_parent": "Informacije za roditelje u sukobu oko skrbi, putovanja, prebivališta i rizika međunarodne otmice djeteta povezane s Poljskom.",
+      "criminal_consequences": "Pregled mogućih kaznenih posljedica u slučajevima međunarodne otmice djeteta i važnosti hitnog pravnog savjeta kada je uključena Poljska.",
+      "why_remain_in_poland": "Objašnjenje zašto dijete i svaki roditelj mogu trebati ostati u Poljskoj tijekom obiteljskog postupka, medijacije ili postupka povratka prema Haškoj konvenciji.",
+      "going_abroad_with_my_child": "Informacije za roditelje koji razmišljaju o putovanju ili preseljenju u inozemstvo s djetetom, uključujući suglasnost, skrb i rizike otmice povezane s Poljskom.",
+      "is_it_possible": "Može li roditelj otići u inozemstvo s djetetom? Saznajte o suglasnosti, pravima skrbi i pravnim granicama prije putovanja ili preseljenja povezanog s Poljskom.",
+      "filial_relationship": "Objašnjenje odnosa roditelja i djeteta, roditeljske skrbi i pitanja skrbništva važnih za međunarodna putovanja i rizike otmice djeteta povezane s Poljskom.",
+      "the_hague_convention": "Vodič kroz Hašku konvenciju o građanskopravnim aspektima međunarodne otmice djece i postupke povratka djece u Poljskoj."
+    }
   }
 }

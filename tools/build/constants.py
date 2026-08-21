@@ -1,6 +1,5 @@
 """Constants for the PCA static site builder."""
 
-DEFAULT_LANGS = ["en", "fr", "hr"]
 CARD_IMAGE_WIDTHS = (360, 300)
 CARD_IMAGE_VARIANT_SUFFIX = "-300x200"
 RESPONSIVE_IMAGE_WIDTHS = (540, 720, 960, 1280, 1600, 1920)

@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="/assets/uploads/2021/03/Etapes.png" style="align: center" height=400>
+    <img src="/assets/uploads/2021/03/Etapes.png" alt="Étapes à suivre en cas de disparition d’un enfant" style="align: center" height=400>
 </p>
 
 1. Lorsque votre enfant disparait, rentrez en communication avec vos proches, l’école et tout autre institution reliée à votre enfant, afin de voir s’ils détiennent des informations qui pourraient vous être utiles. Si vous apprenez que votre conjoint ou ex-conjoint part dans un autre pays avec votre enfant sans votre accord et que vous n’avez plus de nouvelles.
