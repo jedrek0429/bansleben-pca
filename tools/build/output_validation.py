@@ -23,7 +23,7 @@ def _srcset_urls(value: str) -> list[str]:
     return urls
 
 
-def _local_output_path(ctx, url: str) -> Path | None:
+def _local_output_path(ctx, html_path: Path, url: str) -> Path | None:
     value = str(url or "").strip()
     if not value or value.startswith(("data:", "http://", "https://", "//", "#")):
         return None
@@ -37,6 +37,16 @@ def _local_output_path(ctx, url: str) -> Path | None:
         elif path.startswith(prefix + "/"):
             path = path[len(prefix):]
 
+    if not path.startswith("/"):
+        return (html_path.parent / path).resolve()
+
+    if ctx.lang_in_url:
+        return ctx.dist / path.lstrip("/")
+
+    relative_html = html_path.relative_to(ctx.dist)
+    lang = relative_html.parts[0] if relative_html.parts and relative_html.parts[0] in ctx.langs else None
+    if lang:
+        return ctx.dist / lang / path.lstrip("/")
     return ctx.dist / path.lstrip("/")
 
 
@@ -55,7 +65,7 @@ def validate_generated_image_references(ctx) -> None:
             for match in ATTR_RE.finditer(tag):
                 values = _srcset_urls(match.group("value")) if match.group("name").lower() == "srcset" else [match.group("value")]
                 for url in values:
-                    output_path = _local_output_path(ctx, url)
+                    output_path = _local_output_path(ctx, html_path, url)
                     if output_path is None or output_path.is_file():
                         continue
                     rel_html = html_path.relative_to(ctx.dist).as_posix()
