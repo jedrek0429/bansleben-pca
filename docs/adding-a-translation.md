@@ -6,9 +6,9 @@ PCA treats each deployed language as a site package implementing the shared site
 
 `config/pages.json` owns language-independent page structure: stable page keys, parent relationships, templates, navigation participation and shared structural flags.
 
-`config/seo.json` owns only language-independent SEO behaviour and shared schema configuration.
+`config/seo.json` owns language-independent SEO behaviour and shared schema configuration. Existing language-keyed maps may remain temporarily as compatibility data, but new translations must not register themselves there.
 
-`sites/<lang>.json` owns deployment and structural facts for one site. This includes the production URL, language/locale identifiers and any pages or structural overrides that genuinely exist only for that audience.
+`sites/<lang>.json` owns deployment and structural facts for one site. This includes the production URL, hreflang identifier, Open Graph locale, social image and any pages or structural extensions that genuinely exist only for that audience.
 
 `locales/<lang>.json` owns linguistic choices for that language: page titles, local slug segments, navigation and interface copy, SEO descriptions, site name and other translated metadata.
 
@@ -27,6 +27,40 @@ For a new language code such as `pl`:
 5. Run the site checks and a preview build. Missing required translations, duplicate routes, missing content and invalid site-model references must fail validation rather than fall back silently.
 
 A normal new translation must not require changes to `config/pages.json`, `config/seo.json`, builder language lists, or existing `sites/`, `locales/` and `content/` packages. Shared files should change only when the new site requires a genuinely new application capability or shared structural feature.
+
+## Site manifest
+
+A site manifest contains non-linguistic facts about one deployed site. A minimal example is:
+
+```json
+{
+  "url": "https://example.pl",
+  "hreflang": "pl",
+  "og_locale": "pl_PL",
+  "social_image": "/assets/social/og-pl.jpg",
+  "extra_pages": []
+}
+```
+
+`url`, `hreflang`, `og_locale` and `social_image` are read from the site manifest. They are not translation strings and should not be added to shared language maps merely to register a site.
+
+## Locale SEO
+
+Translated SEO text belongs to the locale. A locale may provide:
+
+```json
+{
+  "seo": {
+    "default_description": "...",
+    "descriptions": {
+      "introduction": "...",
+      "whom_to_contact": "..."
+    }
+  }
+}
+```
+
+The builder reads locale-owned descriptions before any compatibility data in shared configuration. A newly added language should therefore be complete without editing shared SEO maps.
 
 ## Site-specific pages
 
