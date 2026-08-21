@@ -30,7 +30,7 @@ Hardening must preserve the deployment behaviour visible to users and maintainer
 - `preview/`, `ochronapacjenta.pl/`, and `autoinstalator/` survive production publishes unchanged;
 - a source/build/staging failure cannot modify the currently served production tree;
 - an activation failure restores the previous production content;
-- a production job deploys the exact commit SHA stored in that queued job;
+- a production job deploys the exact commit SHA stored in that queued job, and that SHA must be contained in the freshly fetched `origin/main`;
 - interrupted `.running` queue jobs are returned to the pending queue on the next worker run.
 
 These invariants are covered by `tools/test_production_language_webroots.py`, `tools/test_production_deployment_contract.py`, `tools/test_deployment_hardening.py`, and `tools/test_preview_social_metadata.py` in the `Production webroot contract` workflow.
@@ -138,13 +138,14 @@ For a push to `main`, the webhook records the push commit SHA in the production 
 ```sh
 git fetch origin main
 git cat-file -e <queued-sha>^{commit}
+git merge-base --is-ancestor <queued-sha> origin/main
 git worktree add --force --detach .deploy-worktrees/production <queued-sha>
 python -m pip install -r requirements.txt   # only when requirements.txt changed
 python tools/build.py deploy --root .deploy-worktrees/production --to ../public_html
 git worktree remove --force .deploy-worktrees/production
 ```
 
-The queued SHA is authoritative. A later push arriving while an older job waits in the queue therefore cannot silently change which revision the older job deploys.
+The queued SHA is authoritative, but it must also be contained in the freshly fetched `origin/main`. A malformed or tampered queue job that points to some other commit already present in the repository fails before a production worktree is created. A later push arriving while an older valid job waits in the queue therefore cannot silently change which revision that older job deploys.
 
 The worker does not upgrade pip during a deployment. It records the SHA-256 digest of the installed `requirements.txt` in `preview/.private/requirements.sha256`; unchanged dependency specifications reuse the existing server Python environment. If the requirements file changes, dependencies are installed before the builder runs and the stamp is updated only after installation succeeds.
 
