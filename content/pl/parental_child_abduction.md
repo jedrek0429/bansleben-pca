@@ -20,7 +20,7 @@ W praktyce trzeba więc ustalić, jakie prawa do opieki przysługiwały przed wy
 
 Samo sprawowanie pieczy nad dzieckiem nie oznacza zatem automatycznie, że można bez zgody drugiego uprawnionego rodzica zmienić państwo jego stałego pobytu. Ocena zawsze zależy od praw przysługujących w państwie stałego pobytu dziecka bezpośrednio przed zdarzeniem.
 
-Jeżeli opis odpowiada Twojej sytuacji, warto możliwie szybko ustalić, czy spełnione są przesłanki zastosowania Konwencji haskiej i jakie działania można podjąć w państwach związanych ze sprawą.
+Jeśli uważasz, że to, o czym tu mowa, odpowiada sytuacji, w jakiej się znajdujesz, warto możliwie szybko ustalić, czy spełnione są przesłanki zastosowania Konwencji haskiej i jakie działania można podjąć w państwach związanych ze sprawą.
 
 ---
 
