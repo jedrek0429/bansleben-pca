@@ -9,6 +9,7 @@ from common import CLR_GREEN, CLR_WHITE, color, display_path, print_labeled, pri
 from apache import write_htaccess_files
 from assets import copy_static
 from context import BuildContext
+from image_pipeline import build_image_manifest
 from output_validation import validate_generated_image_references
 from pages import render_404, render_localized_page
 from sitemap import lang_output_dir, write_extra_seo_files
@@ -31,7 +32,7 @@ def render_templates(ctx: BuildContext, locales) -> None:
 
 
 def make_context(root, *, out=None, prefix=None, preview: bool = False, langs=None) -> BuildContext:
-    return BuildContext.from_root(root, dist=out, url_prefix=prefix, lang_in_url=preview, langs=langs)
+    return BuildContext.from_root(root, dist=out, prefix=prefix, lang_in_url=preview, langs=langs)
 
 
 def inspect(root, *, out=None, prefix=None, preview: bool = False, langs=None) -> BuildContext:
@@ -73,6 +74,7 @@ def site(root, *, out=None, langs=None, dry: bool = False, prefix: str | None = 
     if ctx.dist.exists():
         shutil.rmtree(ctx.dist)
     ctx.dist.mkdir(parents=True, exist_ok=True)
+    ctx.image_manifest = build_image_manifest(ctx, locales)
     render_templates(ctx, locales)
     redirect_lang = ctx.langs[0] if ctx.langs else "en"
     redirect_target = f"{ctx.url_prefix}/{redirect_lang}/" if ctx.url_prefix else f"/{redirect_lang}/"
