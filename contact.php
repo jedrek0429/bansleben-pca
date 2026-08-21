@@ -204,12 +204,22 @@ function send_smtp(array $cfg, string $replyEmail, string $name, string $lang, s
     return smtp_send_raw($cfg, $fromEmail, $toEmail, $raw);
 }
 
+function supported_languages(): array {
+    return ['en', 'fr', 'hr', 'pl'];
+}
+
+function normalize_language(string $lang): string {
+    return in_array($lang, supported_languages(), true) ? $lang : 'en';
+}
+
 function confirmation_subject(string $lang): string {
     switch ($lang) {
         case 'fr':
             return 'Nous avons reçu votre message';
         case 'hr':
             return 'Primili smo vašu poruku';
+        case 'pl':
+            return 'Otrzymaliśmy Twoją wiadomość';
         default:
             return 'We received your message';
     }
@@ -227,6 +237,11 @@ function confirmation_body(string $lang, string $name): string {
                    "Hvala što ste kontaktirali Poland Child Abduction. Primili smo vašu poruku i pregledat ćemo je što je prije moguće.\n\n" .
                    "Ovo je automatska potvrda. Ova poruka ne predstavlja pravni savjet.\n\n" .
                    "Poland Child Abduction\n";
+        case 'pl':
+            return "Dzień dobry {$name},\n\n" .
+                   "Dziękujemy za kontakt z Poland Child Abduction. Otrzymaliśmy Twoją wiadomość i zapoznamy się z nią możliwie szybko.\n\n" .
+                   "To jest automatyczne potwierdzenie. Wiadomość nie stanowi porady prawnej.\n\n" .
+                   "Poland Child Abduction\n";
         default:
             return "Dear {$name},\n\n" .
                    "Thank you for contacting Poland Child Abduction. We have received your message and will review it as soon as possible.\n\n" .
@@ -240,10 +255,7 @@ function send_confirmation_smtp(array $cfg, string $recipientEmail, string $name
     $fromName = clean_header($cfg['from_name']);
     $replyToEmail = clean_header($cfg['reply_to_email'] ?? $cfg['from_email']);
     $recipientEmail = clean_header($recipientEmail);
-
-    if (!in_array($lang, ['en', 'fr', 'hr'], true)) {
-        $lang = 'en';
-    }
+    $lang = normalize_language($lang);
 
     $subject = confirmation_subject($lang);
     $body = confirmation_body($lang, $name);
@@ -271,8 +283,6 @@ function back_url(): string {
         return '/';
     }
 
-    // Allow same-site absolute URLs, but convert them to path-only URLs.
-    // Reject external URLs to avoid open redirects.
     if (preg_match('~^https?://~i', $url)) {
         $parts = parse_url($url);
         $currentHost = strtolower((string)($_SERVER['HTTP_HOST'] ?? ''));
@@ -338,12 +348,8 @@ try {
     $email = trim((string)($_POST['email'] ?? ''));
     $message = trim((string)($_POST['message'] ?? ''));
 
-    $lang = clean_header((string)($_POST['lang'] ?? 'en'));
-    if (!in_array($lang, ['en', 'fr', 'hr'], true)) {
-        $lang = 'en';
-    }
+    $lang = normalize_language(clean_header((string)($_POST['lang'] ?? 'en')));
 
-    // Honeypot field: pretend success for bots, but do not send email.
     if (trim((string)($_POST['website'] ?? '')) !== '') {
         log_line('Honeypot triggered');
         redirect_with_status(true);
@@ -357,7 +363,6 @@ try {
         throw new RuntimeException('Invalid email address');
     }
 
-    // Load config inside the try block so missing/broken config redirects back with sent=0.
     $config = load_config();
 
     log_line('Submitting form from email=' . $email . ' name=' . $name);
