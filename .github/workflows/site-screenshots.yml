@@ -40,6 +40,11 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
 
+      - name: Install image build dependency
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y imagemagick
+
       - name: Validate deployed preview prefix
         env:
           PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number || 'ci' }}
