@@ -28,5 +28,10 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
 
+      - name: Install image build dependency
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y imagemagick
+
       - name: Verify standalone production language roots
         run: python tools/test_production_language_webroots.py
