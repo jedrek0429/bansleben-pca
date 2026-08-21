@@ -97,6 +97,10 @@ def remove_path(path: Path) -> None:
         path.unlink()
 
 
+def move_path(source: Path, target: Path) -> None:
+    source.replace(target)
+
+
 def copy_dist_contents(dist: Path, dest: Path) -> None:
     for item in dist.iterdir():
         target = dest / item.name
@@ -127,11 +131,11 @@ def activate_staged_publish(stage: Path, dest: Path, preserved_root_items: set[s
         for item in list(dest.iterdir()):
             if item.name in preserved_root_items:
                 continue
-            item.replace(backup / item.name)
+            move_path(item, backup / item.name)
             moved_to_backup.append(item.name)
 
         for item in list(stage.iterdir()):
-            item.replace(dest / item.name)
+            move_path(item, dest / item.name)
             activated.append(item.name)
     except Exception:
         for name in reversed(activated):
@@ -139,7 +143,7 @@ def activate_staged_publish(stage: Path, dest: Path, preserved_root_items: set[s
         for name in reversed(moved_to_backup):
             source = backup / name
             if source.exists() or source.is_symlink():
-                source.replace(dest / name)
+                move_path(source, dest / name)
         raise
     finally:
         shutil.rmtree(stage, ignore_errors=True)
