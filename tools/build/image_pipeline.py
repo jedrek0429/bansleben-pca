@@ -10,11 +10,13 @@ from __future__ import annotations
 import hashlib
 import re
 import shutil
+import subprocess
 from pathlib import Path
 from typing import Any
 
-from PIL import Image, ImageOps
+import imagesize
 
+from assets import image_magick_command
 from common import CLR_GREEN, print_labeled
 from constants import RESPONSIVE_IMAGE_WIDTHS, WEBP_QUALITY
 from urls import asset_url
@@ -96,37 +98,39 @@ def _target_widths(original_width: int) -> list[int]:
     return sorted(widths)
 
 
-def _prepare_image(image: Image.Image) -> Image.Image:
-    image = ImageOps.exif_transpose(image)
-    if image.mode in {"RGBA", "LA"} or "transparency" in image.info:
-        return image.convert("RGBA")
-    return image.convert("RGB")
+def _generate_variant(
+    source: Path,
+    destination: Path,
+    command: list[str],
+    width: int,
+) -> None:
+    args = [*command, str(source), "-auto-orient", "-resize", f"{width}x>", "-quality", str(WEBP_QUALITY), str(destination)]
+    completed = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=False)
+    if completed.returncode != 0:
+        detail = completed.stderr.strip() or completed.stdout.strip() or f"exit code {completed.returncode}"
+        raise RuntimeError(f"ImageMagick failed for {source.name} at {width}px: {detail}")
 
 
-def _generate_variants(source: Path, output_dir: Path, digest: str) -> dict[str, Any]:
-    with Image.open(source) as opened:
-        image = _prepare_image(opened)
-        original_width, original_height = image.size
-        if not original_width or not original_height:
-            raise ValueError(f"Image has invalid dimensions: {source}")
+def _generate_variants(source: Path, output_dir: Path, digest: str, command: list[str]) -> dict[str, Any]:
+    original_width, original_height = imagesize.get(source)
+    if not original_width or not original_height:
+        raise ValueError(f"Image has invalid dimensions: {source}")
 
-        variants = []
-        quality = int(WEBP_QUALITY)
-        for width in _target_widths(original_width):
-            height = round(original_height * width / original_width)
-            resized = image if width == original_width else image.resize((width, height), Image.Resampling.LANCZOS)
-            filename = f"{digest}-{width}w.webp"
-            destination = output_dir / filename
-            resized.save(destination, "WEBP", quality=quality, method=6)
-            variants.append({
-                "width": width,
-                "height": height,
-                "path": f"/{GENERATED_IMAGE_DIR}/{filename}",
-            })
+    variants = []
+    for width in _target_widths(int(original_width)):
+        height = round(int(original_height) * width / int(original_width))
+        filename = f"{digest}-{width}w.webp"
+        destination = output_dir / filename
+        _generate_variant(source, destination, command, width)
+        variants.append({
+            "width": width,
+            "height": height,
+            "path": f"/{GENERATED_IMAGE_DIR}/{filename}",
+        })
 
     return {
-        "width": original_width,
-        "height": original_height,
+        "width": int(original_width),
+        "height": int(original_height),
         "variants": variants,
         "primary": variants[-1]["path"],
     }
@@ -155,6 +159,10 @@ def build_image_manifest(ctx, locales) -> dict[str, dict[str, Any]]:
     Missing source files are deliberately left for the generated-output asset
     validator to report against the HTML that actually references them.
     """
+    command = image_magick_command()
+    if not command:
+        raise SystemExit("ImageMagick is required to build responsive images; install 'magick' or 'convert'.")
+
     output_dir = _generated_output_root(ctx)
     output_dir.mkdir(parents=True, exist_ok=True)
     manifest: dict[str, dict[str, Any]] = {}
@@ -164,7 +172,7 @@ def build_image_manifest(ctx, locales) -> dict[str, dict[str, Any]]:
         if not source.is_file():
             continue
         digest = _content_digest(source)
-        manifest[reference] = _generate_variants(source, output_dir, digest)
+        manifest[reference] = _generate_variants(source, output_dir, digest, command)
 
     _copy_generated_for_production(ctx, output_dir)
     print_labeled("OK", CLR_GREEN, f"generated responsive images for {len(manifest)} referenced sources.")
