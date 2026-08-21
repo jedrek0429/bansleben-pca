@@ -209,21 +209,13 @@ def render_preload(images: list[dict[str, str]]) -> str:
 
 
 def virtual_responsive_variant_paths(ctx, relative_path: str, suffix: str = ".webp") -> list[tuple[str, int]]:
-    original = ctx.root / str(relative_path or "").lstrip("/")
-    if not original.is_file():
-        return []
+    """Compatibility shim retained for callers; never invent asset URLs.
 
-    original_width, _ = imagesize.get(original)
-    if not original_width:
-        return []
-
-    entries = []
-    for width in RESPONSIVE_IMAGE_WIDTHS:
-        if width >= original_width:
-            continue
-        rel_path = "/" + resized_webp_path(original, width).relative_to(ctx.root).as_posix()
-        entries.append((rel_path, int(width)))
-    return entries
+    Responsive candidates must correspond to files that are actually present in
+    the source tree. Clean preview builds cannot rely on variants left behind by
+    an earlier deployment or by a local ImageMagick run.
+    """
+    return []
 
 
 def image_variant_paths(ctx, relative_path: str, suffix: str = ".webp") -> list[tuple[str, int]]:
@@ -233,7 +225,7 @@ def image_variant_paths(ctx, relative_path: str, suffix: str = ".webp") -> list[
 
     directory = original.parent
     if not directory.is_dir():
-        return virtual_responsive_variant_paths(ctx, relative_path, suffix)
+        return []
 
     original_ratio = 0.0
     if original.exists():
@@ -256,9 +248,6 @@ def image_variant_paths(ctx, relative_path: str, suffix: str = ".webp") -> list[
             continue
         rel_path = "/" + path.relative_to(ctx.root).as_posix()
         by_width.setdefault(int(width), rel_path)
-
-    for rel_path, width in virtual_responsive_variant_paths(ctx, relative_path, suffix):
-        by_width.setdefault(width, rel_path)
 
     return [(path, width) for width, path in sorted(by_width.items())]
 
