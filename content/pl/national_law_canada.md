@@ -1,11 +1,8 @@
-* **Odpowiedzialność karna za uprowadzenie dziecka**  
-  Sekcje 282 i 283 Criminal Code dotyczą określonych przypadków uprowadzenia dziecka poniżej 14. roku życia. Obejmują zarówno sytuacje, w których dochodzi do naruszenia orzeczenia dotyczącego pieczy nad dzieckiem, jak i przypadki przewidziane w sekcji 283.
+* **Odpowiedzialność karna w sprawach uprowadzenia rodzicielskiego**  
+  Criminal Code: sekcje 282 i 283.
 
-* **Odpowiedzialność rodzicielska po rozstaniu lub rozwodzie**  
-  Divorce Act reguluje między innymi orzeczenia dotyczące wykonywania obowiązków rodzicielskich (*parenting orders*), czasu spędzanego z dzieckiem (*parenting time*) oraz odpowiedzialności za podejmowanie decyzji w jego sprawach (*decision-making responsibility*).
+* **Pieczę nad dzieckiem, odpowiedzialność rodzicielską po rozstaniu oraz przemoc rodzinną**  
+  Divorce Act, R.S.C. 1985, c. 3 (2nd Supp.): sekcja 16 i następne.
 
-* **Prowincje i terytoria**  
-  Prawo rodzinne oraz stosowanie Konwencji haskiej mają w Kanadzie również wymiar prowincjonalny i terytorialny. Każda prowincja i każde terytorium mają własny organ centralny dla Konwencji z 1980 r.; działa także federalny organ centralny.
-
-* **Quebec**  
-  W Quebecu obowiązuje odrębna ustawa dotycząca cywilnych aspektów międzynarodowego i międzyprowincjonalnego uprowadzenia dziecka.
+* **Quebec: cywilne aspekty międzynarodowego i międzyprowincjonalnego uprowadzenia dziecka**  
+  Act respecting the civil aspects of international and interprovincial child abduction.
