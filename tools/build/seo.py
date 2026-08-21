@@ -33,11 +33,24 @@ def page_lastmod(ctx, seo_config: dict, lang: str, key: str) -> str:
     return ""
 
 
+def site_metadata(ctx, lang: str) -> dict:
+    value = ctx.site_configs.get(lang, {}) if hasattr(ctx, "site_configs") else {}
+    return value if isinstance(value, dict) else {}
+
+
+def locale_seo(locales, lang: str) -> dict:
+    locale = locales.get(lang, {}) if isinstance(locales, dict) else {}
+    value = locale.get("seo", {}) if isinstance(locale, dict) else {}
+    return value if isinstance(value, dict) else {}
+
+
 def site_base_url(ctx, seo_config: dict, lang: str, locales) -> str:
     if not ctx.lang_in_url:
-        url = (seo_config.get("site_urls") or {}).get(lang)
+        url = site_metadata(ctx, lang).get("url")
         if not url:
             url = value_from_locales(lang, "domain", locales)
+        if not url:
+            url = (seo_config.get("site_urls") or {}).get(lang)
         return str(url or "").rstrip("/")
     url = seo_config.get("preview_site_url")
     return str(url or "").rstrip("/")
@@ -56,9 +69,18 @@ def absolute_asset_url(ctx, seo_config: dict, locales, lang: str, path_or_url: s
     return site_base_url(ctx, seo_config, lang, locales) + value
 
 
-def seo_description(seo_config: dict, lang: str, key: str) -> str:
-    descriptions = seo_config.get("descriptions") or {}
-    page_descriptions = descriptions.get(key) or {}
+def seo_description(seo_config: dict, locales, lang: str, key: str) -> str:
+    owned = locale_seo(locales, lang)
+    descriptions = owned.get("descriptions") or {}
+    value = descriptions.get(key) if isinstance(descriptions, dict) else None
+    if value:
+        return str(value)
+    default = owned.get("default_description")
+    if default:
+        return str(default)
+
+    legacy_descriptions = seo_config.get("descriptions") or {}
+    page_descriptions = legacy_descriptions.get(key) or {}
     value = page_descriptions.get(lang)
     if value:
         return str(value)
@@ -66,12 +88,31 @@ def seo_description(seo_config: dict, lang: str, key: str) -> str:
     return str(defaults.get(lang) or defaults.get("en") or "")
 
 
-def page_og_locale(seo_config: dict, lang: str) -> str:
-    return str((seo_config.get("og_locale") or {}).get(lang) or lang)
+def page_og_locale(ctx, seo_config: dict, locales, lang: str) -> str:
+    value = site_metadata(ctx, lang).get("og_locale")
+    if not value:
+        value = locale_seo(locales, lang).get("og_locale")
+    if not value:
+        value = (seo_config.get("og_locale") or {}).get(lang)
+    return str(value or lang)
 
 
-def page_hreflang(seo_config: dict, lang: str) -> str:
-    return str((seo_config.get("hreflang") or {}).get(lang) or lang)
+def page_hreflang(ctx, seo_config: dict, locales, lang: str) -> str:
+    value = site_metadata(ctx, lang).get("hreflang")
+    if not value:
+        value = locale_seo(locales, lang).get("hreflang")
+    if not value:
+        value = (seo_config.get("hreflang") or {}).get(lang)
+    return str(value or lang)
+
+
+def site_social_image(ctx, seo_config: dict, locales, lang: str) -> str:
+    value = site_metadata(ctx, lang).get("social_image")
+    if not value:
+        value = locale_seo(locales, lang).get("social_image")
+    if not value:
+        value = (seo_config.get("social_images") or {}).get(lang)
+    return str(value or "")
 
 
 def json_script(data: dict) -> str:
@@ -166,7 +207,7 @@ def render_schema(ctx, seo_config: dict, locales, lang: str, key: str, title: st
         "name": site_name,
         "url": site_base_url(ctx, seo_config, lang, locales) + "/",
         "publisher": {"@id": organization["@id"]},
-        "inLanguage": page_hreflang(seo_config, lang),
+        "inLanguage": page_hreflang(ctx, seo_config, locales, lang),
     }
 
     webpage = {
@@ -178,7 +219,7 @@ def render_schema(ctx, seo_config: dict, locales, lang: str, key: str, title: st
         "description": description,
         "isPartOf": {"@id": website["@id"]},
         "about": {"@id": organization["@id"]},
-        "inLanguage": page_hreflang(seo_config, lang),
+        "inLanguage": page_hreflang(ctx, seo_config, locales, lang),
     }
     if key in {"contact", "who_we_are"}:
         webpage["mainEntity"] = {"@id": organization["@id"]}
@@ -214,11 +255,11 @@ def render_icons(ctx, seo_config: dict, lang: str) -> list[str]:
 
 
 def render_seo_head(ctx, seo_config: dict, locales, lang: str, key: str, title: str) -> str:
-    description = seo_description(seo_config, lang, key)
+    description = seo_description(seo_config, locales, lang, key)
     canonical = absolute_page_url(ctx, seo_config, locales, lang, key)
     site_name = value_from_locales(lang, "site_name", locales) or ""
     full_title = f"{title} | {site_name}" if site_name else title
-    social_image = (seo_config.get("social_images") or {}).get(lang) or ""
+    social_image = site_social_image(ctx, seo_config, locales, lang)
     social_image_abs = absolute_asset_url(ctx, seo_config, locales, lang, social_image) if social_image else ""
 
     lines = []
@@ -229,7 +270,7 @@ def render_seo_head(ctx, seo_config: dict, locales, lang: str, key: str, title: 
     alternate_langs = enabled_alternate_langs(ctx, locales, key)
     for alt_lang in alternate_langs:
         alt_url = absolute_page_url(ctx, seo_config, locales, alt_lang, key)
-        hreflang = page_hreflang(seo_config, alt_lang)
+        hreflang = page_hreflang(ctx, seo_config, locales, alt_lang)
         lines.append(f'<link rel="alternate" hreflang="{html.escape(hreflang, quote=True)}" href="{html.escape(alt_url, quote=True)}">')
 
     x_default_lang = seo_config.get("x_default") or "en"
@@ -247,12 +288,12 @@ def render_seo_head(ctx, seo_config: dict, locales, lang: str, key: str, title: 
         f'<meta property="og:title" content="{html.escape(full_title, quote=True)}">',
         f'<meta property="og:description" content="{html.escape(description, quote=True)}">',
         f'<meta property="og:url" content="{html.escape(canonical, quote=True)}">',
-        f'<meta property="og:locale" content="{html.escape(page_og_locale(seo_config, lang), quote=True)}">',
+        f'<meta property="og:locale" content="{html.escape(page_og_locale(ctx, seo_config, locales, lang), quote=True)}">',
     ])
 
     for alt_lang in alternate_langs:
         if alt_lang != lang:
-            lines.append(f'<meta property="og:locale:alternate" content="{html.escape(page_og_locale(seo_config, alt_lang), quote=True)}">')
+            lines.append(f'<meta property="og:locale:alternate" content="{html.escape(page_og_locale(ctx, seo_config, locales, alt_lang), quote=True)}">')
 
     if social_image_abs:
         lines.extend([
