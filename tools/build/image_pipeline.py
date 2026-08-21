@@ -16,6 +16,7 @@ from PIL import Image, ImageOps
 
 from common import CLR_GREEN, print_labeled
 from constants import RESPONSIVE_IMAGE_WIDTHS, WEBP_QUALITY
+from urls import asset_url
 
 SUPPORTED_SOURCE_SUFFIXES = {".jpg", ".jpeg", ".png", ".webp"}
 GENERATED_IMAGE_DIR = "_generated/images"
@@ -130,3 +131,21 @@ def build_image_manifest(ctx, locales) -> dict[str, dict[str, Any]]:
     _copy_generated_for_production(ctx, output_dir)
     print_labeled("OK", CLR_GREEN, f"generated responsive images for {len(manifest)} referenced sources.")
     return manifest
+
+
+def primary_image_url(ctx, source: str) -> str:
+    entry = ctx.image_manifest.get(str(source or ""), {})
+    primary = entry.get("primary") if isinstance(entry, dict) else None
+    return asset_url(ctx, str(primary or source or ""))
+
+
+def responsive_image_srcset(ctx, source: str) -> str:
+    entry = ctx.image_manifest.get(str(source or ""), {})
+    variants = entry.get("variants", []) if isinstance(entry, dict) else []
+    if not isinstance(variants, list):
+        return ""
+    return ", ".join(
+        f"{asset_url(ctx, str(variant['path']))} {int(variant['width'])}w"
+        for variant in variants
+        if isinstance(variant, dict) and variant.get("path") and variant.get("width")
+    )
