@@ -1,7 +1,9 @@
-Jeżeli wiesz, że dziecko znajduje się w Polsce i pozostajesz w kontakcie z drugim rodzicem, możesz skontaktować się z organem centralnym właściwym dla państwa swojego miejsca stałego pobytu albo z innym organem centralnym, który zgodnie z Konwencją może przekazać wniosek do Polski. Wniosek można również złożyć bezpośrednio do właściwego sądu, zgodnie z zasadami obowiązującymi w Polsce.
+Jeżeli wiesz, że dziecko znajduje się w Polsce i pozostajesz w kontakcie z drugim rodzicem, skontaktuj się z organem centralnym właściwym dla państwa, w którym mieszkasz.
 
-W postępowaniu prowadzonym za pośrednictwem organu centralnego potrzebne będą informacje o dziecku, wnioskodawcy i drugim rodzicu oraz dokumenty dotyczące prawa do opieki. Polskie Ministerstwo Sprawiedliwości udostępnia formularz wniosku o powrót dziecka, formularz dotyczący wykonywania prawa do osobistych kontaktów oraz wzór pełnomocnictwa.
+Przy składaniu wniosku trzeba przekazać dane osobowe oraz inne informacje przydatne do prowadzenia sprawy. Jeżeli właściwy organ centralny wymaga pełnomocnictwa albo upoważnienia pozwalającego mu działać w imieniu wnioskodawcy lub wyznaczyć przedstawiciela, taki dokument należy dołączyć do wniosku.
 
-Organy centralne współpracują między innymi przy ustalaniu miejsca pobytu dziecka, przekazywaniu wniosków i podejmowaniu działań sprzyjających dobrowolnemu rozwiązaniu sprawy. W zależności od okoliczności możliwe jest również skorzystanie z mediacji lub innej formy polubownego rozwiązania sporu.
+Organ centralny państwa wnioskodawcy może przekazać sprawę polskiemu organowi centralnemu i zwrócić się o ustalenie albo potwierdzenie miejsca pobytu dziecka oraz o podjęcie działań przewidzianych w Konwencji.
 
-W Kanadzie, obok federalnego organu centralnego, działają organy centralne poszczególnych prowincji i terytoriów. Jeżeli wiadomo, gdzie znajduje się dziecko, należy ustalić organ właściwy dla danej prowincji lub terytorium.
+Organy centralne podejmują działania sprzyjające dobrowolnemu rozwiązaniu sprawy. W zależności od okoliczności może to obejmować mediację lub inną formę polubownego rozwiązania sporu, także z udziałem prawnika lub mediatora mającego doświadczenie w międzynarodowym prawie rodzinnym.
+
+W Kanadzie, obok federalnego organu centralnego, działają organy centralne poszczególnych prowincji i terytoriów.
