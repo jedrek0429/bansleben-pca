@@ -16,12 +16,12 @@ function parseArgs(argv) {
   return result;
 }
 
-function findIndexFiles(dir) {
+function findHtmlFiles(dir) {
   const results = [];
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) results.push(...findIndexFiles(full));
-    else if (entry.isFile() && entry.name === 'index.html') results.push(full);
+    if (entry.isDirectory()) results.push(...findHtmlFiles(full));
+    else if (entry.isFile() && entry.name.endsWith('.html')) results.push(full);
   }
   return results.sort();
 }
@@ -29,8 +29,8 @@ function findIndexFiles(dir) {
 const args = parseArgs(process.argv.slice(2));
 const root = path.resolve(args.root);
 const baseUrl = args.baseUrl.replace(/\/$/, '');
-const pages = findIndexFiles(root);
-if (!pages.length) throw new Error(`No index.html files found under ${root}`);
+const pages = findHtmlFiles(root);
+if (!pages.length) throw new Error(`No HTML files found under ${root}`);
 
 const browser = await chromium.launch();
 const context = await browser.newContext();
@@ -38,8 +38,12 @@ const page = await context.newPage();
 const failures = [];
 
 for (const file of pages) {
-  const relative = path.relative(root, path.dirname(file)).split(path.sep).join('/');
-  const route = relative ? `/${relative}/` : '/';
+  const relative = path.relative(root, file).split(path.sep).join('/');
+  const route = relative === 'index.html'
+    ? '/'
+    : relative.endsWith('/index.html')
+      ? `/${relative.slice(0, -'index.html'.length)}`
+      : `/${relative}`;
   const url = `${baseUrl}${route}`;
   await page.goto(url, { waitUntil: 'networkidle' });
   const result = await new AxeBuilder({ page })

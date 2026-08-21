@@ -21,6 +21,10 @@ class ReferenceParser(HTMLParser):
             self.references.append(data["href"])
         if tag in {"img", "script", "iframe", "source"} and data.get("src"):
             self.references.append(data["src"])
+        if tag == "form" and data.get("action"):
+            self.references.append(data["action"])
+        if tag in {"button", "input"} and data.get("formaction"):
+            self.references.append(data["formaction"])
         if tag in {"img", "source"} and data.get("srcset"):
             for candidate in data["srcset"].split(","):
                 candidate = candidate.strip()
