@@ -1,4 +1,8 @@
 {
+  "url": "https://polandchildabduction.pl",
+  "hreflang": "en",
+  "og_locale": "en_GB",
+  "social_image": "/assets/social/og-en.jpg",
   "extra_pages": [
     {"key": "national_law_uk", "parent": "individual_national_laws", "template": "content"},
     {"key": "national_law_us", "parent": "individual_national_laws", "template": "content"},
