@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import shutil
+import tempfile
 from pathlib import Path
 
 from common import CLR_GREEN, CLR_RED, CLR_WHITE, display_path, print_group, print_labeled, print_section
@@ -87,16 +88,13 @@ def assert_dist_ok(dist: Path, root: Path, langs: list[str], *, require_private_
         raise SystemExit(1)
 
 
-def remove_unpreserved_destination_items(dest: Path, preserved_root_items: set[str]) -> None:
-    if not dest.exists():
+def remove_path(path: Path) -> None:
+    if not path.exists() and not path.is_symlink():
         return
-    for item in dest.iterdir():
-        if item.name in preserved_root_items:
-            continue
-        if item.is_dir():
-            shutil.rmtree(item)
-        else:
-            item.unlink()
+    if path.is_dir() and not path.is_symlink():
+        shutil.rmtree(path)
+    else:
+        path.unlink()
 
 
 def copy_dist_contents(dist: Path, dest: Path) -> None:
@@ -106,6 +104,46 @@ def copy_dist_contents(dist: Path, dest: Path) -> None:
             shutil.copytree(item, target, dirs_exist_ok=True)
         else:
             shutil.copy2(item, target)
+
+
+def stage_publish(dist: Path, dest: Path) -> Path:
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    stage = Path(tempfile.mkdtemp(prefix=f".{dest.name}.pca-stage-", dir=dest.parent))
+    try:
+        copy_dist_contents(dist, stage)
+    except Exception:
+        shutil.rmtree(stage, ignore_errors=True)
+        raise
+    return stage
+
+
+def activate_staged_publish(stage: Path, dest: Path, preserved_root_items: set[str]) -> None:
+    dest.mkdir(parents=True, exist_ok=True)
+    backup = Path(tempfile.mkdtemp(prefix=f".{dest.name}.pca-backup-", dir=dest.parent))
+    moved_to_backup: list[str] = []
+    activated: list[str] = []
+
+    try:
+        for item in list(dest.iterdir()):
+            if item.name in preserved_root_items:
+                continue
+            item.replace(backup / item.name)
+            moved_to_backup.append(item.name)
+
+        for item in list(stage.iterdir()):
+            item.replace(dest / item.name)
+            activated.append(item.name)
+    except Exception:
+        for name in reversed(activated):
+            remove_path(dest / name)
+        for name in reversed(moved_to_backup):
+            source = backup / name
+            if source.exists() or source.is_symlink():
+                source.replace(dest / name)
+        raise
+    finally:
+        shutil.rmtree(stage, ignore_errors=True)
+        shutil.rmtree(backup, ignore_errors=True)
 
 
 def resolved_languages(root: Path, langs) -> list[str]:
@@ -129,7 +167,10 @@ def publish(dist, dest, *, root=None, langs=None, preserve_root_item=None, requi
 
     assert_safe_paths(dist, dest)
     assert_dist_ok(dist, root, langs, require_private_config=require_private_config)
-    dest.mkdir(parents=True, exist_ok=True)
-    remove_unpreserved_destination_items(dest, preserved)
-    copy_dist_contents(dist, dest)
+
+    # Build the complete replacement tree before touching the live destination.
+    # Activation uses same-filesystem renames and restores the previous tree if
+    # any activation step fails. Preserved roots never move.
+    stage = stage_publish(dist, dest)
+    activate_staged_publish(stage, dest, preserved)
     print_labeled("OK", CLR_GREEN, "Publish complete.")
