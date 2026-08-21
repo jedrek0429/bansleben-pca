@@ -61,7 +61,8 @@ def absolute_asset_url(ctx, seo_config: dict, lang: str, path_or_url: str) -> st
         return value
     if not value.startswith("/"):
         value = "/" + value
-    return site_base_url(ctx, seo_config, lang) + value
+    prefix = ctx.url_prefix if ctx.lang_in_url else ""
+    return site_base_url(ctx, seo_config, lang) + prefix + value
 
 
 def seo_description(locales, lang: str, key: str) -> str:
