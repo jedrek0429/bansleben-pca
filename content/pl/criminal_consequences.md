@@ -6,7 +6,13 @@ Artykuł 211 Kodeksu karnego przewiduje odpowiedzialność za uprowadzenie lub z
 
 # Wielka Brytania
 
-Child Abduction Act 1984 przewiduje odpowiedzialność karną między innymi za bezprawne wywiezienie dziecka poniżej 16. roku życia z Wielkiej Brytanii przez osobę z nim związaną, jeżeli wymagane zgody nie zostały uzyskane. W przypadkach objętych częścią I ustawy maksymalna kara po skazaniu na podstawie aktu oskarżenia wynosi 7 lat pozbawienia wolności.
+## Anglia i Walia
+
+Część I Child Abduction Act 1984 przewiduje odpowiedzialność karną za określone przypadki uprowadzenia dziecka, w tym wywiezienia dziecka poniżej 16. roku życia z Wielkiej Brytanii bez wymaganej zgody przez osobę z nim związaną. Ustawa przewiduje odrębne tryby postępowania. W razie skazania w postępowaniu na podstawie aktu oskarżenia maksymalna kara pozbawienia wolności wynosi 7 lat; w postępowaniu uproszczonym ustawa przewiduje niższy maksymalny wymiar kary oraz możliwość grzywny.
+
+## Szkocja
+
+Część II Child Abduction Act 1984 ustanawia odrębne przestępstwo w prawie szkockim dotyczące wywiezienia lub wysłania dziecka poniżej 16. roku życia poza Zjednoczone Królestwo przez osobę z nim związaną bez wymaganej zgody. Zgodnie z sekcją 8 ustawy skazanie w postępowaniu uproszczonym może skutkować karą pozbawienia wolności do 3 miesięcy, grzywną albo obiema karami, a skazanie na podstawie aktu oskarżenia — karą pozbawienia wolności do 2 lat, grzywną albo obiema karami.
 
 # Stany Zjednoczone
 
