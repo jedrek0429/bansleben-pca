@@ -1,4 +1,8 @@
 {
+  "url": "https://enlevementparentalpologne.pl",
+  "hreflang": "fr",
+  "og_locale": "fr_FR",
+  "social_image": "/assets/social/og-fr.jpg",
   "extra_pages": [
     {"key": "national_law_france", "parent": "individual_national_laws", "template": "content"},
     {"key": "national_law_belgium", "parent": "individual_national_laws", "template": "content"},
