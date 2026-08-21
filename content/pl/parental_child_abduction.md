@@ -1,8 +1,8 @@
-Rodzicielstwo może postawić człowieka w sytuacji, której wcześniej nie brał pod uwagę: dziecko może zostać bezprawnie wywiezione do innego państwa albo bezprawnie tam zatrzymane przez jednego z rodziców.
+Bycie mamą albo tatą może postawić człowieka w sytuacji, której wcześniej w ogóle nie brał pod uwagę. Dziecko może zostać bezprawnie przewiezione do innego państwa albo bezprawnie zatrzymane za granicą przez jednego z rodziców.
 
-Serwis przedstawia informacje przydatne zarówno osobom planującym przeprowadzkę z dzieckiem za granicę, jak i rodzicom, których dziecko zostało bezprawnie wywiezione lub zatrzymane poza państwem jego stałego pobytu.
+Niniejszy serwis ma na celu przedstawienie informacji przydatnych zarówno osobom planującym przeprowadzkę z dzieckiem za granicę, jak i rodzicom, których dziecko zostało bezprawnie wywiezione z państwa jego stałego pobytu lub zatrzymane poza jego granicami.
 
-Przed podjęciem działań prawnych trzeba ustalić, czy w świetle właściwych przepisów doszło do bezprawnego uprowadzenia lub zatrzymania dziecka.
+Przed podjęciem jakichkolwiek działań należy ustalić, czy w świetle właściwych przepisów rzeczywiście doszło do bezprawnego uprowadzenia lub zatrzymania dziecka.
 
 Konwencja dotycząca cywilnych aspektów uprowadzenia dziecka za granicę z 25 października 1980 r. określa tę kwestię w artykule 3.
 
