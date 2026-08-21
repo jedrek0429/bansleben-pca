@@ -35,7 +35,7 @@ def render_sitemap_xml(ctx, seo_config: dict, locales, lang: str) -> str:
         alt_langs = enabled_alternate_langs(ctx, locales, key)
         for alt_lang in alt_langs:
             alt_url = absolute_page_url(ctx, seo_config, locales, alt_lang, key)
-            hreflang = page_hreflang(seo_config, alt_lang)
+            hreflang = page_hreflang(ctx, seo_config, locales, alt_lang)
             rows.append(
                 '    <xhtml:link rel="alternate" hreflang="'
                 + html.escape(hreflang)
