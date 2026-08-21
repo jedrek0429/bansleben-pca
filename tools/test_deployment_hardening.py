@@ -150,12 +150,46 @@ def assert_production_uses_exact_sha_without_mutating_checkout() -> None:
         finally:
             worker.run = real_run
 
+        expected_ancestry_check = ["git", "merge-base", "--is-ancestor", sha, "origin/main"]
+        if expected_ancestry_check not in calls:
+            raise SystemExit("Production preparation does not verify the queued SHA belongs to origin/main")
         expected_add = ["git", "worktree", "add", "--force", "--detach", str(target), sha]
         if expected_add not in calls:
             raise SystemExit("Production worktree is not pinned to the queued SHA")
         forbidden = {"checkout", "reset"}
         if any(len(command) > 1 and command[0] == "git" and command[1] in forbidden for command in calls):
             raise SystemExit("Production preparation mutates the canonical checkout")
+
+
+def assert_production_rejects_sha_outside_main() -> None:
+    with tempfile.TemporaryDirectory(prefix="pca-off-main-sha-") as directory:
+        temp = Path(directory)
+        root = temp / "site-src"
+        worktrees = temp / "worktrees"
+        root.mkdir()
+        sha = "fedcba9876543210fedcba9876543210fedcba98"
+        config = {"site_src": str(root), "worktree_dir": str(worktrees)}
+        calls: list[list[str]] = []
+        real_run = worker.run
+
+        def reject_ancestry(command: list[str], cwd: Path, log, check: bool = True) -> None:
+            calls.append(command)
+            if command[:3] == ["git", "merge-base", "--is-ancestor"]:
+                raise worker.DeployError("queued SHA is not contained in origin/main")
+
+        worker.run = reject_ancestry
+        try:
+            try:
+                worker.prepare_production_worktree(config, sha, io.StringIO())
+            except worker.DeployError:
+                pass
+            else:
+                raise SystemExit("Off-main production SHA was accepted")
+        finally:
+            worker.run = real_run
+
+        if any(command[:3] == ["git", "worktree", "add"] for command in calls):
+            raise SystemExit("Production worktree was created after the ancestry check failed")
 
 
 def assert_polish_contact_runtime_is_supported() -> None:
@@ -177,6 +211,7 @@ def main() -> None:
     assert_queue_recovers_interrupted_jobs()
     assert_dependencies_install_only_when_changed()
     assert_production_uses_exact_sha_without_mutating_checkout()
+    assert_production_rejects_sha_outside_main()
     assert_polish_contact_runtime_is_supported()
     print("Deployment hardening invariants passed.")
 
