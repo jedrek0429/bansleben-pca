@@ -6,7 +6,7 @@ PCA treats each deployed language as a site package implementing the shared site
 
 `config/pages.json` owns language-independent page structure: stable page keys, parent relationships, templates, navigation participation and shared structural flags.
 
-`config/seo.json` owns language-independent SEO behaviour and shared schema configuration. Existing language-keyed maps may remain temporarily as compatibility data, but new translations must not register themselves there.
+`config/seo.json` owns language-independent SEO behaviour and shared schema configuration. Site and locale identity must not be registered there.
 
 `sites/<lang>.json` owns deployment and structural facts for one site. This includes the production URL, hreflang identifier, Open Graph locale, social image and any pages or structural extensions that genuinely exist only for that audience.
 
@@ -42,7 +42,9 @@ A site manifest contains non-linguistic facts about one deployed site. A minimal
 }
 ```
 
-`url`, `hreflang`, `og_locale` and `social_image` are read from the site manifest. They are not translation strings and should not be added to shared language maps merely to register a site.
+`url`, `hreflang`, `og_locale` and `social_image` are read from the site manifest. They are not translation strings and must not be added to shared language maps merely to register a site.
+
+The optional `organization_url_language_override` field is an exception for a site whose external organisation profile uses a different language suffix. When absent, the builder uses the site's own language code. It is not part of the required site identity contract.
 
 ## Locale SEO
 
@@ -60,7 +62,7 @@ Translated SEO text belongs to the locale. A locale may provide:
 }
 ```
 
-The builder reads locale-owned descriptions before any compatibility data in shared configuration. A newly added language should therefore be complete without editing shared SEO maps.
+The builder reads descriptions directly from the locale. A newly added language must therefore be complete without editing shared SEO configuration.
 
 ## Site-specific pages
 

@@ -44,7 +44,7 @@ def locale_seo(locales, lang: str) -> dict:
     return value if isinstance(value, dict) else {}
 
 
-def site_base_url(ctx, seo_config: dict, lang: str, locales) -> str:
+def site_base_url(ctx, seo_config: dict, lang: str) -> str:
     if not ctx.lang_in_url:
         return str(site_metadata(ctx, lang).get("url") or "").rstrip("/")
     url = seo_config.get("preview_site_url")
@@ -52,19 +52,19 @@ def site_base_url(ctx, seo_config: dict, lang: str, locales) -> str:
 
 
 def absolute_page_url(ctx, seo_config: dict, locales, lang: str, key: str) -> str:
-    return site_base_url(ctx, seo_config, lang, locales) + page_url(ctx, locales, lang, key)
+    return site_base_url(ctx, seo_config, lang) + page_url(ctx, locales, lang, key)
 
 
-def absolute_asset_url(ctx, seo_config: dict, locales, lang: str, path_or_url: str) -> str:
+def absolute_asset_url(ctx, seo_config: dict, lang: str, path_or_url: str) -> str:
     value = str(path_or_url or "")
     if value.startswith(("http://", "https://")):
         return value
     if not value.startswith("/"):
         value = "/" + value
-    return site_base_url(ctx, seo_config, lang, locales) + value
+    return site_base_url(ctx, seo_config, lang) + value
 
 
-def seo_description(seo_config: dict, locales, lang: str, key: str) -> str:
+def seo_description(locales, lang: str, key: str) -> str:
     owned = locale_seo(locales, lang)
     descriptions = owned.get("descriptions") or {}
     value = descriptions.get(key) if isinstance(descriptions, dict) else None
@@ -73,15 +73,15 @@ def seo_description(seo_config: dict, locales, lang: str, key: str) -> str:
     return str(owned.get("default_description") or "")
 
 
-def page_og_locale(ctx, seo_config: dict, locales, lang: str) -> str:
+def page_og_locale(ctx, lang: str) -> str:
     return str(site_metadata(ctx, lang).get("og_locale") or lang)
 
 
-def page_hreflang(ctx, seo_config: dict, locales, lang: str) -> str:
+def page_hreflang(ctx, lang: str) -> str:
     return str(site_metadata(ctx, lang).get("hreflang") or lang)
 
 
-def site_social_image(ctx, seo_config: dict, locales, lang: str) -> str:
+def site_social_image(ctx, lang: str) -> str:
     return str(site_metadata(ctx, lang).get("social_image") or "")
 
 
@@ -128,8 +128,8 @@ def organization_url(ctx, schema_cfg: dict, site: str, lang: str) -> str:
     url = schema_cfg.get("url")
     if not url:
         return site
-    suffix = site_metadata(ctx, lang).get("organization_url_language") or lang
-    return url + str(suffix)
+    suffix = site_metadata(ctx, lang).get("organization_url_language_override") or lang
+    return str(url).rstrip("/") + "/" + str(suffix).strip("/")
 
 
 def organization_address(schema_cfg: dict) -> dict | None:
@@ -151,7 +151,7 @@ def render_schema(ctx, seo_config: dict, locales, lang: str, key: str, title: st
     site_name = value_from_locales(lang, "site_name", locales) or title
     logo_src = value_from_locales(lang, "brand.logo_src", locales) or "/assets/favicon.svg"
     schema_cfg = seo_config.get("schema") or {}
-    url = organization_url(ctx, schema_cfg, site_base_url(ctx, seo_config, lang, locales), lang)
+    url = organization_url(ctx, schema_cfg, site_base_url(ctx, seo_config, lang), lang)
 
     organization = {
         "@context": "https://schema.org",
@@ -160,7 +160,7 @@ def render_schema(ctx, seo_config: dict, locales, lang: str, key: str, title: st
         "name": site_name,
         "legalName": schema_cfg.get("legal_name") or site_name,
         "url": url + "/",
-        "logo": absolute_asset_url(ctx, seo_config, locales, lang, logo_src),
+        "logo": absolute_asset_url(ctx, seo_config, lang, logo_src),
         "areaServed": schema_cfg.get("area_served") or "Poland",
         "availableLanguage": schema_cfg.get("languages") or [],
         "sameAs": schema_cfg.get("same_as") or [],
@@ -173,11 +173,11 @@ def render_schema(ctx, seo_config: dict, locales, lang: str, key: str, title: st
     website = {
         "@context": "https://schema.org",
         "@type": "WebSite",
-        "@id": site_base_url(ctx, seo_config, lang, locales) + "/#website",
+        "@id": site_base_url(ctx, seo_config, lang) + "/#website",
         "name": site_name,
-        "url": site_base_url(ctx, seo_config, lang, locales) + "/",
+        "url": site_base_url(ctx, seo_config, lang) + "/",
         "publisher": {"@id": organization["@id"]},
-        "inLanguage": page_hreflang(ctx, seo_config, locales, lang),
+        "inLanguage": page_hreflang(ctx, lang),
     }
 
     webpage = {
@@ -189,7 +189,7 @@ def render_schema(ctx, seo_config: dict, locales, lang: str, key: str, title: st
         "description": description,
         "isPartOf": {"@id": website["@id"]},
         "about": {"@id": organization["@id"]},
-        "inLanguage": page_hreflang(ctx, seo_config, locales, lang),
+        "inLanguage": page_hreflang(ctx, lang),
     }
     if key in {"contact", "who_we_are"}:
         webpage["mainEntity"] = {"@id": organization["@id"]}
@@ -225,12 +225,12 @@ def render_icons(ctx, seo_config: dict, lang: str) -> list[str]:
 
 
 def render_seo_head(ctx, seo_config: dict, locales, lang: str, key: str, title: str) -> str:
-    description = seo_description(seo_config, locales, lang, key)
+    description = seo_description(locales, lang, key)
     canonical = absolute_page_url(ctx, seo_config, locales, lang, key)
     site_name = value_from_locales(lang, "site_name", locales) or ""
     full_title = f"{title} | {site_name}" if site_name else title
-    social_image = site_social_image(ctx, seo_config, locales, lang)
-    social_image_abs = absolute_asset_url(ctx, seo_config, locales, lang, social_image) if social_image else ""
+    social_image = site_social_image(ctx, lang)
+    social_image_abs = absolute_asset_url(ctx, seo_config, lang, social_image) if social_image else ""
 
     lines = []
     if description:
@@ -240,7 +240,7 @@ def render_seo_head(ctx, seo_config: dict, locales, lang: str, key: str, title: 
     alternate_langs = enabled_alternate_langs(ctx, locales, key)
     for alt_lang in alternate_langs:
         alt_url = absolute_page_url(ctx, seo_config, locales, alt_lang, key)
-        hreflang = page_hreflang(ctx, seo_config, locales, alt_lang)
+        hreflang = page_hreflang(ctx, alt_lang)
         lines.append(f'<link rel="alternate" hreflang="{html.escape(hreflang, quote=True)}" href="{html.escape(alt_url, quote=True)}">')
 
     x_default_lang = seo_config.get("x_default") or "en"
@@ -258,12 +258,12 @@ def render_seo_head(ctx, seo_config: dict, locales, lang: str, key: str, title: 
         f'<meta property="og:title" content="{html.escape(full_title, quote=True)}">',
         f'<meta property="og:description" content="{html.escape(description, quote=True)}">',
         f'<meta property="og:url" content="{html.escape(canonical, quote=True)}">',
-        f'<meta property="og:locale" content="{html.escape(page_og_locale(ctx, seo_config, locales, lang), quote=True)}">',
+        f'<meta property="og:locale" content="{html.escape(page_og_locale(ctx, lang), quote=True)}">',
     ])
 
     for alt_lang in alternate_langs:
         if alt_lang != lang:
-            lines.append(f'<meta property="og:locale:alternate" content="{html.escape(page_og_locale(ctx, seo_config, locales, alt_lang), quote=True)}">')
+            lines.append(f'<meta property="og:locale:alternate" content="{html.escape(page_og_locale(ctx, alt_lang), quote=True)}">')
 
     if social_image_abs:
         lines.extend([

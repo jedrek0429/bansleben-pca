@@ -82,36 +82,7 @@ class BuildContext:
         return load_json(self.root / "locales" / f"{lang}.json")
 
     def load_locales(self) -> dict[str, dict[str, Any]]:
-        locales = {lang: self.load_locale(lang) for lang in self.langs}
-        self._apply_locale_seo(locales)
-        return locales
-
-    def _apply_locale_seo(self, locales: dict[str, dict[str, Any]]) -> None:
-        """Overlay locale-owned SEO values onto the legacy shared maps.
-
-        Existing locales remain compatible with config/seo.json. New sites can
-        provide all translated SEO values inside their locale file and require
-        no edit to shared SEO configuration.
-        """
-        for lang, locale in locales.items():
-            seo = locale.get("seo", {}) if isinstance(locale, dict) else {}
-            if not isinstance(seo, dict):
-                continue
-            scalar_maps = {
-                "hreflang": "hreflang",
-                "og_locale": "og_locale",
-                "social_image": "social_images",
-                "default_description": "default_descriptions",
-            }
-            for source_key, target_key in scalar_maps.items():
-                value = seo.get(source_key)
-                if value is not None:
-                    self.seo_config.setdefault(target_key, {})[lang] = value
-            descriptions = seo.get("descriptions", {})
-            if isinstance(descriptions, dict):
-                target = self.seo_config.setdefault("descriptions", {})
-                for key, value in descriptions.items():
-                    target.setdefault(key, {})[lang] = value
+        return {lang: self.load_locale(lang) for lang in self.langs}
 
     def load_configs(self) -> None:
         pages_path = self.root / "config" / "pages.json"
