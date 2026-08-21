@@ -61,6 +61,11 @@ function log_line(string $msg): void {
 function clean_header(string $value): string { return trim(str_replace(["\r", "\n"], ' ', $value)); }
 function encode_header(string $value): string { return '=?UTF-8?B?' . base64_encode($value) . '?='; }
 
+function normalize_language(string $value): string {
+    $lang = clean_header($value);
+    return preg_match('/^[a-z]{2}(-[A-Z]{2})?$/', $lang) === 1 ? $lang : 'unknown';
+}
+
 function smtp_read($fp): array {
     $data = '';
     while (($line = fgets($fp, 515)) !== false) {
@@ -169,7 +174,7 @@ try {
     $name = trim((string)($_POST['name'] ?? ''));
     $email = trim((string)($_POST['email'] ?? ''));
     $message = trim((string)($_POST['message'] ?? ''));
-    $lang = clean_header((string)($_POST['lang'] ?? 'en'));
+    $lang = normalize_language((string)($_POST['lang'] ?? 'en'));
     if (trim((string)($_POST['website'] ?? '')) !== '') { log_line('Honeypot triggered'); redirect_with_status(true); }
     if ($name === '' || $email === '' || $message === '') throw new RuntimeException('Missing required fields');
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) throw new RuntimeException('Invalid email address');
