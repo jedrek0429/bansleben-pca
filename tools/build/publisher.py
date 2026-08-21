@@ -19,25 +19,33 @@ def assert_safe_paths(dist: Path, dest: Path) -> None:
         raise SystemExit("Refusing to publish: destination is inside dist. Choose a destination outside build output.")
 
 
-def assert_assets_ok(dist: Path, root: Path, langs: list[str]) -> None:
-    root_assets = dist / "assets"
-    language_assets = [dist / lang / "assets" for lang in langs]
-    root_assets_exist = root_assets.exists()
-    language_assets_exist = all(path.exists() for path in language_assets)
-    if root_assets_exist and not language_assets_exist:
+def assert_shared_or_language_tree(dist: Path, root: Path, langs: list[str], name: str) -> None:
+    root_path = dist / name
+    language_paths = [dist / lang / name for lang in langs]
+    root_exists = root_path.exists()
+    language_paths_exist = all(path.exists() for path in language_paths)
+    if root_exists and not language_paths_exist:
         return
-    if language_assets_exist and not root_assets_exist:
+    if language_paths_exist and not root_exists:
         return
     print_group(
         "Missing build output",
         [
-            "Expected either root assets/, or assets/ under every language directory.",
-            *[display_path(path, root) for path in [root_assets, *language_assets] if not path.exists()],
+            f"Expected either root {name}/, or {name}/ under every language directory.",
+            *[display_path(path, root) for path in [root_path, *language_paths] if not path.exists()],
         ],
         "ERROR",
         CLR_RED,
     )
     raise SystemExit(1)
+
+
+def assert_assets_ok(dist: Path, root: Path, langs: list[str]) -> None:
+    assert_shared_or_language_tree(dist, root, langs, "assets")
+
+
+def assert_generated_assets_ok(dist: Path, root: Path, langs: list[str]) -> None:
+    assert_shared_or_language_tree(dist, root, langs, "_generated")
 
 
 def private_config_paths(dist: Path, langs: list[str]) -> list[Path]:
@@ -58,6 +66,7 @@ def assert_dist_ok(dist: Path, root: Path, langs: list[str], *, require_private_
         required.extend([dist / lang / "index.html", dist / lang / "contact.php"])
 
     assert_assets_ok(dist, root, langs)
+    assert_generated_assets_ok(dist, root, langs)
 
     if require_private_config:
         required.extend(private_config_paths(dist, langs))
@@ -68,7 +77,7 @@ def assert_dist_ok(dist: Path, root: Path, langs: list[str], *, require_private_
         print_labeled("ERROR", CLR_RED, "dist is incomplete. Run a successful build first, then publish again.")
         raise SystemExit(1)
 
-    allowed_root_items = {*langs, "assets", "index.html"}
+    allowed_root_items = {*langs, "assets", "_generated", "index.html"}
     if (dist / ".private").exists():
         allowed_root_items.add(".private")
     extra_root_items = sorted(path.name for path in dist.iterdir() if path.name not in allowed_root_items)

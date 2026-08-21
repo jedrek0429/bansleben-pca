@@ -11,11 +11,11 @@ from seo import absolute_page_url, page_hreflang, page_lastmod, site_base_url
 from urls import asset_url, enabled_alternate_langs, is_enabled
 
 
-def all_enabled_page_keys_for_lang(ctx, lang: str) -> list[str]:
+def all_enabled_page_keys_for_lang(ctx, locales, lang: str) -> list[str]:
     keys = []
-    for page in ctx.pages_config.get("pages", []):
-        key = page["key"]
-        if is_enabled(page, lang):
+    for page in ctx.effective_pages(lang):
+        key = page.get("key")
+        if key and is_enabled(ctx, locales, lang, key):
             keys.append(key)
     return keys
 
@@ -25,7 +25,7 @@ def render_sitemap_xml(ctx, seo_config: dict, locales, lang: str) -> str:
         '<?xml version="1.0" encoding="UTF-8"?>',
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">',
     ]
-    for key in all_enabled_page_keys_for_lang(ctx, lang):
+    for key in all_enabled_page_keys_for_lang(ctx, locales, lang):
         canonical = absolute_page_url(ctx, seo_config, locales, lang, key)
         rows.append("  <url>")
         rows.append("    <loc>" + html.escape(canonical) + "</loc>")

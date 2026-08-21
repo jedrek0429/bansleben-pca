@@ -4,8 +4,9 @@ from __future__ import annotations
 
 import html
 
-from assets import find_images_to_preload, primary_variant_url, render_preload, responsive_image_srcset
+from assets import find_images_to_preload, render_preload
 from cards import card_group_for, render_card_grid
+from image_pipeline import primary_image_url, responsive_image_srcset
 from localization import value_from_locales
 from seo import absolute_page_url, render_404_head, render_seo_head
 from template_engine import read_content, render_partial, render_text
@@ -64,9 +65,9 @@ def hero_image_for_page(ctx, lang: str, locales, key: str) -> str:
         return ""
 
     image_info = ctx.image_info(src)
-    image_src = primary_variant_url(ctx, src, ".webp")
+    image_src = primary_image_url(ctx, src)
     fallback_src = asset_url(ctx, src)
-    srcset = responsive_image_srcset(ctx, src, ".webp")
+    srcset = responsive_image_srcset(ctx, src)
 
     attrs = [
         f'src="{html.escape(image_src, quote=True)}"',
