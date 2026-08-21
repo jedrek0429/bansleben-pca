@@ -2,7 +2,7 @@
   "lang": "pl",
   "site_name": "Uprowadzenie rodzicielskie — Polska",
   "menu": {
-    "introduction": "POCZĄTEK",
+    "introduction": "WPROWADZENIE",
     "whom_to_contact": "Z KIM SIĘ SKONTAKTOWAĆ?",
     "jurisprudence": "ORZECZNICTWO",
     "contact": "KONTAKT",
@@ -36,7 +36,7 @@
     "page": "the_hague_convention"
   },
   "pages": {
-    "introduction": {"enabled": true, "title": "Początek", "slug": ""},
+    "introduction": {"enabled": true, "title": "Wprowadzenie", "slug": ""},
     "whom_to_contact": {"enabled": true, "title": "Z kim się skontaktować?", "slug": "z-kim-sie-skontaktowac"},
     "jurisprudence": {"enabled": true, "title": "Orzecznictwo", "slug": "orzecznictwo"},
     "contact": {"enabled": true, "title": "Kontakt", "slug": "kontakt"},
@@ -85,7 +85,7 @@
   "footer": {"privacy_policy": "Polityka prywatności"},
   "social": {"facebook_follow": "Obserwuj na Facebooku"},
   "card_items": {
-    "introduction": {"title": "Początek", "image_alt": "Początek", "image_title": "Początek"},
+    "introduction": {"title": "Wprowadzenie", "image_alt": "Wprowadzenie", "image_title": "Wprowadzenie"},
     "whom_to_contact": {"title": "Z kim się skontaktować?", "image_alt": "Z kim się skontaktować?", "image_title": "Z kim się skontaktować?"},
     "jurisprudence": {"title": "Orzecznictwo", "image_alt": "Orzecznictwo", "image_title": "Orzecznictwo"},
     "contact": {"title": "Kontakt", "image_alt": "Kontakt", "image_title": "Kontakt"},
