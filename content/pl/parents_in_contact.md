@@ -1,4 +1,4 @@
-Jeżeli wiesz, że dziecko znajduje się w Polsce i pozostajesz w kontakcie z drugim rodzicem, skontaktuj się z organem centralnym właściwym dla państwa, w którym mieszkasz.
+Jeżeli pozostajesz w kontakcie z drugim rodzicem i wiesz, że znajduje się on w Polsce, skontaktuj się z organem centralnym właściwym dla państwa, w którym mieszkasz.
 
 Przy składaniu wniosku trzeba przekazać dane osobowe oraz inne informacje przydatne do prowadzenia sprawy. Jeżeli właściwy organ centralny wymaga pełnomocnictwa albo upoważnienia pozwalającego mu działać w imieniu wnioskodawcy lub wyznaczyć przedstawiciela, taki dokument należy dołączyć do wniosku.
 
