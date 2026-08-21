@@ -8,6 +8,7 @@ in-memory manifest consumed by the renderers.
 from __future__ import annotations
 
 import hashlib
+import re
 import shutil
 from pathlib import Path
 from typing import Any
@@ -20,6 +21,22 @@ from urls import asset_url
 
 SUPPORTED_SOURCE_SUFFIXES = {".jpg", ".jpeg", ".png", ".webp"}
 GENERATED_IMAGE_DIR = "_generated/images"
+MARKDOWN_IMAGE_RE = re.compile(r"!\[[^\]]*\]\(([^)]+)\)")
+HTML_IMAGE_RE = re.compile(r"<img\b[^>]*\bsrc=[\"']([^\"']+)[\"'][^>]*>", re.IGNORECASE)
+
+
+def source_asset_reference(value: str) -> str | None:
+    """Resolve a local content image path to its canonical source asset path."""
+    path = str(value or "").strip()
+    if not path or path.startswith(("http://", "https://", "//", "data:", "mailto:", "#")):
+        return None
+    if path.startswith("/assets/"):
+        reference = path
+    elif path.startswith("assets/"):
+        reference = "/" + path
+    else:
+        reference = "/assets/" + path.lstrip("/")
+    return reference if Path(reference).suffix.lower() in SUPPORTED_SOURCE_SUFFIXES else None
 
 
 def _walk_asset_references(value: Any):
@@ -30,15 +47,36 @@ def _walk_asset_references(value: Any):
         for child in value:
             yield from _walk_asset_references(child)
     elif isinstance(value, str):
-        path = value.strip()
-        if path.startswith("/assets/") and Path(path).suffix.lower() in SUPPORTED_SOURCE_SUFFIXES:
-            yield path
+        reference = source_asset_reference(value) if value.strip().startswith(("/assets/", "assets/")) else None
+        if reference:
+            yield reference
+
+
+def _content_image_references(ctx) -> set[str]:
+    refs: set[str] = set()
+    for lang in ctx.langs:
+        content_dir = ctx.root / "content" / lang
+        if not content_dir.is_dir():
+            continue
+        for path in sorted(content_dir.glob("*.md")):
+            text = path.read_text(encoding="utf-8")
+            for match in MARKDOWN_IMAGE_RE.finditer(text):
+                raw = match.group(1).strip().split(None, 1)[0].strip("<>")
+                reference = source_asset_reference(raw)
+                if reference:
+                    refs.add(reference)
+            for match in HTML_IMAGE_RE.finditer(text):
+                reference = source_asset_reference(match.group(1))
+                if reference:
+                    refs.add(reference)
+    return refs
 
 
 def collect_referenced_images(ctx, locales) -> list[str]:
-    """Return local raster images referenced by builder-managed configuration."""
+    """Return local raster images referenced by configuration or content."""
     refs = set(_walk_asset_references(locales))
     refs.update(_walk_asset_references(ctx.hero_images))
+    refs.update(_content_image_references(ctx))
     return sorted(refs)
 
 
@@ -134,13 +172,15 @@ def build_image_manifest(ctx, locales) -> dict[str, dict[str, Any]]:
 
 
 def primary_image_url(ctx, source: str) -> str:
-    entry = ctx.image_manifest.get(str(source or ""), {})
+    reference = source_asset_reference(source) or str(source or "")
+    entry = ctx.image_manifest.get(reference, {})
     primary = entry.get("primary") if isinstance(entry, dict) else None
     return asset_url(ctx, str(primary or source or ""))
 
 
 def responsive_image_srcset(ctx, source: str) -> str:
-    entry = ctx.image_manifest.get(str(source or ""), {})
+    reference = source_asset_reference(source) or str(source or "")
+    entry = ctx.image_manifest.get(reference, {})
     variants = entry.get("variants", []) if isinstance(entry, dict) else []
     if not isinstance(variants, list):
         return ""
