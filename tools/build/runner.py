@@ -3,7 +3,6 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from assets import convert_to_webp
 from autofix import autofix_locales
 from builder import clean, inspect, site
 from hyperlinks import format_content
@@ -19,7 +18,6 @@ Examples:
   build.py deploy --root . --to ../public_html
   build.py utils autofix-locales --root .
   build.py utils format-links --root . --check
-  build.py utils convert-images assets
 """
 
 
@@ -75,19 +73,16 @@ def build_parser() -> argparse.ArgumentParser:
     add_root_arg(cmd)
     cmd.add_argument("--out", default=None, help="output directory; default: root.parent/site-dist")
 
-    cmd = sub.add_parser("utils", help="maintenance utilities", description="Run focused maintenance tasks for content, locales, and assets.")
+    cmd = sub.add_parser("utils", help="maintenance utilities", description="Run focused maintenance tasks for content and locales.")
     utilities = cmd.add_subparsers(title="utilities", dest="utility", required=True)
 
-    util = utilities.add_parser("autofix-locales", help="repair locale drift", description="Repair fixable locale JSON drift from config/pages.json and locales/en.json.")
+    util = utilities.add_parser("autofix-locales", help="normalize legacy locale structure", description="Remove legacy structural duplication without inventing translations.")
     add_root_arg(util)
 
     util = utilities.add_parser("format-links", help="normalize Markdown links", description="Normalize bare URLs and emails in Markdown content files.")
     add_root_arg(util)
     util.add_argument("--check", action="store_true", help="report changes without writing files")
     util.add_argument("--self-test", action="store_true", help="run formatter self-test")
-
-    util = utilities.add_parser("convert-images", help="convert images to WebP", description="Convert PNG/JPEG files below a directory to WebP when ImageMagick is available.")
-    util.add_argument("path", help="directory containing images")
 
     return parser
 
@@ -110,8 +105,6 @@ def main(argv=None) -> None:
         autofix_locales(args.root)
     elif args.command == "utils" and args.utility == "format-links":
         format_content(args.root, check_only=args.check, self_test=args.self_test)
-    elif args.command == "utils" and args.utility == "convert-images":
-        convert_to_webp(args.path)
     else:
         raise SystemExit("Unknown command")
 
