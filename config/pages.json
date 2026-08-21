@@ -23,6 +23,5 @@
     {"key": "filial_relationship", "parent": "going_abroad_with_my_child", "template": "content"},
     {"key": "the_hague_convention", "parent": null, "template": "content"}
   ],
-  "top_menu": ["introduction", "whom_to_contact", "jurisprudence", "contact", "who_we_are"],
-  "external_links": {"legal_practice": {"url": "https://bansleben.pl/"}}
+  "top_menu": ["introduction", "whom_to_contact", "jurisprudence", "contact", "who_we_are"]
 }
