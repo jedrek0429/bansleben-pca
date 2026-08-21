@@ -1,8 +1,12 @@
-Uprowadzenie rodzicielskie może polegać na bezprawnym wywiezieniu dziecka z państwa jego stałego pobytu albo na bezprawnym zatrzymaniu go za granicą po zgodnym z prawem wyjeździe.
+Rodzicielstwo może postawić człowieka w sytuacji, której wcześniej nie brał pod uwagę: dziecko może zostać bezprawnie wywiezione do innego państwa albo bezprawnie tam zatrzymane przez jednego z rodziców.
 
-Konwencja dotycząca cywilnych aspektów uprowadzenia dziecka za granicę z 25 października 1980 r. określa, kiedy uprowadzenie lub zatrzymanie dziecka jest bezprawne.
+Serwis przedstawia informacje przydatne zarówno osobom planującym przeprowadzkę z dzieckiem za granicę, jak i rodzicom, których dziecko zostało bezprawnie wywiezione lub zatrzymane poza państwem jego stałego pobytu.
 
-**Artykuł 3:**
+Przed podjęciem działań prawnych trzeba ustalić, czy w świetle właściwych przepisów doszło do bezprawnego uprowadzenia lub zatrzymania dziecka.
+
+Konwencja dotycząca cywilnych aspektów uprowadzenia dziecka za granicę z 25 października 1980 r. określa tę kwestię w artykule 3.
+
+## Artykuł 3
 
 Uprowadzenie lub zatrzymanie dziecka będzie uznane za bezprawne, jeżeli:
 
@@ -12,6 +16,18 @@ b) w chwili uprowadzenia lub zatrzymania prawa te były skutecznie wykonywane ws
 
 Prawo do opieki określone w punkcie a) może wynikać w szczególności z mocy samego prawa, z orzeczenia sądowego lub administracyjnego albo z ugody mającej moc prawną w świetle przepisów ustawodawstwa tego państwa.
 
-Dla oceny, czy doszło do bezprawnego uprowadzenia lub zatrzymania, istotne jest zatem prawo obowiązujące w państwie stałego pobytu dziecka bezpośrednio przed zdarzeniem oraz to, czy prawo do opieki było wówczas faktycznie wykonywane albo byłoby wykonywane, gdyby do uprowadzenia lub zatrzymania nie doszło.
+W praktyce trzeba więc ustalić, jakie prawa do opieki przysługiwały przed wyjazdem lub zatrzymaniem oraz czy były wówczas wykonywane. Jeżeli prawo do opieki przysługuje kilku osobom wspólnie, sam fakt, że jeden z rodziców również je wykonuje, nie przesądza jeszcze o zgodności wyjazdu lub zatrzymania z prawem. Znaczenie ma między innymi to, czy wyjazd naruszył prawa drugiego rodzica oraz czy uzyskano wymaganą zgodę albo odpowiednie rozstrzygnięcie sądu.
 
-Artykuł 1 Konwencji wskazuje dwa jej cele: zapewnienie niezwłocznego powrotu dzieci bezprawnie uprowadzonych lub zatrzymanych oraz zapewnienie poszanowania praw do opieki i odwiedzin w innych Umawiających się Państwach.
+Samo sprawowanie pieczy nad dzieckiem nie oznacza zatem automatycznie, że można bez zgody drugiego uprawnionego rodzica zmienić państwo jego stałego pobytu. Ocena zawsze zależy od praw przysługujących w państwie stałego pobytu dziecka bezpośrednio przed zdarzeniem.
+
+Jeżeli opis odpowiada Twojej sytuacji, warto możliwie szybko ustalić, czy spełnione są przesłanki zastosowania Konwencji haskiej i jakie działania można podjąć w państwach związanych ze sprawą.
+
+---
+
+## Artykuł 1 Konwencji haskiej z 25 października 1980 r.
+
+Przedmiotem niniejszej konwencji jest:
+
+a) zapewnienie niezwłocznego powrotu dzieci bezprawnie uprowadzonych lub zatrzymanych w jednym z Umawiających się Państw oraz
+
+b) zapewnienie poszanowania praw do opieki i odwiedzin określonych przez ustawodawstwo jednego Umawiającego się Państwa w innych Umawiających się Państwach.
