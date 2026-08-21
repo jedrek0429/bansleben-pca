@@ -55,6 +55,7 @@ class BuildContext:
     cards_config: dict[str, Any] = field(default_factory=dict)
     seo_config: dict[str, Any] = field(default_factory=dict)
     hero_images: dict[str, Any] = field(default_factory=dict)
+    image_manifest: dict[str, dict[str, Any]] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         self.root = Path(self.root).expanduser().resolve()
@@ -141,6 +142,7 @@ class BuildContext:
         self.cards_config = load_json(cards_path) if cards_path.exists() else {}
         self.seo_config = load_optional_json(self.root / "config" / "seo.json")
         self.hero_images = load_optional_json(self.root / "config" / "hero_images.json")
+        self.image_manifest = {}
         self.clear_caches()
 
     def effective_pages(self, lang: str) -> list[dict[str, Any]]:
