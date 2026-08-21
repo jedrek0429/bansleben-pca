@@ -6,6 +6,7 @@ import shutil
 from pathlib import Path
 
 from common import CLR_GREEN, CLR_RED, CLR_WHITE, display_path, print_group, print_labeled, print_section
+from context import BuildContext
 
 DEFAULT_PRESERVED_ROOT_ITEMS = ["preview", "ochronapacjenta.pl", "autoinstalator"]
 
@@ -107,11 +108,19 @@ def copy_dist_contents(dist: Path, dest: Path) -> None:
             shutil.copy2(item, target)
 
 
+def resolved_languages(root: Path, langs) -> list[str]:
+    if langs:
+        return list(langs)
+    ctx = BuildContext.from_root(root)
+    ctx.load_configs()
+    return list(ctx.langs)
+
+
 def publish(dist, dest, *, root=None, langs=None, preserve_root_item=None, require_private_config: bool = True) -> None:
     dist = Path(dist).expanduser().resolve()
     dest = Path(dest).expanduser().resolve()
     root = Path(root).expanduser().resolve() if root else dist.parent
-    langs = list(langs or ["en", "fr", "hr"])
+    langs = resolved_languages(root, langs)
     preserved = set(preserve_root_item or DEFAULT_PRESERVED_ROOT_ITEMS)
 
     print_section("Publish site")
