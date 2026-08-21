@@ -9,6 +9,7 @@ from common import CLR_GREEN, CLR_WHITE, color, display_path, print_labeled, pri
 from apache import write_htaccess_files
 from assets import copy_static
 from context import BuildContext
+from output_validation import validate_generated_image_references
 from pages import render_404, render_localized_page
 from sitemap import lang_output_dir, write_extra_seo_files
 from template_engine import load_templates
@@ -76,6 +77,7 @@ def site(root, *, out=None, langs=None, dry: bool = False, prefix: str | None = 
     redirect_lang = ctx.langs[0] if ctx.langs else "en"
     redirect_target = f"{ctx.url_prefix}/{redirect_lang}/" if ctx.url_prefix else f"/{redirect_lang}/"
     (ctx.dist / "index.html").write_text('<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=' + redirect_target + '"><link rel="canonical" href="' + redirect_target + '"><title>Redirecting…</title>', encoding="utf-8")
+    validate_generated_image_references(ctx)
     print_labeled("OK", CLR_GREEN, f"built {display_path(ctx.dist, ctx.root.parent)}")
     return ctx
 
