@@ -21,73 +21,84 @@ def _load_locales(root: Path) -> dict[str, dict]:
 
 
 def _extra_pages(site: dict) -> list[dict]:
-    extra = site.get("extra_pages", []) if isinstance(site, dict) else []
-    if isinstance(extra, dict):
-        return [{"key": key, **value} for key, value in extra.items() if isinstance(value, dict)]
-    return [page for page in extra if isinstance(page, dict)] if isinstance(extra, list) else []
+    pages = site.get("pages", []) if isinstance(site, dict) else []
+    return [page for page in pages if isinstance(page, dict)]
 
 
 def _check_graph(pages: list[dict], label: str, errors: list[str]) -> dict[str, dict]:
-    by_key = {}
+    by_key: dict[str, dict] = {}
+    counts = defaultdict(int)
     for page in pages:
         key = page.get("key")
         if not key:
             errors.append(f"{label}: page without key")
             continue
-        if key in by_key:
-            errors.append(f"{label}: duplicate page key '{key}'")
+        counts[key] += 1
         by_key[key] = page
         if not page.get("template"):
             errors.append(f"{label}: page '{key}' missing template")
+    for key, count in counts.items():
+        if count != 1:
+            errors.append(f"{label}: duplicate page key '{key}'")
     for key, page in by_key.items():
         parent = page.get("parent")
         if parent and parent not in by_key:
             errors.append(f"{label}: page '{key}' references missing parent '{parent}'")
     for key in by_key:
-        seen = set()
+        seen: set[str] = set()
         current = key
         while current:
             if current in seen:
-                errors.append(f"{label}: cycle in page hierarchy involving '{current}'")
+                errors.append(f"{label}: hierarchy cycle involving '{current}'")
                 break
             seen.add(current)
-            current = by_key.get(current, {}).get("parent")
+            page = by_key.get(current)
+            current = str(page.get("parent") or "") if page else ""
     return by_key
 
 
-def _resolved_slug(key: str, by_key: dict[str, dict], locale_pages: dict, seen=None) -> str:
+def _slug_segment(entry: dict) -> str:
+    raw = str(entry.get("slug") or "").strip("/")
+    return raw.rsplit("/", 1)[-1] if raw else ""
+
+
+def _resolved_slug(key: str, by_key: dict[str, dict], locale_pages: dict) -> str:
     if key == "introduction":
         return ""
-    if key not in by_key:
-        return ""
-    seen = set(seen or ())
-    if key in seen:
-        return ""
-    seen.add(key)
-    raw = str((locale_pages.get(key) or {}).get("slug") or "").strip("/")
-    segment = raw.rsplit("/", 1)[-1] if by_key[key].get("parent") and "/" in raw else raw
-    if not segment:
-        return ""
-    parent = by_key[key].get("parent")
-    if not parent:
-        return segment
-    prefix = _resolved_slug(parent, by_key, locale_pages, seen)
-    return f"{prefix}/{segment}" if prefix else ""
+    parts: list[str] = []
+    seen: set[str] = set()
+    current = key
+    while current and current != "introduction":
+        if current in seen:
+            return ""
+        seen.add(current)
+        entry = locale_pages.get(current) or {}
+        segment = _slug_segment(entry)
+        if segment:
+            parts.append(segment)
+        page = by_key.get(current) or {}
+        current = str(page.get("parent") or "")
+    return "/".join(reversed(parts))
 
 
 def validate(root, *, strict: bool = False, autofix_prompt: bool = True) -> None:
-    del autofix_prompt
     root = Path(root).expanduser().resolve()
-    errors, warnings = [], []
-    term_width = min(shutil.get_terminal_size((120, 20)).columns, 140)
     pages_path = root / "config" / "pages.json"
     locales_dir = root / "locales"
+    errors: list[str] = []
+    warnings: list[str] = []
+    term_width = min(shutil.get_terminal_size((120, 20)).columns, 140)
+
     if not root.is_dir():
         print_labeled("ERROR", CLR_RED, f"site source root not found: {display_path(root, root.parent)}")
         raise SystemExit(2)
-    if not pages_path.is_file() or not locales_dir.is_dir():
-        print_labeled("ERROR", CLR_RED, "config/pages.json and locales/ are required")
+    if not pages_path.is_file():
+        print_labeled("ERROR", CLR_RED, f"pages config not found: {display_path(pages_path, root.parent)}")
         raise SystemExit(2)
+    if not locales_dir.is_dir():
+        print_labeled("ERROR", CLR_RED, f"locales directory not found: {display_path(locales_dir, root.parent)}")
+        raise SystemExit(2)
+
     pages_data = load_json(pages_path)
     if pages_data.get("schema_version") != 2:
         errors.append("config/pages.json must declare schema_version 2")
@@ -99,6 +110,7 @@ def validate(root, *, strict: bool = False, autofix_prompt: bool = True) -> None
     if "card_groups" in pages_data:
         errors.append("config/pages.json must not contain card_groups; use parent relationships or config/cards.json")
     shared_by_key = _check_graph(shared_pages, "shared model", errors)
+
     sites = _load_sites(root)
     locales = _load_locales(root)
     site_codes = list(sites) if sites else list(locales)
@@ -107,6 +119,7 @@ def validate(root, *, strict: bool = False, autofix_prompt: bool = True) -> None
             errors.append(f"Site '{code}' has sites/{code}.json but no locales/{code}.json")
         for code in sorted(set(locales) - set(sites)):
             errors.append(f"Locale '{code}' has no sites/{code}.json")
+
     for lang in site_codes:
         locale = locales.get(lang, {})
         locale_pages = locale.get("pages", {}) if isinstance(locale, dict) else {}
@@ -131,24 +144,29 @@ def validate(root, *, strict: bool = False, autofix_prompt: bool = True) -> None
                 errors.append(f"Locale '{lang}' pages.{key} missing title")
             if key != "introduction" and not str(entry.get("slug") or "").strip("/"):
                 errors.append(f"Locale '{lang}' pages.{key} missing slug")
-            if key in shared_by_key and "parent" in entry:
-                if entry.get("parent") != shared_by_key[key].get("parent"):
-                    errors.append(f"Locale '{lang}' pages.{key}.parent conflicts with shared model")
-                else:
-                    warnings.append(f"Locale '{lang}' pages.{key}.parent is legacy duplicated structure and is ignored")
+
+            # Locale parent fields belong to the pre-v2 architecture. They are never
+            # structural input, even when stale or contradictory: the effective page
+            # graph is the single source of truth for hierarchy.
+            if "parent" in entry:
+                warnings.append(f"Locale '{lang}' pages.{key}.parent is legacy duplicated structure and is ignored")
+
             raw_slug = str(entry.get("slug") or "").strip("/")
             if page.get("parent") and "/" in raw_slug:
                 warnings.append(f"Locale '{lang}' pages.{key}.slug stores a legacy full path; only its final segment is used")
             resolved = _resolved_slug(key, by_key, locale_pages)
             if resolved or key == "introduction":
                 urls[resolved].append(key)
+
         for slug, keys in urls.items():
             if len(keys) > 1:
                 errors.append(f"Locale '{lang}' duplicate resolved route '{slug}' for {keys}")
+
         extra_locale_keys = set(locale_pages) - set(by_key)
         enabled_extras = [key for key in extra_locale_keys if (locale_pages.get(key) or {}).get("enabled", True) is not False]
         if enabled_extras:
             errors.append(f"Locale '{lang}' enables pages not declared by shared model or site manifest: {sorted(enabled_extras)}")
+
     print_section("Site Check Report", term_width)
     print(color(f"Source:        {display_path(root, root.parent)}", CLR_WHITE))
     print(color(f"Sites found:   {', '.join(site_codes)}", CLR_WHITE))
