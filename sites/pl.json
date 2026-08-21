@@ -2,7 +2,7 @@
   "url": "https://uprowadzenierodzicielskie.pl",
   "hreflang": "pl",
   "og_locale": "pl_PL",
-  "social_image": "/assets/uploads/2021/03/polska.png",
+  "social_image": "/assets/social/og-pl.jpg",
   "legal_practice_url": "https://bansleben.pl/",
   "extra_pages": [
     {"key": "national_law_uk", "parent": "individual_national_laws", "template": "content"},
