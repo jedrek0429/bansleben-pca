@@ -316,5 +316,33 @@
     "name_label": "Ime i prezime",
     "email_label": "E-mail",
     "message_label": "Poruka"
+  },
+  "seo": {
+    "default_description": "Informacije za roditelje u slučajevima međunarodne roditeljske otmice, protupravnog odvođenja ili zadržavanja djeteta u Poljskoj te postupaka povratka prema Haškoj konvenciji.",
+    "descriptions": {
+      "introduction": "Praktične pravne informacije o roditeljskoj otmici djece u Poljsku ili iz Poljske, postupcima povratka prema Haškoj konvenciji, poljskim sudovima i hitnim koracima za roditelje.",
+      "whom_to_contact": "Saznajte kojim se tijelima, ustanovama i pravnim stručnjacima obratiti ako je dijete protupravno odvedeno ili zadržano u Poljskoj.",
+      "jurisprudence": "Odabrana sudska praksa o međunarodnoj roditeljskoj otmici djece, postupcima povratka prema Haškoj konvenciji i obiteljskim predmetima povezanim s Poljskom.",
+      "contact": "Kontaktirajte nas u vezi s hitnom roditeljskom otmicom, protupravnim zadržavanjem ili postupkom povratka djeteta prema Haškoj konvenciji koji uključuje Poljsku.",
+      "who_we_are": "Saznajte tko stoji iza stranice Roditeljska otmica djeteta — Poljska i kako pravna pomoć može podržati roditelje u prekograničnim predmetima.",
+      "privacy_policy": "Pročitajte politiku privatnosti stranice Roditeljska otmica djeteta — Poljska, uključujući informacije o obrascu za kontakt i osobnim podacima.",
+      "parental_child_abduction": "Objašnjenje roditeljske otmice, protupravnog odvođenja i protupravnog zadržavanja prema Haškoj konvenciji, s naglaskom na predmete povezane s Poljskom.",
+      "within_the_law": "Pregled međunarodnih i nacionalnih pravnih pravila koja se mogu primijeniti kada je dijete protupravno odvedeno ili zadržano u Poljskoj.",
+      "international_laws": "Međunarodni pravni okvir za slučajeve roditeljske otmice djece, uključujući Hašku konvenciju i prekogranične postupke povratka povezane s Poljskom.",
+      "individual_national_laws": "Vodič kroz odabrana nacionalna prava koja mogu utjecati na međunarodnu roditeljsku otmicu, roditeljsku skrb i povratak djeteta u predmetima povezanim s Poljskom.",
+      "national_law_croatia": "Pregled hrvatskih pravnih pitanja koja se mogu pojaviti u međunarodnim slučajevima roditeljske otmice i povratka djeteta povezanima s Poljskom.",
+      "national_law_poland": "Pregled poljskih pravnih pravila važnih za roditeljsku skrb, roditeljske ovlasti i međunarodnu otmicu djece pred poljskim tijelima i sudovima.",
+      "what_should_i_do": "Prvi koraci kada je dijete odvedeno u Poljsku ili zadržano u Poljskoj bez suglasnosti: dokumenti, rokovi i pravne mogućnosti.",
+      "steps_to_follow": "Praktični koraci nakon što je dijete protupravno odvedeno ili zadržano u Poljskoj, uključujući dokaze, nadležna tijela i pravne radnje.",
+      "parents_in_contact": "Smjernice za roditelje koji su i dalje u kontaktu i znaju da se dijete ili drugi roditelj nalazi u Poljskoj, uključujući dogovor, medijaciju i pravnu zaštitu.",
+      "parental_non_cooperation": "Pravne mogućnosti kada drugi roditelj odbija medijaciju ili suradnju nakon što je dijete odvedeno ili zadržano u Poljskoj.",
+      "conflict_with_the_other_parent": "Informacije za roditelje u sukobu oko skrbi, putovanja, prebivališta i rizika međunarodne otmice djeteta povezane s Poljskom.",
+      "criminal_consequences": "Pregled mogućih kaznenih posljedica u slučajevima međunarodne otmice djeteta i važnosti hitnog pravnog savjeta kada je uključena Poljska.",
+      "why_remain_in_poland": "Objašnjenje zašto dijete i svaki roditelj mogu trebati ostati u Poljskoj tijekom obiteljskog postupka, medijacije ili postupka povratka prema Haškoj konvenciji.",
+      "going_abroad_with_my_child": "Informacije za roditelje koji razmišljaju o putovanju ili preseljenju u inozemstvo s djetetom, uključujući suglasnost, skrb i rizike otmice povezane s Poljskom.",
+      "is_it_possible": "Može li roditelj otići u inozemstvo s djetetom? Saznajte o suglasnosti, pravima skrbi i pravnim granicama prije putovanja ili preseljenja povezanog s Poljskom.",
+      "filial_relationship": "Objašnjenje odnosa roditelja i djeteta, roditeljske skrbi i pitanja skrbništva važnih za međunarodna putovanja i rizike otmice djeteta povezane s Poljskom.",
+      "the_hague_convention": "Vodič kroz Hašku konvenciju o građanskopravnim aspektima međunarodne otmice djece i postupke povratka djece u Poljskoj."
+    }
   }
 }
