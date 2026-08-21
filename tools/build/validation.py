@@ -5,10 +5,13 @@ from __future__ import annotations
 import shutil
 from collections import defaultdict
 from pathlib import Path
+from urllib.parse import urlsplit
 
 from common import CLR_GREEN, CLR_RED, CLR_WHITE, CLR_YELLOW, color, display_path, load_json, print_group, print_labeled, print_section
 
 LEGACY_SHARED_PAGE_FIELDS = {"enabled", "titles", "slugs"}
+REQUIRED_SITE_FIELDS = ("url", "hreflang", "og_locale", "social_image")
+NON_CONTENT_TEMPLATES = {"home", "home_cards", "contact", "contact_page", "cards", "cards_page"}
 
 
 def _load_sites(root: Path) -> dict[str, dict]:
@@ -85,6 +88,21 @@ def _resolved_slug(key: str, by_key: dict[str, dict], locale_pages: dict) -> str
     return "/".join(reversed(parts))
 
 
+def _requires_content(page: dict) -> bool:
+    return str(page.get("template") or "content") not in NON_CONTENT_TEMPLATES
+
+
+def _validate_site_identity(lang: str, site: dict, errors: list[str]) -> None:
+    for field in REQUIRED_SITE_FIELDS:
+        value = site.get(field)
+        if not isinstance(value, str) or not value.strip():
+            errors.append(f"Site '{lang}' missing required {field}")
+    url = str(site.get("url") or "").strip()
+    parsed = urlsplit(url)
+    if url and (parsed.scheme not in {"http", "https"} or not parsed.netloc):
+        errors.append(f"Site '{lang}' url must be an absolute HTTP(S) URL")
+
+
 def validate(root, *, strict: bool = False, autofix_prompt: bool = True) -> None:
     root = Path(root).expanduser().resolve()
     pages_path = root / "config" / "pages.json"
@@ -127,8 +145,21 @@ def validate(root, *, strict: bool = False, autofix_prompt: bool = True) -> None
     for lang in site_codes:
         locale = locales.get(lang, {})
         locale_pages = locale.get("pages", {}) if isinstance(locale, dict) else {}
+        site = sites.get(lang, {})
+        _validate_site_identity(lang, site if isinstance(site, dict) else {}, errors)
+        locale_seo = locale.get("seo") if isinstance(locale, dict) else None
+        if not isinstance(locale_seo, dict):
+            errors.append(f"Locale '{lang}' missing seo object")
+            locale_seo = {}
+        default_description = locale_seo.get("default_description")
+        if not isinstance(default_description, str) or not default_description.strip():
+            errors.append(f"Locale '{lang}' seo.default_description is required")
+        seo_descriptions = locale_seo.get("descriptions")
+        if not isinstance(seo_descriptions, dict):
+            errors.append(f"Locale '{lang}' seo.descriptions must be an object")
+            seo_descriptions = {}
         effective = [dict(page) for page in shared_pages if isinstance(page, dict)]
-        extra = _extra_pages(sites.get(lang, {}))
+        extra = _extra_pages(site)
         shared_keys = set(shared_by_key)
         for page in extra:
             key = page.get("key")
@@ -148,6 +179,15 @@ def validate(root, *, strict: bool = False, autofix_prompt: bool = True) -> None
                 errors.append(f"Locale '{lang}' pages.{key} missing title")
             if key != "introduction" and not str(entry.get("slug") or "").strip("/"):
                 errors.append(f"Locale '{lang}' pages.{key} missing slug")
+            description = seo_descriptions.get(key)
+            if not isinstance(description, str) or not description.strip():
+                errors.append(f"Locale '{lang}' seo.descriptions.{key} is required")
+            if _requires_content(page):
+                content_path = root / "content" / lang / f"{key}.md"
+                if not content_path.is_file():
+                    errors.append(f"Locale '{lang}' missing content/{lang}/{key}.md")
+                elif not content_path.read_text(encoding="utf-8").strip():
+                    errors.append(f"Locale '{lang}' content/{lang}/{key}.md is empty")
 
             # Locale parent fields belong to the pre-v2 architecture. They are never
             # structural input, even when stale or contradictory: the effective page

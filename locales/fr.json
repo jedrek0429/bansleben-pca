@@ -382,5 +382,35 @@
     "name_label": "Nom",
     "email_label": "E-mail",
     "message_label": "Message"
+  },
+  "seo": {
+    "default_description": "Informations pour les parents confrontés à un enlèvement parental international, un déplacement ou non-retour illicite d’enfant en Pologne, et aux procédures de retour fondées sur la Convention de La Haye.",
+    "descriptions": {
+      "introduction": "Informations pratiques sur l’enlèvement parental vers ou depuis la Pologne, les demandes de retour d’enfant au titre de la Convention de La Haye, les juridictions polonaises et les démarches urgentes.",
+      "whom_to_contact": "Découvrez quelles autorités, institutions et professionnels du droit contacter lorsqu’un enfant a été déplacé ou retenu illicitement en Pologne.",
+      "jurisprudence": "Sélection de jurisprudence sur l’enlèvement parental international, les procédures de retour fondées sur la Convention de La Haye et les affaires familiales impliquant la Pologne.",
+      "contact": "Contactez-nous au sujet d’un enlèvement parental urgent, d’un non-retour illicite ou d’une procédure de retour d’enfant impliquant la Pologne.",
+      "who_we_are": "Découvrez qui se trouve derrière Enlèvement Parental Pologne et comment une assistance juridique peut aider les parents dans les affaires transfrontalières impliquant la Pologne.",
+      "privacy_policy": "Consultez la politique de confidentialité du site Enlèvement Parental Pologne, y compris les informations relatives au formulaire de contact et aux données personnelles.",
+      "parental_child_abduction": "Explication de l’enlèvement parental, du déplacement illicite et du non-retour illicite au sens de la Convention de La Haye, avec un accent sur les affaires impliquant la Pologne.",
+      "within_the_law": "Aperçu des règles juridiques internationales et nationales pouvant s’appliquer lorsqu’un enfant est déplacé ou retenu illicitement en Pologne.",
+      "international_laws": "Cadre juridique international applicable aux affaires d’enlèvement parental, notamment la Convention de La Haye et les procédures transfrontalières de retour impliquant la Pologne.",
+      "individual_national_laws": "Guide des législations nationales sélectionnées pouvant influencer les affaires d’enlèvement parental, de garde et de retour d’enfant impliquant la Pologne.",
+      "national_law_france": "Aperçu des questions de droit français pouvant se poser dans les affaires d’enlèvement parental international et de retour d’enfant impliquant la Pologne.",
+      "national_law_belgium": "Aperçu des questions de droit belge pouvant se poser dans les affaires d’enlèvement parental international et de retour d’enfant impliquant la Pologne.",
+      "national_law_canada": "Aperçu des questions de droit canadien pouvant se poser dans les affaires d’enlèvement parental international et de retour d’enfant impliquant la Pologne.",
+      "national_law_poland": "Aperçu des règles du droit polonais relatives à la garde, à l’autorité parentale et aux affaires d’enlèvement international d’enfant devant les autorités et juridictions polonaises.",
+      "what_should_i_do": "Premières démarches lorsqu’un enfant a été emmené ou retenu en Pologne sans consentement : documents, délais et options juridiques.",
+      "steps_to_follow": "Étapes pratiques à suivre lorsqu’un enfant a été déplacé ou retenu illicitement en Pologne : preuves, autorités et démarches juridiques.",
+      "parents_in_contact": "Conseils lorsque les parents restent en contact et que l’enfant ou l’autre parent se trouve en Pologne : discussion, médiation et garanties juridiques.",
+      "parental_non_cooperation": "Options juridiques lorsque l’autre parent refuse la médiation ou la coopération après qu’un enfant a été emmené ou retenu en Pologne.",
+      "conflict_with_the_other_parent": "Informations pour les parents en conflit sur la garde, les voyages, la résidence et les risques d’enlèvement international d’enfant impliquant la Pologne.",
+      "criminal_consequences": "Aperçu des conséquences pénales possibles dans les affaires d’enlèvement international d’enfant et de l’importance d’un conseil juridique rapide lorsque la Pologne est concernée.",
+      "why_remain_in_poland": "Explication des raisons pour lesquelles l’enfant et chaque parent peuvent devoir rester en Pologne pendant une procédure familiale, une médiation ou une demande de retour fondée sur la Convention de La Haye.",
+      "going_abroad_with_my_child": "Informations pour les parents envisageant un voyage ou un déménagement à l’étranger avec un enfant : consentement, garde et risques d’enlèvement parental impliquant la Pologne.",
+      "is_it_possible": "Un parent peut-il partir à l’étranger avec son enfant ? Consentement, droits de garde et limites juridiques avant un voyage ou un déménagement impliquant la Pologne.",
+      "filial_relationship": "Rappel sur la filiation, l’autorité parentale et les questions de garde pertinentes en cas de voyage international et de risque d’enlèvement d’enfant impliquant la Pologne.",
+      "the_hague_convention": "Guide de la Convention de La Haye sur les aspects civils de l’enlèvement international d’enfants et du fonctionnement des procédures de retour en Pologne."
+    }
   }
 }

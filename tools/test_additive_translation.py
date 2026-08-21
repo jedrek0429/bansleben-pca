@@ -28,6 +28,24 @@ def run(root: Path, *args: str) -> None:
     subprocess.run(command, cwd=root, check=True)
 
 
+def expect_check_failure(root: Path, expected: str) -> None:
+    command = [
+        sys.executable,
+        str(root / "tools" / "build.py"),
+        "check",
+        "--strict",
+        "--no-autofix-prompt",
+        "--root",
+        str(root),
+    ]
+    result = subprocess.run(command, cwd=root, text=True, capture_output=True)
+    output = result.stdout + result.stderr
+    if result.returncode == 0:
+        raise SystemExit(f"Expected site-model validation to fail with: {expected}")
+    if expected not in output:
+        raise SystemExit(f"Expected validation error {expected!r}, got:\n{output}")
+
+
 def make_synthetic_locale(root: Path) -> dict:
     english = load_json(root / "locales" / "en.json")
     shared_pages = load_json(root / "config" / "pages.json").get("pages", [])
@@ -70,13 +88,15 @@ def main() -> None:
         sites_dir = root / "sites"
         for path in sites_dir.glob("*.json"):
             path.unlink()
-        write_json(sites_dir / f"{LANG}.json", {
+        site_path = sites_dir / f"{LANG}.json"
+        site_manifest = {
             "url": SITE_URL,
             "hreflang": LANG,
             "og_locale": "zz_ZZ",
             "social_image": "/assets/social/og-en.jpg",
             "extra_pages": [],
-        })
+        }
+        write_json(site_path, site_manifest)
 
         locale_dir = root / "locales"
         synthetic = make_synthetic_locale(root)
@@ -90,6 +110,51 @@ def main() -> None:
         for path in (root / "content" / "en").glob("*.md"):
             if path.stem in shared_keys:
                 shutil.copy2(path, content_dir / path.name)
+
+        run(root, "check", "--strict", "--no-autofix-prompt")
+
+        for field in ("url", "hreflang", "og_locale", "social_image"):
+            incomplete_site = dict(site_manifest)
+            incomplete_site.pop(field)
+            write_json(site_path, incomplete_site)
+            expect_check_failure(root, f"Site '{LANG}' missing required {field}")
+        write_json(site_path, site_manifest)
+
+        invalid_site = dict(site_manifest)
+        invalid_site["url"] = "/not-an-absolute-site-url"
+        write_json(site_path, invalid_site)
+        expect_check_failure(root, f"Site '{LANG}' url must be an absolute HTTP(S) URL")
+        write_json(site_path, site_manifest)
+
+        incomplete_locale = dict(synthetic)
+        incomplete_locale.pop("seo")
+        write_json(locale_dir / f"{LANG}.json", incomplete_locale)
+        expect_check_failure(root, f"Locale '{LANG}' missing seo object")
+
+        incomplete_locale = dict(synthetic)
+        incomplete_locale["seo"] = dict(synthetic["seo"])
+        incomplete_locale["seo"].pop("default_description")
+        write_json(locale_dir / f"{LANG}.json", incomplete_locale)
+        expect_check_failure(root, f"Locale '{LANG}' seo.default_description is required")
+
+        incomplete_locale = dict(synthetic)
+        incomplete_locale["seo"] = dict(synthetic["seo"])
+        incomplete_locale["seo"]["descriptions"] = dict(synthetic["seo"]["descriptions"])
+        incomplete_locale["seo"]["descriptions"].pop("whom_to_contact")
+        write_json(locale_dir / f"{LANG}.json", incomplete_locale)
+        expect_check_failure(root, f"Locale '{LANG}' seo.descriptions.whom_to_contact is required")
+        write_json(locale_dir / f"{LANG}.json", synthetic)
+
+        missing_content = content_dir / "whom_to_contact.md"
+        parked_content = content_dir / "whom_to_contact.md.missing"
+        missing_content.rename(parked_content)
+        expect_check_failure(root, f"Locale '{LANG}' missing content/{LANG}/whom_to_contact.md")
+        parked_content.rename(missing_content)
+
+        content_text = missing_content.read_text(encoding="utf-8")
+        missing_content.write_text("\n", encoding="utf-8")
+        expect_check_failure(root, f"Locale '{LANG}' content/{LANG}/whom_to_contact.md is empty")
+        missing_content.write_text(content_text, encoding="utf-8")
 
         run(root, "check", "--strict", "--no-autofix-prompt")
         output = root.parent / "contract-dist"
