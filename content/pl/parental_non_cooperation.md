@@ -1,7 +1,7 @@
-Jeżeli dobrowolny powrót dziecka ani mediacja nie prowadzą do rozwiązania sprawy, można wystąpić z wnioskiem o powrót dziecka na podstawie Konwencji haskiej.
+**Złóż formalny wniosek do właściwego organu centralnego o pomoc w uzyskaniu powrotu dziecka na podstawie Konwencji haskiej.**
 
-Organ centralny może pomóc w przekazaniu wniosku, uzyskaniu potrzebnych informacji oraz współpracy z organem centralnym drugiego państwa. O samym powrocie dziecka rozstrzyga jednak właściwy sąd albo organ administracyjny państwa, w którym dziecko się znajduje.
+Organ centralny może pomóc w przekazaniu wniosku do właściwych organów za granicą oraz w podjęciu działań zmierzających do uzyskania powrotu dziecka albo skutecznego wykonywania międzynarodowego prawa do odwiedzin.
 
-Po uzyskaniu informacji o bezprawnym uprowadzeniu lub zatrzymaniu dziecka Konwencja ogranicza możliwość rozstrzygania co do istoty prawa do opieki do czasu ustalenia, że dziecko nie powinno zostać zwrócone, albo do czasu bezskutecznego upływu terminu na złożenie wniosku o jego powrót.
+W ramach współpracy przewidzianej przez Konwencję organy centralne mogą wspierać wszczęcie właściwego postępowania w państwie, w którym znajduje się dziecko, oraz przekazywać informacje potrzebne do rozpoznania sprawy.
 
-Wnioski dotyczące wykonywania prawa do odwiedzin mogą być kierowane do organów centralnych na zasadach określonych w artykule 21 Konwencji.
+Do czasu rozstrzygnięcia kwestii powrotu dziecka możliwość wydawania rozstrzygnięć co do istoty prawa do opieki podlega zasadom określonym w Konwencji haskiej.
