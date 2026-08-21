@@ -8,7 +8,7 @@ Bez względu na postanowienia artykułu poprzedzającego władza sądowa lub adm
 
 a) osoba, instytucja lub organizacja opiekująca się dzieckiem faktycznie nie wykonywała prawa do opieki w czasie uprowadzenia lub zatrzymania albo zgodziła się lub później wyraziła zgodę na uprowadzenie lub zatrzymanie; lub
 
-b) istnieje poważne ryzyko, że powrót dziecka naraziłby je na szkodę fizyczną lub psychiczną albo w jakikolwiek inny sposób postawiłby je w niekorzystnej sytuacji.
+b) istnieje poważne ryzyko, że powrót dziecka naraziłby je na szkodę fizyczną lub psychiczną albo w jakikolwiek inny sposób postawiłby je w sytuacji nie do zniesienia.
 
 Władza sądowa lub administracyjna może również odmówić zarządzenia powrotu dziecka, jeżeli stwierdzi, że dziecko sprzeciwia się powrotowi oraz że osiągnęło ono wiek i stopień dojrzałości, przy którym właściwe jest uwzględnienie jego opinii.
 
