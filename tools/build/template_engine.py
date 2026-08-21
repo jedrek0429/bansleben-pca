@@ -6,6 +6,7 @@ import json
 import re
 
 from common import display_path
+from image_pipeline import primary_image_url, responsive_image_srcset
 from images import resolve_images
 from localization import nested_get, value_from_locales
 from menus import render_language_switcher, render_main_menu, render_mobile_menu
@@ -84,7 +85,9 @@ def render_text(ctx, text: str, lang: str, locales, render_state=None, templates
         if name == "logo_height":
             return str(image_info.get("height", ""))
         if name == "logo_webp_src":
-            return asset_url(ctx, str(image_info.get("webp_src", "")))
+            return primary_image_url(ctx, str(logo_src))
+        if name == "logo_srcset":
+            return responsive_image_srcset(ctx, str(logo_src))
         value = value_from_locales(lang, token, locales)
         return unresolved(token) if value is None else str(value)
 
