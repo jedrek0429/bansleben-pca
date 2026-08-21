@@ -44,7 +44,7 @@ jobs:
           sudo apt-get install -y imagemagick
 
       - name: Validate repository site model
-        run: python tools/build.py check --root . --no-autofix-prompt
+        run: python tools/build.py check --root . --strict --no-autofix-prompt
 
       - name: Run additive translation regression
         run: python tools/test_additive_translation.py
