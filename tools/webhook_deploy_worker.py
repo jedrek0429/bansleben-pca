@@ -353,6 +353,7 @@ def prepare_production_worktree(config, sha: str, log) -> Path:
     if target.exists():
         remove_worktree(config, target, log)
     run(["git", "cat-file", "-e", f"{sha}^{{commit}}"], root, log)
+    run(["git", "merge-base", "--is-ancestor", sha, "origin/main"], root, log)
     run(["git", "worktree", "add", "--force", "--detach", str(target), sha], root, log)
     return target
 
