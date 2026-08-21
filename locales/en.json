@@ -116,8 +116,8 @@
     },
     "parents_in_contact": {
       "enabled": true,
-      "title": "If Parents Remain in Contact and are Both in Poland",
-      "slug": "parents-in-contact"
+      "title": "If You Remain in Contact with the Other Parent and Know They Are in Poland",
+      "slug": "other-parent-in-poland"
     },
     "parental_non_cooperation": {
       "enabled": true,
@@ -279,9 +279,9 @@
       "image_src": "/assets/uploads/2021/03/kroki.png"
     },
     "parents_in_contact": {
-      "title": "If Parents Remain in Contact and are Both in Poland",
-      "image_alt": "If Parents Remain in Contact and are Both in Poland",
-      "image_title": "If Parents Remain in Contact and are Both in Poland",
+      "title": "If You Remain in Contact with the Other Parent and Know They Are in Poland",
+      "image_alt": "Other parent in Poland",
+      "image_title": "Other parent in Poland",
       "image_src": "/assets/uploads/2023/09/polska.png"
     },
     "parental_non_cooperation": {
@@ -357,7 +357,7 @@
       "national_law_poland": "Overview of Polish legal rules relevant to custody, parental authority and international child abduction cases before Polish authorities and courts.",
       "what_should_i_do": "First steps for a parent when a child has been taken to Poland or kept in Poland without consent, including documents, deadlines and legal options.",
       "steps_to_follow": "Practical steps to take after a child has been wrongfully removed to or retained in Poland, including evidence, authorities and legal action.",
-      "parents_in_contact": "Guidance for parents who remain in contact and know the child or the other parent is in Poland, including negotiation, mediation and legal safeguards.",
+      "parents_in_contact": "Guidance for a parent who remains in contact with the other parent and knows that the other parent is in Poland, including mediation and Central Authority assistance.",
       "parental_non_cooperation": "Legal options when the other parent refuses mediation or cooperation after a child has been taken to or retained in Poland.",
       "conflict_with_the_other_parent": "Information for parents in conflict about custody, travel, residence and international child abduction risks involving Poland.",
       "criminal_consequences": "Overview of possible criminal consequences in international child abduction cases and why urgent legal advice is important when Poland is involved.",

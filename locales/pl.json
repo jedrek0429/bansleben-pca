@@ -1,0 +1,151 @@
+{
+  "lang": "pl",
+  "site_name": "Uprowadzenie rodzicielskie — Polska",
+  "menu": {
+    "introduction": "WPROWADZENIE",
+    "whom_to_contact": "Z KIM SIĘ SKONTAKTOWAĆ?",
+    "jurisprudence": "ORZECZNICTWO",
+    "contact": "KONTAKT",
+    "who_we_are": "KIM JESTEŚMY?",
+    "legal_practice": "PRAKTYKA PRAWNA"
+  },
+  "form": {
+    "name": "Imię i nazwisko",
+    "email": "E-mail",
+    "message": "Wiadomość",
+    "send": "WYŚLIJ",
+    "success": "Dziękujemy. Wiadomość została wysłana.",
+    "error": "Nie udało się wysłać wiadomości. Sprawdź adres e-mail i spróbuj ponownie."
+  },
+  "common": {
+    "read_more": "Więcej informacji",
+    "back": "Wstecz",
+    "home": "Początek",
+    "select_page": "Wybierz stronę",
+    "content_placeholder": "Treść w przygotowaniu."
+  },
+  "not_found": {
+    "title": "Nie znaleziono strony",
+    "text": "Strona, której szukasz, nie istnieje lub została przeniesiona.",
+    "button": "Wróć do początku"
+  },
+  "hague_footer": {
+    "title": "Konwencja haska",
+    "text": "Serwis dotyczy Konwencji dotyczącej cywilnych aspektów uprowadzenia dziecka za granicę, sporządzonej w Hadze 25 października 1980 r.",
+    "link_label": "Więcej informacji",
+    "page": "the_hague_convention"
+  },
+  "pages": {
+    "introduction": {"enabled": true, "title": "Wprowadzenie", "slug": ""},
+    "whom_to_contact": {"enabled": true, "title": "Z kim się skontaktować?", "slug": "z-kim-sie-skontaktowac"},
+    "jurisprudence": {"enabled": true, "title": "Orzecznictwo", "slug": "orzecznictwo"},
+    "contact": {"enabled": true, "title": "Kontakt", "slug": "kontakt"},
+    "who_we_are": {"enabled": true, "title": "Kim jesteśmy?", "slug": "kim-jestesmy"},
+    "privacy_policy": {"enabled": true, "title": "Polityka prywatności", "slug": "polityka-prywatnosci"},
+    "parental_child_abduction": {"enabled": true, "title": "Uprowadzenie rodzicielskie", "slug": "uprowadzenie-rodzicielskie-dziecka"},
+    "within_the_law": {"enabled": true, "title": "W świetle prawa", "slug": "w-swietle-prawa"},
+    "international_laws": {"enabled": true, "title": "Prawo międzynarodowe", "slug": "prawo-miedzynarodowe"},
+    "individual_national_laws": {"enabled": true, "title": "Prawo krajowe", "slug": "prawo-krajowe"},
+    "national_law_uk": {"enabled": true, "title": "Wielka Brytania", "slug": "wielka-brytania"},
+    "national_law_us": {"enabled": true, "title": "Stany Zjednoczone", "slug": "stany-zjednoczone"},
+    "national_law_canada": {"enabled": true, "title": "Kanada", "slug": "kanada"},
+    "national_law_france": {"enabled": true, "title": "Francja", "slug": "francja"},
+    "national_law_belgium": {"enabled": true, "title": "Belgia", "slug": "belgia"},
+    "national_law_croatia": {"enabled": true, "title": "Chorwacja", "slug": "chorwacja"},
+    "national_law_poland": {"enabled": true, "title": "Polska", "slug": "polska"},
+    "what_should_i_do": {"enabled": true, "title": "Co mogę zrobić?", "slug": "co-moge-zrobic"},
+    "steps_to_follow": {"enabled": true, "title": "Kroki do podjęcia", "slug": "kroki-do-podjecia"},
+    "parents_in_contact": {"enabled": true, "title": "Jeżeli pozostajesz w kontakcie z drugim rodzicem i wiesz, że jest w Polsce", "slug": "drugi-rodzic-w-polsce"},
+    "parental_non_cooperation": {"enabled": true, "title": "Drugi rodzic odmawia mediacji", "slug": "brak-wspolpracy-drugiego-rodzica"},
+    "conflict_with_the_other_parent": {"enabled": true, "title": "Konflikt z drugim rodzicem", "slug": "konflikt-z-drugim-rodzicem"},
+    "criminal_consequences": {"enabled": true, "title": "Konsekwencje karne międzynarodowego uprowadzenia dziecka", "slug": "konsekwencje-karne"},
+    "why_remain_in_poland": {"enabled": true, "title": "Dlaczego dziecko i oboje rodzice powinni pozostać w Polsce?", "slug": "dlaczego-pozostac-w-polsce"},
+    "going_abroad_with_my_child": {"enabled": true, "title": "Chcę wyjechać za granicę z dzieckiem", "slug": "chce-wyjechac-za-granice-z-dzieckiem"},
+    "is_it_possible": {"enabled": true, "title": "Czy to możliwe?", "slug": "czy-to-mozliwe"},
+    "filial_relationship": {"enabled": true, "title": "Pochodzenie dziecka i władza rodzicielska", "slug": "pochodzenie-dziecka-i-wladza-rodzicielska"},
+    "the_hague_convention": {"enabled": true, "title": "Konwencja haska", "slug": "konwencja-haska"}
+  },
+  "shared_blocks": {
+    "un_crc_intro": {"text": "Konwencja o prawach dziecka nakłada na państwa obowiązek podejmowania działań zapobiegających uprowadzaniu, sprzedaży i handlowi dziećmi."},
+    "hague_purpose": {
+      "title": "Przedmiotem niniejszej konwencji jest:",
+      "items": [
+        "zapewnienie niezwłocznego powrotu dzieci bezprawnie uprowadzonych lub zatrzymanych w jednym z Umawiających się Państw oraz",
+        "zapewnienie poszanowania praw do opieki i odwiedzin określonych przez ustawodawstwo jednego Umawiającego się Państwa w innych Umawiających się Państwach."
+      ],
+      "citation": "Artykuł 1 Konwencji haskiej z 25 października 1980 r."
+    }
+  },
+  "cards": {"read_more": "Więcej informacji"},
+  "brand": {
+    "logo_text": "Uprowadzenie rodzicielskie",
+    "logo_alt": "Uprowadzenie rodzicielskie",
+    "logo_src": "/assets/logos/logo-pl.png"
+  },
+  "footer": {"privacy_policy": "Polityka prywatności"},
+  "social": {"facebook_follow": "Obserwuj na Facebooku"},
+  "card_items": {
+    "introduction": {"title": "Wprowadzenie", "image_alt": "Wprowadzenie", "image_title": "Wprowadzenie"},
+    "whom_to_contact": {"title": "Z kim się skontaktować?", "image_alt": "Z kim się skontaktować?", "image_title": "Z kim się skontaktować?"},
+    "jurisprudence": {"title": "Orzecznictwo", "image_alt": "Orzecznictwo", "image_title": "Orzecznictwo"},
+    "contact": {"title": "Kontakt", "image_alt": "Kontakt", "image_title": "Kontakt"},
+    "who_we_are": {"title": "Kim jesteśmy?", "image_alt": "Kim jesteśmy?", "image_title": "Kim jesteśmy?"},
+    "privacy_policy": {"title": "Polityka prywatności", "image_alt": "Polityka prywatności", "image_title": "Polityka prywatności"},
+    "parental_child_abduction": {"title": "Uprowadzenie rodzicielskie", "image_alt": "Uprowadzenie rodzicielskie", "image_title": "Uprowadzenie rodzicielskie", "image_src": "/assets/uploads/2023/09/family.png"},
+    "within_the_law": {"title": "W świetle prawa", "image_alt": "W świetle prawa", "image_title": "W świetle prawa", "image_src": "/assets/uploads/2023/09/regulation.jpeg"},
+    "international_laws": {"title": "Prawo międzynarodowe", "image_alt": "Prawo międzynarodowe", "image_title": "Prawo międzynarodowe", "image_src": "/assets/uploads/2021/03/AdobeStock_71382930-scaled.jpeg"},
+    "individual_national_laws": {"title": "Prawo krajowe", "image_alt": "Prawo krajowe", "image_title": "Prawo krajowe", "image_src": "/assets/uploads/2021/03/AdobeStock_393652006-scaled.jpeg"},
+    "national_law_uk": {"title": "Wielka Brytania", "image_alt": "Wielka Brytania", "image_title": "Wielka Brytania", "image_src": "/assets/uploads/2023/09/2.jpg"},
+    "national_law_us": {"title": "Stany Zjednoczone", "image_alt": "Stany Zjednoczone", "image_title": "Stany Zjednoczone", "image_src": "/assets/uploads/2023/09/1.jpg"},
+    "national_law_canada": {"title": "Kanada", "image_alt": "Kanada", "image_title": "Kanada", "image_src": "/assets/uploads/2021/03/canada.png"},
+    "national_law_france": {"title": "Francja", "image_alt": "Francja", "image_title": "Francja", "image_src": "/assets/uploads/2021/03/francja.png"},
+    "national_law_belgium": {"title": "Belgia", "image_alt": "Belgia", "image_title": "Belgia", "image_src": "/assets/uploads/2021/03/belgia.png"},
+    "national_law_croatia": {"title": "Chorwacja", "image_alt": "Chorwacja", "image_title": "Chorwacja", "image_src": "/assets/uploads/2026/07/croatia.jpg"},
+    "national_law_poland": {"title": "Polska", "image_alt": "Polska", "image_title": "Polska", "image_src": "/assets/uploads/2021/03/polska.png"},
+    "what_should_i_do": {"title": "Co mogę zrobić?", "image_alt": "Co mogę zrobić?", "image_title": "Co mogę zrobić?", "image_src": "/assets/uploads/2023/09/what.png"},
+    "steps_to_follow": {"title": "Kroki do podjęcia", "image_alt": "Kroki do podjęcia", "image_title": "Kroki do podjęcia", "image_src": "/assets/uploads/2021/03/kroki.png"},
+    "parents_in_contact": {"title": "Jeżeli pozostajesz w kontakcie z drugim rodzicem i wiesz, że jest w Polsce", "image_alt": "Drugi rodzic w Polsce", "image_title": "Drugi rodzic w Polsce", "image_src": "/assets/uploads/2023/09/polska.png"},
+    "parental_non_cooperation": {"title": "Drugi rodzic odmawia mediacji", "image_alt": "Brak zgody na mediację", "image_title": "Brak zgody na mediację", "image_src": "/assets/uploads/2023/09/mediacje.png"},
+    "conflict_with_the_other_parent": {"title": "Konflikt z drugim rodzicem", "image_alt": "Konflikt z drugim rodzicem", "image_title": "Konflikt z drugim rodzicem", "image_src": "/assets/uploads/2023/09/rozwod.png"},
+    "criminal_consequences": {"title": "Konsekwencje karne międzynarodowego uprowadzenia dziecka", "image_alt": "Konsekwencje karne", "image_title": "Konsekwencje karne", "image_src": "/assets/uploads/2023/09/sad.png"},
+    "why_remain_in_poland": {"title": "Dlaczego dziecko i oboje rodzice powinni pozostać w Polsce?", "image_alt": "Dlaczego dziecko i oboje rodzice powinni pozostać w Polsce?", "image_title": "Dlaczego dziecko i oboje rodzice powinni pozostać w Polsce?", "image_src": "/assets/uploads/2023/09/polska.png"},
+    "going_abroad_with_my_child": {"title": "Chcę wyjechać za granicę z dzieckiem", "image_alt": "Wyjazd za granicę z dzieckiem", "image_title": "Wyjazd za granicę z dzieckiem", "image_src": "/assets/uploads/2023/09/travel.png"},
+    "is_it_possible": {"title": "Czy to możliwe?", "image_alt": "Czy to możliwe?", "image_title": "Czy to możliwe?", "image_src": "/assets/uploads/2023/09/mozliwosci.png"},
+    "filial_relationship": {"title": "Pochodzenie dziecka i władza rodzicielska", "image_alt": "Pochodzenie dziecka i władza rodzicielska", "image_title": "Pochodzenie dziecka i władza rodzicielska", "image_src": "/assets/uploads/2021/03/rodzice-2.png"},
+    "the_hague_convention": {"title": "Konwencja haska", "image_alt": "Konwencja haska", "image_title": "Konwencja haska", "image_src": "/assets/uploads/2023/09/sad.png"}
+  },
+  "contact_form": {"name_label": "Imię i nazwisko", "email_label": "E-mail", "message_label": "Wiadomość"},
+  "seo": {
+    "default_description": "Informacje dla rodziców dotyczące międzynarodowego uprowadzenia lub zatrzymania dziecka oraz postępowań o jego powrót do Polski lub z Polski.",
+    "descriptions": {
+      "introduction": "Praktyczne informacje o uprowadzeniu rodzicielskim dziecka do Polski lub z Polski, Konwencji haskiej, postępowaniu o powrót i pierwszych działaniach.",
+      "whom_to_contact": "Dane kontaktowe organów centralnych, służb i instytucji udzielających pomocy w sprawach międzynarodowego uprowadzenia dziecka.",
+      "jurisprudence": "Wybrane orzeczenia Europejskiego Trybunału Praw Człowieka dotyczące uprowadzeń rodzicielskich, Konwencji haskiej i Polski.",
+      "contact": "Kontakt w sprawach uprowadzenia rodzicielskiego, bezprawnego zatrzymania dziecka oraz postępowania o jego powrót do Polski lub z Polski.",
+      "who_we_are": "Informacje o Kancelarii Adwokackiej Elżbiety Bansleben i jej doświadczeniu w transgranicznych sprawach rodzinnych.",
+      "privacy_policy": "Informacje o przetwarzaniu danych osobowych w serwisie, formularzu kontaktowym oraz prawach przysługujących na podstawie RODO.",
+      "parental_child_abduction": "Czym jest bezprawne uprowadzenie lub zatrzymanie dziecka w rozumieniu Konwencji haskiej z 1980 r.",
+      "within_the_law": "Najważniejsze przepisy prawa międzynarodowego, unijnego i krajowego mające zastosowanie w sprawach uprowadzenia rodzicielskiego.",
+      "international_laws": "Konwencja haska, Konwencja o prawach dziecka, EKPC i prawo Unii Europejskiej w sprawach międzynarodowego uprowadzenia dzieci.",
+      "individual_national_laws": "Przepisy Polski, Wielkiej Brytanii, Stanów Zjednoczonych, Kanady, Francji, Belgii i Chorwacji dotyczące uprowadzenia dziecka i odpowiedzialności rodzicielskiej.",
+      "national_law_uk": "Prawo Wielkiej Brytanii dotyczące uprowadzenia dziecka, odpowiedzialności rodzicielskiej, jurysdykcji i postępowań transgranicznych.",
+      "national_law_us": "Prawo Stanów Zjednoczonych dotyczące międzynarodowego uprowadzenia rodzicielskiego i jurysdykcji w sprawach pieczy nad dzieckiem.",
+      "national_law_canada": "Prawo Kanady dotyczące uprowadzenia dziecka, odpowiedzialności rodzicielskiej oraz właściwości organów federalnych, prowincjonalnych i terytorialnych.",
+      "national_law_france": "Prawo Francji dotyczące uprowadzenia rodzicielskiego, władzy rodzicielskiej i postępowań o powrót dziecka.",
+      "national_law_belgium": "Prawo Belgii dotyczące uprowadzenia rodzicielskiego, władzy rodzicielskiej i transgranicznych spraw rodzinnych.",
+      "national_law_croatia": "Prawo Chorwacji dotyczące uprowadzenia dziecka, pieczy rodzicielskiej oraz postępowań prowadzonych na podstawie Konwencji haskiej.",
+      "national_law_poland": "Polskie przepisy dotyczące władzy rodzicielskiej, kontaktów z dzieckiem, uprowadzenia dziecka i postępowań o jego powrót.",
+      "what_should_i_do": "Co zrobić po bezprawnym uprowadzeniu lub zatrzymaniu dziecka: pierwsze działania, właściwe instytucje i dostępne środki prawne.",
+      "steps_to_follow": "Pierwsze działania po zaginięciu lub transgranicznym uprowadzeniu dziecka, w tym zgłoszenie sprawy, pomoc prawna i kontakt z właściwymi instytucjami.",
+      "parents_in_contact": "Co zrobić, gdy pozostajesz w kontakcie z drugim rodzicem i wiesz, że znajduje się on w Polsce.",
+      "parental_non_cooperation": "Jakie działania można podjąć na podstawie Konwencji haskiej, gdy drugi rodzic nie zgadza się na dobrowolny powrót dziecka lub mediację.",
+      "conflict_with_the_other_parent": "Informacje o transgranicznym konflikcie rodzicielskim oraz dostępnych środkach ochrony praw dziecka i rodzica.",
+      "criminal_consequences": "Możliwe konsekwencje karne uprowadzenia dziecka w różnych państwach oraz znaczenie indywidualnej porady prawnej.",
+      "why_remain_in_poland": "Dlaczego dziecko i oboje rodzice mogą potrzebować pozostać w Polsce oraz jakie znaczenie ma w takiej sytuacji Konwencja haska.",
+      "going_abroad_with_my_child": "Co należy wiedzieć przed wyjazdem lub przeprowadzką za granicę z dzieckiem, w szczególności o zgodzie drugiego rodzica i orzeczeniu sądu.",
+      "is_it_possible": "Skutki prawne przeprowadzki za granicę z dzieckiem bez zgody drugiego rodzica i kwestie, które należy ocenić przed wyjazdem.",
+      "filial_relationship": "Ustalenie pochodzenia dziecka, władza i odpowiedzialność rodzicielska oraz podejmowanie istotnych decyzji w różnych państwach.",
+      "the_hague_convention": "Jak działa Konwencja haska z 1980 r., kiedy można żądać powrotu dziecka i jaką rolę pełnią organy centralne."
+    }
+  }
+}

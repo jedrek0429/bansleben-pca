@@ -171,6 +171,17 @@ def main() -> None:
         if "Synthetic SEO description" not in rendered:
             raise SystemExit("Synthetic SEO descriptions were not sourced from locales/zz.json")
 
+        preview_output = root.parent / "contract-preview"
+        run(root, "preview", "--to", str(preview_output), "--prefix", "contract", "--no-format")
+        preview_index = preview_output / LANG / "index.html"
+        if not preview_index.is_file():
+            raise SystemExit(
+                "Manifest-discovered preview omitted the synthetic locale; preview/deploy must not use a hard-coded language list"
+            )
+        preview_html = preview_index.read_text(encoding="utf-8")
+        if ">ZZ</a>" not in preview_html:
+            raise SystemExit("Manifest-discovered preview omitted the synthetic locale from the language switcher")
+
     print("Additive translation contract passed.")
 
 

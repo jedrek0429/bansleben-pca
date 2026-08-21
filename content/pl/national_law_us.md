@@ -1,0 +1,1 @@
+Uniform Child Custody Jurisdiction and Enforcement Act (UCCJEA) reguluje zasady ustalania jurysdykcji w sprawach dotyczących pieczy nad dzieckiem. Jednym z podstawowych łączników jest „home state” dziecka, co zazwyczaj wiąże się z jego zamieszkiwaniem z rodzicem lub osobą pełniącą funkcję rodzica przez sześć kolejnych miesięcy bezpośrednio przed wszczęciem postępowania.

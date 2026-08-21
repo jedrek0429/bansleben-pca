@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import html
 
-from constants import DEFAULT_LEGAL_PRACTICE_URL, DEFAULT_MENU_KEYS
+from constants import DEFAULT_MENU_KEYS
 from localization import value_from_locales
 from urls import is_enabled, page_config, page_title, page_url
 
@@ -42,14 +42,14 @@ def render_menu_items(ctx, locales, lang: str, current_key: str, mobile: bool = 
         class_attr = " ".join(classes)
         items.append(f'<li class="{class_attr}"><a href="{href}"{aria}>{label}</a></li>')
 
-    external = ctx.pages_config.get("external_links", {}).get("legal_practice", {})
-    legal_url = external.get("url") or DEFAULT_LEGAL_PRACTICE_URL
-    legal_label = value_from_locales(lang, "menu.legal_practice", locales) or "Legal practice"
-    items.append(
-        '<li class="nav-item nav-item--external">'
-        f'<a href="{html.escape(str(legal_url), quote=True)}">{html.escape(str(legal_label))}</a>'
-        '</li>'
-    )
+    legal_url = ctx.site_configs.get(lang, {}).get("legal_practice_url")
+    if legal_url:
+        legal_label = value_from_locales(lang, "menu.legal_practice", locales) or "Legal practice"
+        items.append(
+            '<li class="nav-item nav-item--external">'
+            f'<a href="{html.escape(str(legal_url), quote=True)}">{html.escape(str(legal_label))}</a>'
+            '</li>'
+        )
     return "\n".join(items)
 
 
