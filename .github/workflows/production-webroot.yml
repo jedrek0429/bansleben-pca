@@ -36,5 +36,8 @@ jobs:
       - name: Verify standalone production language roots
         run: python tools/test_production_language_webroots.py
 
+      - name: Verify production deployment compatibility
+        run: python tools/test_production_deployment_contract.py
+
       - name: Verify PR preview social metadata paths
         run: python tools/test_preview_social_metadata.py
