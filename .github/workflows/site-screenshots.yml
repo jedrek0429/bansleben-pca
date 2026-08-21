@@ -45,6 +45,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y imagemagick
 
+      - name: Validate additive translation contract
+        run: python tools/test_additive_translation.py
+
       - name: Validate deployed preview prefix
         env:
           PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number || 'ci' }}
