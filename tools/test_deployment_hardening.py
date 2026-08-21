@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import io
 import json
+import os
 import tempfile
 from pathlib import Path
 import sys
@@ -107,11 +108,7 @@ def assert_stale_publish_temps_are_cleaned() -> None:
         stale_time = 1_000.0
         recent_time = 20_000.0
         for path in (stale_stage, stale_backup, unrelated):
-            path.touch()
-            path.chmod(0o755)
-            import os
             os.utime(path, (stale_time, stale_time))
-        import os
         os.utime(recent_stage, (recent_time, recent_time))
 
         removed = publisher.cleanup_stale_publish_temps(
