@@ -1,7 +1,6 @@
 {
   "lang": "en",
   "site_name": "Poland Child Abduction",
-  "domain": "https://polandchildabduction.pl",
   "menu": {
     "introduction": "INTRODUCTION",
     "whom_to_contact": "WHOM TO CONTACT?",
@@ -38,170 +37,127 @@
     "introduction": {
       "enabled": true,
       "title": "Introduction",
-      "slug": "",
-      "parent": null
+      "slug": ""
     },
     "whom_to_contact": {
       "enabled": true,
       "title": "Whom to Contact?",
-      "slug": "whom-to-contact",
-      "parent": null
+      "slug": "whom-to-contact"
     },
     "jurisprudence": {
       "enabled": true,
       "title": "Jurisprudence",
-      "slug": "jurisprudence",
-      "parent": null
+      "slug": "jurisprudence"
     },
     "contact": {
       "enabled": true,
       "title": "Contact",
-      "slug": "contact",
-      "parent": null
+      "slug": "contact"
     },
     "who_we_are": {
       "enabled": true,
       "title": "Who We Are",
-      "slug": "who-we-are",
-      "parent": null
+      "slug": "who-we-are"
     },
     "privacy_policy": {
       "enabled": true,
       "title": "Privacy Policy",
-      "slug": "privacy-policy",
-      "parent": null
+      "slug": "privacy-policy"
     },
     "parental_child_abduction": {
       "enabled": true,
       "title": "Parental Child Abduction",
-      "slug": "parental-child-abduction",
-      "parent": null
+      "slug": "parental-child-abduction"
     },
     "within_the_law": {
       "enabled": true,
       "title": "Within the Law",
-      "slug": "within-the-law",
-      "parent": null
+      "slug": "within-the-law"
     },
     "international_laws": {
       "enabled": true,
       "title": "International Laws",
-      "slug": "within-the-law/international-laws",
-      "parent": "within_the_law"
+      "slug": "international-laws"
     },
     "individual_national_laws": {
       "enabled": true,
       "title": "Individual National Laws",
-      "slug": "within-the-law/individual-national-laws",
-      "parent": "within_the_law"
+      "slug": "individual-national-laws"
     },
     "national_law_uk": {
       "enabled": true,
       "title": "British",
-      "slug": "within-the-law/individual-national-laws/british",
-      "parent": "individual_national_laws"
+      "slug": "british"
     },
     "national_law_us": {
       "enabled": true,
       "title": "American",
-      "slug": "within-the-law/individual-national-laws/american",
-      "parent": "individual_national_laws"
-    },
-    "national_law_france": {
-      "enabled": false,
-      "title": "",
-      "slug": "",
-      "parent": "individual_national_laws"
-    },
-    "national_law_belgium": {
-      "enabled": false,
-      "title": "",
-      "slug": "",
-      "parent": "individual_national_laws"
+      "slug": "american"
     },
     "national_law_canada": {
       "enabled": true,
       "title": "Canadian",
-      "slug": "within-the-law/individual-national-laws/canadian",
-      "parent": "individual_national_laws"
-    },
-    "national_law_croatia": {
-      "enabled": false,
-      "title": "",
-      "slug": "",
-      "parent": "individual_national_laws"
+      "slug": "canadian"
     },
     "national_law_poland": {
       "enabled": true,
       "title": "Polish",
-      "slug": "within-the-law/individual-national-laws/polish",
-      "parent": "individual_national_laws"
+      "slug": "polish"
     },
     "what_should_i_do": {
       "enabled": true,
       "title": "What Should I Do?",
-      "slug": "what-should-i-do",
-      "parent": null
+      "slug": "what-should-i-do"
     },
     "steps_to_follow": {
       "enabled": true,
       "title": "Steps to Follow",
-      "slug": "what-should-i-do/steps-to-follow",
-      "parent": "what_should_i_do"
+      "slug": "steps-to-follow"
     },
     "parents_in_contact": {
       "enabled": true,
       "title": "If Parents Remain in Contact and are Both in Poland",
-      "slug": "what-should-i-do/parents-in-contact",
-      "parent": "what_should_i_do"
+      "slug": "parents-in-contact"
     },
     "parental_non_cooperation": {
       "enabled": true,
       "title": "If the Other Parent Refuses Mediation",
-      "slug": "what-should-i-do/parental-non-cooperation",
-      "parent": "what_should_i_do"
+      "slug": "parental-non-cooperation"
     },
     "conflict_with_the_other_parent": {
       "enabled": true,
       "title": "Conflict with the Other Parent",
-      "slug": "conflict-with-the-other-parent",
-      "parent": null
+      "slug": "conflict-with-the-other-parent"
     },
     "criminal_consequences": {
       "enabled": true,
       "title": "Criminal Consequences of International Child Abduction",
-      "slug": "conflict-with-the-other-parent/criminal-consequences",
-      "parent": "going_abroad_with_my_child"
+      "slug": "criminal-consequences"
     },
     "why_remain_in_poland": {
       "enabled": true,
       "title": "Why Should the Child and Each Parent Remain within Poland?",
-      "slug": "conflict-with-the-other-parent/why-remain-in-poland",
-      "parent": "conflict_with_the_other_parent"
+      "slug": "why-remain-in-poland"
     },
     "going_abroad_with_my_child": {
       "enabled": true,
       "title": "Going Abroad with My Child",
-      "slug": "going-abroad-with-my-child",
-      "parent": null
+      "slug": "going-abroad-with-my-child"
     },
     "is_it_possible": {
       "enabled": true,
       "title": "Is It Possible?",
-      "slug": "going-abroad-with-my-child/is-it-possible",
-      "parent": "going_abroad_with_my_child"
+      "slug": "is-it-possible"
     },
     "filial_relationship": {
       "enabled": true,
       "title": "The Filial Relationship and Parental Authority",
-      "slug": "going-abroad-with-my-child/filial-relationship",
-      "parent": "conflict_with_the_other_parent"
+      "slug": "filial-relationship"
     },
     "the_hague_convention": {
       "enabled": true,
       "title": "The Hague Convention",
-      "slug": "the-hague-convention",
-      "parent": null
+      "slug": "the-hague-convention"
     }
   },
   "shared_blocks": {

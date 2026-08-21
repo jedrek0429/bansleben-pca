@@ -1,7 +1,6 @@
 {
   "lang": "fr",
   "site_name": "Enlèvement Parental Pologne",
-  "domain": "https://enlevementparentalpologne.pl",
   "menu": {
     "introduction": "ACCUEIL",
     "whom_to_contact": "QUI CONTACTER ?",
@@ -39,170 +38,127 @@
     "introduction": {
       "enabled": true,
       "title": "Accueil",
-      "slug": "",
-      "parent": null
+      "slug": ""
     },
     "whom_to_contact": {
       "enabled": true,
       "title": "Qui contacter ?",
-      "slug": "qui-contacter",
-      "parent": null
+      "slug": "qui-contacter"
     },
     "jurisprudence": {
       "enabled": true,
       "title": "Jurisprudence",
-      "slug": "jurisprudence",
-      "parent": null
+      "slug": "jurisprudence"
     },
     "contact": {
       "enabled": true,
       "title": "Formulaire",
-      "slug": "formulaire",
-      "parent": null
+      "slug": "formulaire"
     },
     "who_we_are": {
       "enabled": true,
       "title": "Qui sommes-nous ?",
-      "slug": "qui-sommes-nous",
-      "parent": null
+      "slug": "qui-sommes-nous"
     },
     "privacy_policy": {
       "enabled": true,
       "title": "Politique de confidentialité",
-      "slug": "politique-de-confidentialite",
-      "parent": null
+      "slug": "politique-de-confidentialite"
     },
     "parental_child_abduction": {
       "enabled": true,
       "title": "Enlèvement parental",
-      "slug": "enlevement-parental",
-      "parent": null
+      "slug": "enlevement-parental"
     },
     "within_the_law": {
       "enabled": true,
       "title": "Que dit la loi ?",
-      "slug": "que-dit-la-loi",
-      "parent": null
+      "slug": "que-dit-la-loi"
     },
     "international_laws": {
       "enabled": true,
       "title": "Législation internationale",
-      "slug": "que-dit-la-loi/legislation-internationale",
-      "parent": "within_the_law"
+      "slug": "legislation-internationale"
     },
     "individual_national_laws": {
       "enabled": true,
       "title": "Législations nationales",
-      "slug": "que-dit-la-loi/legislations-nationales",
-      "parent": "within_the_law"
-    },
-    "national_law_uk": {
-      "enabled": false,
-      "title": "",
-      "slug": "",
-      "parent": "individual_national_laws"
-    },
-    "national_law_us": {
-      "enabled": false,
-      "title": "",
-      "slug": "",
-      "parent": "individual_national_laws"
+      "slug": "legislations-nationales"
     },
     "national_law_france": {
       "enabled": true,
       "title": "Française",
-      "slug": "que-dit-la-loi/legislations-nationales/francaise",
-      "parent": "individual_national_laws"
+      "slug": "francaise"
     },
     "national_law_belgium": {
       "enabled": true,
       "title": "Belge",
-      "slug": "que-dit-la-loi/legislations-nationales/belge",
-      "parent": "individual_national_laws"
+      "slug": "belge"
     },
     "national_law_canada": {
       "enabled": true,
       "title": "Canadienne",
-      "slug": "que-dit-la-loi/legislations-nationales/canadienne",
-      "parent": "individual_national_laws"
-    },
-    "national_law_croatia": {
-      "enabled": false,
-      "title": "",
-      "slug": "",
-      "parent": "individual_national_laws"
+      "slug": "canadienne"
     },
     "national_law_poland": {
       "enabled": true,
       "title": "Polonaise",
-      "slug": "que-dit-la-loi/legislations-nationales/polonaise",
-      "parent": "individual_national_laws"
+      "slug": "polonaise"
     },
     "what_should_i_do": {
       "enabled": true,
       "title": "Que puis-je faire ?",
-      "slug": "que-puis-je-faire",
-      "parent": null
+      "slug": "que-puis-je-faire"
     },
     "steps_to_follow": {
       "enabled": true,
       "title": "Étapes à suivre",
-      "slug": "que-puis-je-faire/etapes-a-suivre",
-      "parent": "what_should_i_do"
+      "slug": "etapes-a-suivre"
     },
     "parents_in_contact": {
       "enabled": true,
       "title": "Si vous êtes en contact avec l’autre parent et que vous savez qu’il est en Pologne.",
-      "slug": "que-puis-je-faire/parents-en-contact",
-      "parent": "what_should_i_do"
+      "slug": "parents-en-contact"
     },
     "parental_non_cooperation": {
       "enabled": true,
       "title": "Si l’autre parent refuse la médiation",
-      "slug": "que-puis-je-faire/non-cooperation-parentale",
-      "parent": "what_should_i_do"
+      "slug": "non-cooperation-parentale"
     },
     "conflict_with_the_other_parent": {
       "enabled": true,
       "title": "Conflit avec l’autre parent",
-      "slug": "conflit-avec-lautre-parent",
-      "parent": null
+      "slug": "conflit-avec-lautre-parent"
     },
     "criminal_consequences": {
       "enabled": true,
       "title": "Conséquences pénales de l’enlèvement international d’enfant",
-      "slug": "conflit-avec-lautre-parent/consequences-penales",
-      "parent": "going_abroad_with_my_child"
+      "slug": "consequences-penales"
     },
     "why_remain_in_poland": {
       "enabled": true,
       "title": "Pourquoi votre enfant et son deuxième parent pourrait rester en Pologne ?",
-      "slug": "conflit-avec-lautre-parent/pourquoi-rester-en-pologne",
-      "parent": "conflict_with_the_other_parent"
+      "slug": "pourquoi-rester-en-pologne"
     },
     "going_abroad_with_my_child": {
       "enabled": true,
       "title": "Je veux partir à l’étranger avec mon enfant",
-      "slug": "je-veux-partir-a-letranger-avec-mon-enfant",
-      "parent": null
+      "slug": "je-veux-partir-a-letranger-avec-mon-enfant"
     },
     "is_it_possible": {
       "enabled": true,
       "title": "Est-ce possible ?",
-      "slug": "je-veux-partir-a-letranger-avec-mon-enfant/est-ce-possible",
-      "parent": "going_abroad_with_my_child"
+      "slug": "est-ce-possible"
     },
     "filial_relationship": {
       "enabled": true,
       "title": "Rappel sur la filiation et l’autorité parentale.",
-      "slug": "je-veux-partir-a-letranger-avec-mon-enfant/la-filiation-et-lautorite-parentale",
-      "parent": "conflict_with_the_other_parent"
+      "slug": "la-filiation-et-lautorite-parentale"
     },
     "the_hague_convention": {
       "enabled": true,
       "title": "Convention de La Haye",
-      "slug": "mieux-connaitre-la-convention-de-la-haye",
-      "parent": null
+      "slug": "mieux-connaitre-la-convention-de-la-haye"
     }
   },
   "shared_blocks": {
