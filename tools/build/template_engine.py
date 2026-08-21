@@ -102,11 +102,7 @@ def render_text(ctx, text: str, lang: str, locales, render_state=None, templates
         "main_menu": lambda: render_main_menu(ctx, locales, lang, page.get("key", "introduction")),
         "mobile_menu": lambda: render_mobile_menu(ctx, locales, lang, page.get("key", "introduction")),
         "privacy_policy_url": lambda: page_url(ctx, locales, lang, "privacy_policy"),
-        "common.select_page": lambda: {
-            "en": "Select page",
-            "fr": "Sélectionner une page",
-            "hr": "Odaberite stranicu",
-        }.get(lang, "Select page"),
+        "common.select_page": lambda: value_from_locales(lang, "common.select_page", locales) or "Select page",
     }
 
     context_prefixes = {
