@@ -32,7 +32,7 @@ def render_templates(ctx: BuildContext, locales) -> None:
 
 
 def make_context(root, *, out=None, prefix=None, preview: bool = False, langs=None) -> BuildContext:
-    return BuildContext.from_root(root, dist=out, prefix=prefix, lang_in_url=preview, langs=langs)
+    return BuildContext.from_root(root, dist=out, url_prefix=prefix, lang_in_url=preview, langs=langs)
 
 
 def inspect(root, *, out=None, prefix=None, preview: bool = False, langs=None) -> BuildContext:
