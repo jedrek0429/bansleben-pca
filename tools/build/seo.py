@@ -46,12 +46,7 @@ def locale_seo(locales, lang: str) -> dict:
 
 def site_base_url(ctx, seo_config: dict, lang: str, locales) -> str:
     if not ctx.lang_in_url:
-        url = site_metadata(ctx, lang).get("url")
-        if not url:
-            url = value_from_locales(lang, "domain", locales)
-        if not url:
-            url = (seo_config.get("site_urls") or {}).get(lang)
-        return str(url or "").rstrip("/")
+        return str(site_metadata(ctx, lang).get("url") or "").rstrip("/")
     url = seo_config.get("preview_site_url")
     return str(url or "").rstrip("/")
 
@@ -75,44 +70,19 @@ def seo_description(seo_config: dict, locales, lang: str, key: str) -> str:
     value = descriptions.get(key) if isinstance(descriptions, dict) else None
     if value:
         return str(value)
-    default = owned.get("default_description")
-    if default:
-        return str(default)
-
-    legacy_descriptions = seo_config.get("descriptions") or {}
-    page_descriptions = legacy_descriptions.get(key) or {}
-    value = page_descriptions.get(lang)
-    if value:
-        return str(value)
-    defaults = seo_config.get("default_descriptions") or {}
-    return str(defaults.get(lang) or defaults.get("en") or "")
+    return str(owned.get("default_description") or "")
 
 
 def page_og_locale(ctx, seo_config: dict, locales, lang: str) -> str:
-    value = site_metadata(ctx, lang).get("og_locale")
-    if not value:
-        value = locale_seo(locales, lang).get("og_locale")
-    if not value:
-        value = (seo_config.get("og_locale") or {}).get(lang)
-    return str(value or lang)
+    return str(site_metadata(ctx, lang).get("og_locale") or lang)
 
 
 def page_hreflang(ctx, seo_config: dict, locales, lang: str) -> str:
-    value = site_metadata(ctx, lang).get("hreflang")
-    if not value:
-        value = locale_seo(locales, lang).get("hreflang")
-    if not value:
-        value = (seo_config.get("hreflang") or {}).get(lang)
-    return str(value or lang)
+    return str(site_metadata(ctx, lang).get("hreflang") or lang)
 
 
 def site_social_image(ctx, seo_config: dict, locales, lang: str) -> str:
-    value = site_metadata(ctx, lang).get("social_image")
-    if not value:
-        value = locale_seo(locales, lang).get("social_image")
-    if not value:
-        value = (seo_config.get("social_images") or {}).get(lang)
-    return str(value or "")
+    return str(site_metadata(ctx, lang).get("social_image") or "")
 
 
 def json_script(data: dict) -> str:
@@ -154,12 +124,12 @@ def schema_page_type(key: str) -> str:
     }.get(key, "WebPage")
 
 
-def organization_url(schema_cfg: dict, site: str, lang: str) -> str:
+def organization_url(ctx, schema_cfg: dict, site: str, lang: str) -> str:
     url = schema_cfg.get("url")
     if not url:
         return site
-    lang_suffixes = schema_cfg.get("url_langs") or {}
-    return url + str(lang_suffixes.get(lang, lang))
+    suffix = site_metadata(ctx, lang).get("organization_url_language") or lang
+    return url + str(suffix)
 
 
 def organization_address(schema_cfg: dict) -> dict | None:
@@ -181,7 +151,7 @@ def render_schema(ctx, seo_config: dict, locales, lang: str, key: str, title: st
     site_name = value_from_locales(lang, "site_name", locales) or title
     logo_src = value_from_locales(lang, "brand.logo_src", locales) or "/assets/favicon.svg"
     schema_cfg = seo_config.get("schema") or {}
-    url = organization_url(schema_cfg, site_base_url(ctx, seo_config, lang, locales), lang)
+    url = organization_url(ctx, schema_cfg, site_base_url(ctx, seo_config, lang, locales), lang)
 
     organization = {
         "@context": "https://schema.org",
