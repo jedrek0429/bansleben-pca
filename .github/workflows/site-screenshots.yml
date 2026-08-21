@@ -40,6 +40,15 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
 
+      - name: Validate deployed preview prefix
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number || 'ci' }}
+        run: |
+          python tools/build.py preview \
+            --root . \
+            --to ../site-prefixed-preview \
+            --prefix "pr-${PR_NUMBER}"
+
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
