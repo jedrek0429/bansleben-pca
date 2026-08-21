@@ -26,7 +26,11 @@ def add_root_arg(command: argparse.ArgumentParser) -> None:
 
 
 def add_langs_arg(command: argparse.ArgumentParser) -> None:
-    command.add_argument("--langs", default=None, help="comma-separated languages, e.g. en,fr,hr")
+    command.add_argument(
+        "--langs",
+        default=None,
+        help="comma-separated languages; when omitted, discover languages from sites/*.json",
+    )
 
 
 def build_parser() -> argparse.ArgumentParser:
