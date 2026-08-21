@@ -31,9 +31,10 @@ Hardening must preserve the deployment behaviour visible to users and maintainer
 - a source/build/staging failure cannot modify the currently served production tree;
 - an activation failure restores the previous production content;
 - a production job deploys the exact commit SHA stored in that queued job, and that SHA must be contained in the freshly fetched `origin/main`;
-- interrupted `.running` queue jobs are returned to the pending queue on the next worker run.
+- interrupted `.running` queue jobs are returned to the pending queue on the next worker run;
+- stale publish stage/backup directories left by a hard-killed deployment are removed before a later publish once they are at least 24 hours old.
 
-These invariants are covered by `tools/test_production_language_webroots.py`, `tools/test_production_deployment_contract.py`, `tools/test_deployment_hardening.py`, and `tools/test_preview_social_metadata.py` in the `Production webroot contract` workflow.
+These invariants are covered by `tools/test_production_language_webroots.py`, `tools/test_production_deployment_contract.py`, `tools/test_deployment_hardening.py`, and `tools/test_preview_social_metadata.py` in the `PCA CI / Production contract` job.
 
 ## What triggers deploys
 
@@ -147,6 +148,8 @@ git worktree remove --force .deploy-worktrees/production
 
 The queued SHA is authoritative, but it must also be contained in the freshly fetched `origin/main`. A malformed or tampered queue job that points to some other commit already present in the repository fails before a production worktree is created. A later push arriving while an older valid job waits in the queue therefore cannot silently change which revision that older job deploys.
 
+The canonical deployment repository is expected to retain normal Git history rather than be maintained as a shallow clone. `git cat-file` and the ancestry check require the queued commit to exist locally after fetching `main`; converting the deployment checkout to a shallow clone would therefore require revisiting this contract.
+
 The worker does not upgrade pip during a deployment. It records the SHA-256 digest of the installed `requirements.txt` in `preview/.private/requirements.sha256`; unchanged dependency specifications reuse the existing server Python environment. If the requirements file changes, dependencies are installed before the builder runs and the stamp is updated only after installation succeeds.
 
 ### Transactional publishing
@@ -155,6 +158,7 @@ The builder validates and generates the complete distribution before publication
 
 ```text
 validated dist
+  -> remove stale transaction directories from old interrupted publishes
   -> copy complete dist into a temporary staging directory
   -> move current replaceable production items into a temporary backup
   -> move staged items into public_html
@@ -162,13 +166,17 @@ validated dist
   -> remove temporary stage/backup directories
 ```
 
-Nothing in `public_html` is removed while the staging copy is being prepared. Preserved roots are never moved during activation:
+Nothing in `public_html` is removed while the staging copy is being prepared. A normal exception during activation runs rollback immediately. A hard process termination cannot execute `finally`, so a later publish removes matching `.pca-stage-*` and `.pca-backup-*` directories older than 24 hours before starting a new transaction.
+
+Preserved roots are never moved during activation:
 
 - `preview/`
 - `ochronapacjenta.pl/`
 - `autoinstalator/`
 
-This deliberately keeps the existing webroot and hosting model. It does not introduce release symlinks, change domain document roots, or replace the webhook deployment architecture.
+Activation intentionally keeps the existing webroot and hosting model rather than swapping a release symlink or renaming the entire document root. As a consequence, there is a brief successful-activation window in which a concurrent HTTP request can observe an item between the old item being moved out and its replacement being moved in. The transactional design protects failure recovery, while fully atomic visibility to concurrent readers would require changing the hosting model.
+
+This deliberately does not introduce release symlinks, change domain document roots, or replace the webhook deployment architecture.
 
 The worker creates a GitHub check run for the production deploy and marks it success or failure when the job finishes.
 
@@ -205,9 +213,11 @@ The worker creates a GitHub check run for the preview deploy and updates a reusa
 
 ## Contact runtime
 
-Every generated production language root contains the same contact handler. The handler accepts all configured production languages currently shipped by PCA (`en`, `fr`, `hr`, and `pl`) and sends the automatic confirmation in the submitted language. Unknown language codes fall back to English.
+Every generated production language root contains the same generic contact handler and a locale-owned `.private/pca-contact-locale.json` containing that language's confirmation subject and body. The submitted `lang` field no longer selects confirmation copy; the deployed language root already determines the confirmation locale.
 
-SMTP configuration remains private and is copied into the generated language webroots by the existing build/publish flow.
+The `lang` field is retained only as diagnostic metadata in the internal notification and logs. It is shape-validated as a language tag such as `pl` or `en-US`; malformed values are recorded as `unknown`. There is intentionally no hard-coded language allowlist in PHP, so adding a new locale remains a data-only translation change.
+
+SMTP configuration remains private in `pca-contact-config.json` and is copied into the generated language webroots by the existing build/publish flow. Translation content and SMTP credentials remain separate runtime files.
 
 ## Recreate everything on a new server
 
