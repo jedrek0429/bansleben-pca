@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import html
 
-from assets import primary_variant_url, responsive_image_srcset
+from image_pipeline import primary_image_url, responsive_image_srcset
 from localization import value_from_locales
 from template_engine import render_text
 from urls import asset_url, is_enabled, page_config, page_slug, page_title, page_url
@@ -49,11 +49,11 @@ def render_card(ctx, locales, lang: str, key: str, col_index: int, cols: int, ca
     is_leading_card = card_index == 0
     width_class = {1: "pca-card--full", 2: "pca-card--half", 3: "pca-card--third"}.get(cols, "pca-card--third")
     image_info = ctx.image_info(str(img_src_value))
-    image_src = primary_variant_url(ctx, str(img_src_value), ".webp") if img_src_value else ""
+    image_src = primary_image_url(ctx, str(img_src_value)) if img_src_value else ""
     src = html.escape(str(image_src), quote=True)
-    responsive_srcset = responsive_image_srcset(ctx, str(img_src_value), ".webp") if img_src_value else ""
+    responsive_srcset_value = responsive_image_srcset(ctx, str(img_src_value)) if img_src_value else ""
     sizes = card_image_sizes(cols)
-    srcset = f'srcset="{html.escape(responsive_srcset, quote=True)}" sizes="{html.escape(sizes, quote=True)}"' if responsive_srcset else ""
+    srcset = f'srcset="{html.escape(responsive_srcset_value, quote=True)}" sizes="{html.escape(sizes, quote=True)}"' if responsive_srcset_value else ""
     render_state = {"card": {"width_class": width_class, "last": "", "image_src": src, "fallback_src": html.escape(str(fallback_src), quote=True), "image_alt": html.escape(str(img_alt), quote=True), "image_title": html.escape(str(img_title)), "image_width": html.escape(str(image_info.get("width", "")), quote=True), "image_height": html.escape(str(image_info.get("height", "")), quote=True), "srcset": srcset, "fetchpriority": "high" if is_leading_card else "auto", "loading": "eager" if is_leading_card else "lazy", "title": html.escape(str(title)), "href": href, "read_more": html.escape(str(read_more))}}
     return render_text(ctx, templates["partials"]["card"], lang, locales, render_state, templates)
 
