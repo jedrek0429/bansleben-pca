@@ -6,7 +6,7 @@ from pathlib import Path
 
 from common import CLR_GREEN, print_labeled
 from builder import site
-from context import normalize_url_prefix, parse_langs
+from context import BuildContext, normalize_url_prefix, parse_langs
 from hyperlinks import format_content
 from publisher import publish
 from validation import validate as check
@@ -66,11 +66,20 @@ def write_root_htaccess(dest: Path) -> None:
     )
 
 
+def resolved_languages(root: Path, langs) -> list[str]:
+    requested = parse_langs(langs)
+    if requested:
+        return requested
+    ctx = BuildContext.from_root(root)
+    ctx.load_configs()
+    return list(ctx.langs)
+
+
 def deploy(root, *, to=None, langs=None, clean_content: bool = True) -> None:
     root = Path(root).expanduser().resolve()
     dist = root.parent / "site-dist"
     dest = Path(to).expanduser().resolve() if to else root.parent / "public_html"
-    lang_list = parse_langs(langs) or ["en", "fr", "hr"]
+    lang_list = resolved_languages(root, langs)
     check(root, autofix_prompt=False)
     if clean_content:
         format_content(root)
@@ -87,7 +96,7 @@ def preview(root, *, prefix: str, to=None, langs=None, clean_content: bool = Tru
     prefix = normalize_url_prefix(prefix)
     dist = root.parent / "site-dist"
     dest = Path(to).expanduser().resolve() if to else root.parent / "public_html" / "preview" / prefix.strip("/")
-    lang_list = parse_langs(langs) or ["en", "fr", "hr"]
+    lang_list = resolved_languages(root, langs)
     check(root, autofix_prompt=False)
     if clean_content:
         format_content(root)
