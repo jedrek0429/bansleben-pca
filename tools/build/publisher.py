@@ -4,12 +4,14 @@ from __future__ import annotations
 
 import shutil
 import tempfile
+import time
 from pathlib import Path
 
 from common import CLR_GREEN, CLR_RED, CLR_WHITE, display_path, print_group, print_labeled, print_section
 from context import BuildContext
 
 DEFAULT_PRESERVED_ROOT_ITEMS = ["preview", "ochronapacjenta.pl", "autoinstalator"]
+STALE_PUBLISH_TEMP_MAX_AGE_SECONDS = 24 * 60 * 60
 
 
 def assert_safe_paths(dist: Path, dest: Path) -> None:
@@ -110,6 +112,31 @@ def copy_dist_contents(dist: Path, dest: Path) -> None:
             shutil.copy2(item, target)
 
 
+def cleanup_stale_publish_temps(
+    dest: Path,
+    *,
+    max_age_seconds: int = STALE_PUBLISH_TEMP_MAX_AGE_SECONDS,
+    now: float | None = None,
+) -> int:
+    parent = dest.parent
+    if not parent.is_dir():
+        return 0
+
+    cutoff = (time.time() if now is None else now) - max_age_seconds
+    removed = 0
+    for kind in ("stage", "backup"):
+        pattern = f".{dest.name}.pca-{kind}-*"
+        for path in parent.glob(pattern):
+            try:
+                if path.stat().st_mtime >= cutoff:
+                    continue
+            except FileNotFoundError:
+                continue
+            remove_path(path)
+            removed += 1
+    return removed
+
+
 def stage_publish(dist: Path, dest: Path) -> Path:
     dest.parent.mkdir(parents=True, exist_ok=True)
     stage = Path(tempfile.mkdtemp(prefix=f".{dest.name}.pca-stage-", dir=dest.parent))
@@ -171,6 +198,10 @@ def publish(dist, dest, *, root=None, langs=None, preserve_root_item=None, requi
 
     assert_safe_paths(dist, dest)
     assert_dist_ok(dist, root, langs, require_private_config=require_private_config)
+
+    # A hard-killed previous publish cannot run its finally block. Remove only
+    # transaction directories old enough that they cannot belong to this run.
+    cleanup_stale_publish_temps(dest)
 
     # Build the complete replacement tree before touching the live destination.
     # Activation uses same-filesystem renames and restores the previous tree if
