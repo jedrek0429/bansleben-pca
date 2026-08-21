@@ -21,8 +21,12 @@ def _load_locales(root: Path) -> dict[str, dict]:
 
 
 def _extra_pages(site: dict) -> list[dict]:
-    pages = site.get("pages", []) if isinstance(site, dict) else []
-    return [page for page in pages if isinstance(page, dict)]
+    extra = site.get("extra_pages", []) if isinstance(site, dict) else []
+    if isinstance(extra, dict):
+        return [{"key": key, **value} for key, value in extra.items() if isinstance(value, dict)]
+    if isinstance(extra, list):
+        return [page for page in extra if isinstance(page, dict)]
+    return []
 
 
 def _check_graph(pages: list[dict], label: str, errors: list[str]) -> dict[str, dict]:
