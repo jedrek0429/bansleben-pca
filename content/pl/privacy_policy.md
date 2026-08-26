@@ -63,6 +63,8 @@ ul. Stawki 2
 Telefon: 22 531 03 00  
 Faks: 22 531 03 01
 
-## Pliki cookies
+## Pliki cookies i pamięć przeglądarki
 
-Serwis wykorzystuje pliki cookies. Korzystając z serwisu, użytkownik wyraża zgodę na ich używanie.
+Serwis nie wykorzystuje plików cookies ani pamięci przeglądarki do analityki, reklamy, profilowania lub śledzenia użytkowników. Serwis nie wymaga zatem zgody na pliki cookies w celu przeglądania jego treści.
+
+Jeżeli w przyszłości zostaną wprowadzone opcjonalne technologie wymagające zgody użytkownika, nie będą one uruchamiane przed uzyskaniem wyraźnej zgody.
