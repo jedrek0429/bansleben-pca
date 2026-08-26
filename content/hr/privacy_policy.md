@@ -69,6 +69,8 @@ ul. Stawki 2
 Tel: 22 531 03 00
 Fax: 22 531 03 01
 
-## Kolačići
+## Kolačići i pohrana u pregledniku
 
-Ova web stranica koristi kolačiće. Korištenjem ove web stranice pristajete na njihovu uporabu.
+Ova web stranica ne koristi kolačiće ni pohranu u pregledniku za analitiku, oglašavanje, profiliranje ili praćenje korisnika. Stoga za pregledavanje stranice nije potrebna privola za kolačiće.
+
+Ako se u budućnosti uvedu neobavezne tehnologije koje zahtijevaju privolu korisnika, neće se aktivirati prije nego što korisnik da izričitu privolu.
