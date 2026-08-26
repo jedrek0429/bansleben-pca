@@ -71,6 +71,4 @@ Fax : 22 531 03 01
 
 ## Cookies et stockage du navigateur
 
-Ce site n’utilise ni cookies ni stockage du navigateur à des fins d’analyse, de publicité, de profilage ou de suivi des utilisateurs. Aucun consentement aux cookies n’est donc nécessaire pour consulter le site.
-
-Si des technologies facultatives nécessitant le consentement de l’utilisateur sont introduites à l’avenir, elles ne seront pas activées avant l’obtention d’un consentement explicite.
+Ce site n’utilise ni cookies ni stockage du navigateur à des fins d’analyse, de publicité, de profilage ou de suivi des utilisateurs.
