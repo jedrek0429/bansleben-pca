@@ -71,6 +71,4 @@ Fax: 22 531 03 01
 
 ## Cookies and browser storage
 
-This website does not use cookies or browser storage for analytics, advertising, profiling, or user tracking. No cookie consent is therefore required to browse the website.
-
-If optional technologies requiring the user's consent are introduced in the future, they will not be activated before explicit consent has been obtained.
+This website does not use cookies or browser storage for analytics, advertising, profiling, or user tracking.
