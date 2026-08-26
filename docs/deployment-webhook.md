@@ -2,7 +2,7 @@
 
 The site uses pull-based deployment.
 
-GitHub sends webhook events to the hosting server. The webhook endpoint writes small JSON jobs into a private queue. A cron worker on the server reads the queue, fetches the right code, runs the builder app, and reports the result back to GitHub.
+GitHub sends webhook events to the hosting server. The webhook endpoint writes small JSON jobs into a private queue. A cron worker on the server reads the queue, fetches the exact requested code, runs the builder app, and reports the result back to GitHub.
 
 ## Flow
 
@@ -11,11 +11,30 @@ GitHub App webhook
   -> https://preview.polandchildabduction.pl/github-webhook.php
   -> public_html/preview/.private/deploy-queue/*.json
   -> cron runs tools/webhook_deploy_worker.py
+  -> isolated Git worktree at the queued revision
   -> python tools/build.py deploy or python tools/build.py preview
+  -> staged/transactional publish
   -> GitHub check run and PR comment update
 ```
 
 The webhook endpoint returns quickly. The slow work happens later in the cron worker.
+
+## Deployment compatibility contract
+
+Hardening must preserve the deployment behaviour visible to users and maintainers:
+
+- a push to `main` still queues and publishes production automatically;
+- PR previews still use `https://preview.polandchildabduction.pl/pr-<number>/`;
+- production domains still point directly at their existing language webroots;
+- the webhook, queue and GitHub check-run flow stays the same;
+- `preview/`, `ochronapacjenta.pl/`, and `autoinstalator/` survive production publishes unchanged;
+- a source/build/staging failure cannot modify the currently served production tree;
+- an activation failure restores the previous production content;
+- a production job deploys the exact commit SHA stored in that queued job, and that SHA must be contained in the freshly fetched `origin/main`;
+- interrupted `.running` queue jobs are returned to the pending queue on the next worker run;
+- stale publish stage/backup directories left by a hard-killed deployment are removed before a later publish once they are at least 24 hours old.
+
+These invariants are covered by `tools/test_production_language_webroots.py`, `tools/test_production_deployment_contract.py`, `tools/test_deployment_hardening.py`, and `tools/test_preview_social_metadata.py` in the `PCA CI / Production contract` job.
 
 ## What triggers deploys
 
@@ -31,20 +50,22 @@ The webhook endpoint returns quickly. The slow work happens later in the cron wo
 Default server layout:
 
 ```text
-site-src/                                  # repository checkout
-public_html/                              # production web root
+site-src/                                  # canonical repository checkout
+site-src/.deploy-worktrees/                # temporary detached deploy worktrees
+public_html/                               # production web root
 public_html/preview/github-webhook.php    # webhook endpoint
 public_html/preview/pr-<number>/          # PR previews
-public_html/preview/.private/             # secrets, queue, logs, locks
+public_html/preview/.private/             # secrets, queue, logs, locks, dependency stamp
 ```
 
-The private directory contains:
+The private directory contains runtime state such as:
 
 ```text
 pca-deploy-config.json
 github-app-key.pem
 deploy-queue/
 deploy-logs/
+requirements.sha256
 ```
 
 Do not commit anything from `.private`.
@@ -109,25 +130,53 @@ Example:
 * * * * * cd /home/platne/serwer88382/site-src && tools/.venv/bin/python tools/webhook_deploy_worker.py >> /home/platne/serwer88382/public_html/preview/.private/deploy-worker.log 2>&1
 ```
 
-The worker uses a lock file so overlapping cron runs should not process the same queue twice.
+The worker uses a lock file so overlapping cron runs cannot process the same queue concurrently. At the start of a locked run it recovers any `*.running` job left behind by an interrupted worker and makes that job pending again. Reprocessing is intentionally safe because builds and publishes are idempotent for a given revision.
 
 ## Production behavior
 
-For a push to `main`, the worker runs:
+For a push to `main`, the webhook records the push commit SHA in the production job. The worker leaves the canonical `site-src` checkout alone and uses it only as the Git repository from which an isolated detached worktree is created:
 
 ```sh
 git fetch origin main
-git checkout main
-git reset --hard origin/main
-python -m pip install -r requirements.txt
-python tools/build.py deploy --root . --to ../public_html
+git cat-file -e <queued-sha>^{commit}
+git merge-base --is-ancestor <queued-sha> origin/main
+git worktree add --force --detach .deploy-worktrees/production <queued-sha>
+python -m pip install -r requirements.txt   # only when requirements.txt changed
+python tools/build.py deploy --root .deploy-worktrees/production --to ../public_html
+git worktree remove --force .deploy-worktrees/production
 ```
 
-Production publishes preserve root runtime state, including:
+The queued SHA is authoritative, but it must also be contained in the freshly fetched `origin/main`. A malformed or tampered queue job that points to some other commit already present in the repository fails before a production worktree is created. A later push arriving while an older valid job waits in the queue therefore cannot silently change which revision that older job deploys.
+
+The canonical deployment repository is expected to retain normal Git history rather than be maintained as a shallow clone. `git cat-file` and the ancestry check require the queued commit to exist locally after fetching `main`; converting the deployment checkout to a shallow clone would therefore require revisiting this contract.
+
+The worker does not upgrade pip during a deployment. It records the SHA-256 digest of the installed `requirements.txt` in `preview/.private/requirements.sha256`; unchanged dependency specifications reuse the existing server Python environment. If the requirements file changes, dependencies are installed before the builder runs and the stamp is updated only after installation succeeds.
+
+### Transactional publishing
+
+The builder validates and generates the complete distribution before publication. Publishing then follows this sequence on the same filesystem:
+
+```text
+validated dist
+  -> remove stale transaction directories from old interrupted publishes
+  -> copy complete dist into a temporary staging directory
+  -> move current replaceable production items into a temporary backup
+  -> move staged items into public_html
+  -> on any activation error: remove partial new items and restore the backup
+  -> remove temporary stage/backup directories
+```
+
+Nothing in `public_html` is removed while the staging copy is being prepared. A normal exception during activation runs rollback immediately. A hard process termination cannot execute `finally`, so a later publish removes matching `.pca-stage-*` and `.pca-backup-*` directories older than 24 hours before starting a new transaction.
+
+Preserved roots are never moved during activation:
 
 - `preview/`
-- `.private/`
-- `github-webhook.php`
+- `ochronapacjenta.pl/`
+- `autoinstalator/`
+
+Activation intentionally keeps the existing webroot and hosting model rather than swapping a release symlink or renaming the entire document root. As a consequence, there is a brief successful-activation window in which a concurrent HTTP request can observe an item between the old item being moved out and its replacement being moved in. The transactional design protects failure recovery, while fully atomic visibility to concurrent readers would require changing the hosting model.
+
+This deliberately does not introduce release symlinks, change domain document roots, or replace the webhook deployment architecture.
 
 The worker creates a GitHub check run for the production deploy and marks it success or failure when the job finishes.
 
@@ -139,7 +188,7 @@ For a PR preview, the worker creates a detached worktree and publishes to:
 public_html/preview/pr-<number>/
 ```
 
-The preview build command is:
+The preview build command remains:
 
 ```sh
 python tools/build.py preview \
@@ -161,6 +210,14 @@ https://preview.polandchildabduction.pl/pr-<number>/_deploy.log
 ```
 
 The worker creates a GitHub check run for the preview deploy and updates a reusable PR comment with the preview URL and deploy log link.
+
+## Contact runtime
+
+Every generated production language root contains the same generic contact handler and a locale-owned `.private/pca-contact-locale.json` containing that language's confirmation subject and body. The submitted `lang` field no longer selects confirmation copy; the deployed language root already determines the confirmation locale.
+
+The `lang` field is retained only as diagnostic metadata in the internal notification and logs. It is shape-validated as a language tag such as `pl` or `en-US`; malformed values are recorded as `unknown`. There is intentionally no hard-coded language allowlist in PHP, so adding a new locale remains a data-only translation change.
+
+SMTP configuration remains private in `pca-contact-config.json` and is copied into the generated language webroots by the existing build/publish flow. Translation content and SMTP credentials remain separate runtime files.
 
 ## Recreate everything on a new server
 

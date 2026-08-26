@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import hashlib
 import json
 import shutil
 import subprocess
@@ -307,44 +308,84 @@ def ack_preview_command(config, job, log=None):
             log.flush()
 
 
+def requirements_digest(requirements: Path) -> str:
+    return hashlib.sha256(requirements.read_bytes()).hexdigest()
+
+
 def install_requirements(config, root: Path, log) -> None:
     requirements = root / "requirements.txt"
-    if requirements.is_file():
-        py = python_bin(config)
-        run([py, "-m", "pip", "install", "--upgrade", "pip"], root, log)
-        run([py, "-m", "pip", "install", "-r", str(requirements)], root, log)
+    if not requirements.is_file():
+        return
+
+    digest = requirements_digest(requirements)
+    stamp = private_dir(config) / "requirements.sha256"
+    if stamp.is_file() and stamp.read_text(encoding="utf-8").strip() == digest:
+        log.write("\nPython dependencies unchanged; reusing installed environment.\n")
+        log.flush()
+        return
+
+    py = python_bin(config)
+    run([py, "-m", "pip", "install", "-r", str(requirements)], root, log)
+    stamp.parent.mkdir(parents=True, exist_ok=True)
+    temporary = stamp.with_suffix(".tmp")
+    temporary.write_text(digest + "\n", encoding="utf-8")
+    temporary.replace(stamp)
 
 
 def run_builder(config, root: Path, log, *args: str) -> None:
     run([python_bin(config), str(root / "tools" / "build.py"), *args], root, log)
 
 
-def deploy_production(config, job: dict[str, Any]) -> None:
+def remove_worktree(config, target: Path, log) -> None:
     root = site_src(config)
-    sha = str(job.get("sha") or "") or None
+    run(["git", "worktree", "remove", "--force", str(target)], root, log, check=False)
+    shutil.rmtree(target, ignore_errors=True)
+
+
+def prepare_production_worktree(config, sha: str, log) -> Path:
+    if not sha:
+        raise DeployError("Production job is missing the commit SHA.")
+
+    root = site_src(config)
+    target = worktree_dir(config) / "production"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    run(["git", "fetch", "origin", "main"], root, log)
+    if target.exists():
+        remove_worktree(config, target, log)
+    run(["git", "cat-file", "-e", f"{sha}^{{commit}}"], root, log)
+    run(["git", "merge-base", "--is-ancestor", sha, "origin/main"], root, log)
+    run(["git", "worktree", "add", "--force", "--detach", str(target), sha], root, log)
+    return target
+
+
+def deploy_production(config, job: dict[str, Any]) -> None:
+    sha = str(job.get("sha") or "").strip()
     short_sha = (sha or time.strftime("%Y%m%d-%H%M%S"))[:12]
     log_dir(config).mkdir(parents=True, exist_ok=True)
     log_path = log_dir(config) / f"production-{short_sha}.log"
     check = create_check(
         config,
         "PCA Production Deploy",
-        sha,
+        sha or None,
         production_url(config),
         "Production deploy started",
-        production_summary(config, sha, "started"),
+        production_summary(config, sha or None, "started"),
         f"production-{short_sha}",
     )
+    root: Path | None = None
     try:
         with log_path.open("w", encoding="utf-8") as log:
             log.write(f"Production deploy job: {json.dumps(job, ensure_ascii=False)}\n")
-            run(["git", "fetch", "origin", "main"], root, log)
-            run(["git", "checkout", "main"], root, log)
-            run(["git", "reset", "--hard", "origin/main"], root, log)
+            root = prepare_production_worktree(config, sha, log)
             install_requirements(config, root, log)
             run_builder(config, root, log, "deploy", "--root", str(root), "--to", str(public_html(config)))
     except Exception as exc:
-        finish_check(config, check, "failure", production_url(config), "Production deploy failed", production_summary(config, sha, "failed", exc))
+        finish_check(config, check, "failure", production_url(config), "Production deploy failed", production_summary(config, sha or None, "failed", exc))
         raise
+    finally:
+        if root is not None and log_path.exists():
+            with log_path.open("a", encoding="utf-8") as log:
+                remove_worktree(config, root, log)
     finish_check(config, check, "success", production_url(config), "Production deployed", production_summary(config, sha, "succeeded"))
 
 
@@ -354,8 +395,7 @@ def prepare_preview_worktree(config, pr_number: int, log) -> Path:
     target.parent.mkdir(parents=True, exist_ok=True)
     run(["git", "fetch", "origin", f"pull/{pr_number}/head"], root, log)
     if target.exists():
-        run(["git", "worktree", "remove", "--force", str(target)], root, log, check=False)
-        shutil.rmtree(target, ignore_errors=True)
+        remove_worktree(config, target, log)
     run(["git", "worktree", "add", "--force", "--detach", str(target), "FETCH_HEAD"], root, log)
     return target
 
@@ -427,9 +467,33 @@ def worker_lock(config):
         yield
 
 
+def recovered_job_path(running: Path) -> Path:
+    target = running.with_suffix(".json")
+    if not target.exists():
+        return target
+    index = 1
+    while True:
+        candidate = running.with_name(f"{running.stem}.recovered-{index}.json")
+        if not candidate.exists():
+            return candidate
+        index += 1
+
+
+def recover_interrupted_jobs(directory: Path) -> int:
+    recovered = 0
+    for running in sorted(directory.glob("*.running")):
+        running.rename(recovered_job_path(running))
+        recovered += 1
+    return recovered
+
+
 def process_queue(config, max_jobs: int) -> int:
     directory = queue_dir(config)
     directory.mkdir(parents=True, exist_ok=True)
+    recovered = recover_interrupted_jobs(directory)
+    if recovered:
+        print(f"Recovered {recovered} interrupted deploy job(s).")
+
     count = 0
     for path in sorted(directory.glob("*.json")):
         if count >= max_jobs:

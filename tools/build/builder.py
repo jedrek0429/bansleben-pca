@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import shutil
 
 from common import CLR_GREEN, CLR_WHITE, color, display_path, print_labeled, print_section
@@ -17,6 +18,23 @@ from template_engine import load_templates
 from urls import is_enabled
 
 
+def write_contact_runtime_locale(ctx: BuildContext, lang: str, lang_root) -> None:
+    source = ctx.root / "locales" / "contact" / f"{lang}.json"
+    if not source.is_file():
+        raise RuntimeError(f"Missing contact runtime locale: {source}")
+    data = json.loads(source.read_text(encoding="utf-8"))
+    required = ("confirmation_subject", "confirmation_body")
+    if not isinstance(data, dict) or any(not str(data.get(key, "")).strip() for key in required):
+        raise RuntimeError(f"Invalid contact runtime locale: {source}")
+    private_dir = lang_root / ".private"
+    private_dir.mkdir(parents=True, exist_ok=True)
+    (private_dir / "pca-contact-locale.json").write_text(
+        json.dumps(data, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    (private_dir / ".htaccess").write_text("Require all denied\n", encoding="utf-8")
+
+
 def render_templates(ctx: BuildContext, locales) -> None:
     templates = load_templates(ctx)
     for lang in ctx.langs:
@@ -27,6 +45,7 @@ def render_templates(ctx: BuildContext, locales) -> None:
         render_404(ctx, lang, locales, templates)
         copy_static(ctx, lang)
         lang_root = lang_output_dir(ctx, lang)
+        write_contact_runtime_locale(ctx, lang, lang_root)
         write_extra_seo_files(ctx, ctx.seo_config, locales, lang, lang_root)
         write_htaccess_files(ctx, ctx.seo_config, locales, lang, lang_root)
 

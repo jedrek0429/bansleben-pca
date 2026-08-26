@@ -104,6 +104,15 @@ def main() -> None:
             path.unlink()
         write_json(locale_dir / f"{LANG}.json", synthetic)
 
+        contact_locale_dir = locale_dir / "contact"
+        for path in contact_locale_dir.glob("*.json"):
+            path.unlink()
+        synthetic_contact = {
+            "confirmation_subject": "Synthetic confirmation",
+            "confirmation_body": "Hello {name},\n\nSynthetic confirmation body.\n",
+        }
+        write_json(contact_locale_dir / f"{LANG}.json", synthetic_contact)
+
         content_dir = root / "content" / LANG
         content_dir.mkdir(parents=True, exist_ok=True)
         shared_keys = set(synthetic["pages"])
@@ -170,6 +179,10 @@ def main() -> None:
             raise SystemExit("Synthetic hreflang was not sourced from sites/zz.json")
         if "Synthetic SEO description" not in rendered:
             raise SystemExit("Synthetic SEO descriptions were not sourced from locales/zz.json")
+
+        runtime_locale = output / LANG / ".private" / "pca-contact-locale.json"
+        if load_json(runtime_locale) != synthetic_contact:
+            raise SystemExit("Synthetic contact runtime was not generated from locales/contact/zz.json")
 
         preview_output = root.parent / "contract-preview"
         run(root, "preview", "--to", str(preview_output), "--prefix", "contract", "--no-format")
