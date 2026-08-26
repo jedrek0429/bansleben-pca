@@ -69,6 +69,6 @@ ul. Stawki 2
 Tél. : 22 531 03 00  
 Fax : 22 531 03 01
 
-## Cookies
+## Cookies et stockage du navigateur
 
-Ce site web utilise des cookies. En utilisant ce site web, vous acceptez leur utilisation.
+Ce site n’utilise ni cookies ni stockage du navigateur à des fins d’analyse, de publicité, de profilage ou de suivi des utilisateurs.
