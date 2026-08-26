@@ -65,6 +65,4 @@ Faks: 22 531 03 01
 
 ## Pliki cookies i pamięć przeglądarki
 
-Serwis nie wykorzystuje plików cookies ani pamięci przeglądarki do analityki, reklamy, profilowania lub śledzenia użytkowników. Serwis nie wymaga zatem zgody na pliki cookies w celu przeglądania jego treści.
-
-Jeżeli w przyszłości zostaną wprowadzone opcjonalne technologie wymagające zgody użytkownika, nie będą one uruchamiane przed uzyskaniem wyraźnej zgody.
+Serwis nie wykorzystuje plików cookies ani pamięci przeglądarki do analityki, reklamy, profilowania lub śledzenia użytkowników.
