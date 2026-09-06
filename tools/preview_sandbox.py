@@ -45,6 +45,12 @@ def _mount(source: Path, target: str, *, readonly: bool = False) -> str:
     return f"type=bind,src={source},dst={target}{mode}"
 
 
+def _identity_args(runtime: str) -> list[str]:
+    if Path(runtime).name == "podman":
+        return ["--userns=keep-id"]
+    return ["--user", f"{os.getuid()}:{os.getgid()}"]
+
+
 def _base_container_args(config: dict[str, Any], runtime: str, sandbox: Path) -> list[str]:
     return [
         runtime,
@@ -52,15 +58,14 @@ def _base_container_args(config: dict[str, Any], runtime: str, sandbox: Path) ->
         "--rm",
         "--read-only",
         "--cap-drop=ALL",
-        "--security-opt=no-new-privileges",
+        "--security-opt=no-new-privileges=true",
         "--pids-limit",
         _limit(config, "preview_pids_limit", "128"),
         "--memory",
         _limit(config, "preview_memory_limit", "512m"),
         "--cpus",
         _limit(config, "preview_cpu_limit", "1.0"),
-        "--user",
-        f"{os.getuid()}:{os.getgid()}",
+        *_identity_args(runtime),
         "--tmpfs",
         "/tmp:rw,nosuid,nodev,size=128m",
         "--env",
