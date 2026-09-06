@@ -286,6 +286,30 @@ def copy_assets_to(ctx, dst: Path) -> None:
             copy_path(item, assets_dst / item.name)
 
 
+def contact_config_source(root: Path) -> Path:
+    direct = root / "pca-contact-config.json"
+    if direct.is_file():
+        return direct
+
+    try:
+        completed = subprocess.run(
+            ["git", "rev-parse", "--git-common-dir"],
+            cwd=str(root),
+            check=True,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+        )
+    except (OSError, subprocess.CalledProcessError):
+        return direct
+
+    common_dir = Path(completed.stdout.strip())
+    if not common_dir.is_absolute():
+        common_dir = (root / common_dir).resolve()
+    canonical = common_dir.parent / "pca-contact-config.json"
+    return canonical if canonical.is_file() else direct
+
+
 def copy_static(ctx, lang: str) -> None:
     lang_root = ctx.dist / lang
     lang_root.mkdir(parents=True, exist_ok=True)
@@ -297,7 +321,7 @@ def copy_static(ctx, lang: str) -> None:
         if php_src.name == "pca-contact-config.php":
             continue
         copy_path(php_src, lang_root / php_src.name)
-    config_src = ctx.root / "pca-contact-config.json"
+    config_src = contact_config_source(ctx.root)
     private_dir = lang_root / ".private"
     if ctx.lang_in_url:
         private_dir = ctx.dist / ".private"
