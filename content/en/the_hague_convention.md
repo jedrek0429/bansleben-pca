@@ -1,3 +1,7 @@
+If a child has been wrongfully removed to or retained in Poland, the **Hague Convention of 25 October 1980** may provide a route to seek the child’s return, depending on the countries involved and the facts of the case. This page explains the Convention in the context of parental child abduction involving Poland.
+
+For the underlying definition, see [parental child abduction to or from Poland](/parental-child-abduction/). If you need the practical sequence of actions, see [what to do if your child is taken to Poland](/what-should-i-do/) and [steps after a child is taken to Poland](/what-should-i-do/steps-to-follow/).
+
 Understanding the usefulness of the Hague Convention
 
 **QUESTION:**
