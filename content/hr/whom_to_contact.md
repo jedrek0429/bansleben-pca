@@ -1,3 +1,5 @@
+Ova stranica okuplja kontaktne podatke koje stranica navodi za tijela i organizacije povezane s međunarodnim roditeljskim otmicama. Za praktični slijed pogledajte [korake koje treba poduzeti](/sto-mogu-uciniti/koraci-koje-treba-poduzeti/) i odjeljak o [Haškoj konvenciji](/haska-konvencija/).
+
 # Poljska
 
 ## Ministarstvo pravosuđa Republike Poljske
