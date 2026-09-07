@@ -49,10 +49,10 @@ def read_content(ctx, lang: str, key: str) -> str:
     markdown = resolve_images(markdown, ctx, lang)
     rendered = markdown_to_html(markdown, ctx.url_prefix)
 
-    # Markdown content uses site-root links. Preview builds may live below a URL
-    # prefix, so make those links follow the same output contract as menus/cards.
-    if ctx.url_prefix:
-        prefix = ctx.url_prefix.rstrip("/")
+    # Markdown content uses site-root links. In preview mode each language also
+    # has its own path segment, so resolve links through the full page prefix.
+    prefix = page_prefix(ctx, lang)
+    if prefix:
         rendered = re.sub(r'href="/(?!/)', f'href="{prefix}/', rendered)
     return rendered
 
