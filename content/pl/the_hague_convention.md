@@ -1,3 +1,7 @@
+Ta strona zawiera materiały serwisu dotyczące **Konwencji haskiej z 25 października 1980 r.** w kontekście uprowadzenia rodzicielskiego związanego z Polską.
+
+Powiązane materiały znajdziesz na stronach [uprowadzenie rodzicielskie](/uprowadzenie-rodzicielskie-dziecka/), [co mogę zrobić?](/co-moge-zrobic/) oraz [kroki do podjęcia](/co-moge-zrobic/kroki-do-podjecia/).
+
 # Jak może pomóc Konwencja haska?
 
 **Pytanie:** Jak Konwencja może mi pomóc, gdy moje dziecko znajduje się w Polsce? Co mogę zrobić?
