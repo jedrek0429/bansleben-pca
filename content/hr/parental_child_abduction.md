@@ -1,3 +1,7 @@
+Ako se vaša situacija odnosi na Poljsku, poveznice u nastavku vode do glavnih povezanih tema na ovoj stranici.
+
+Pogledajte [što možete učiniti](/sto-mogu-uciniti/), informacije o [Haškoj konvenciji](/haska-konvencija/), [što kaže zakon](/sto-kaze-zakon/) i [međunarodno pravo](/sto-kaze-zakon/medunarodno-pravo/).
+
 Roditeljska otmica Kada postanete roditelj, može vam se dogoditi da se morate suočiti sa situacijom koju nikada niste predvidjeli ili za koju niste mislili da biste jednoga dana mogli biti njezinom žrtvom: protupravnim odvođenjem ili zadržavanjem vašeg djeteta u stranoj državi, bilo od strane vas samih, bilo od strane drugog roditelja.
 
 Na ovoj stranici pronaći ćete informacije koje bi vam mogle biti potrebne ako želite otići živjeti u inozemstvo sa svojim djetetom, ili ako ste žrtva protupravnog odvođenja vašeg djeteta na strano područje ili protupravnog zadržavanja vašeg djeteta.

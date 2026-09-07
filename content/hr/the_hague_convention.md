@@ -1,3 +1,7 @@
+Ova stranica sadrži informacije o **Haškoj konvenciji od 25. listopada 1980.** u kontekstu roditeljske otmice povezane s Poljskom.
+
+Za povezane sadržaje pogledajte [roditeljsku otmicu djeteta](/roditeljska-otmica-djeteta/), [što možete učiniti](/sto-mogu-uciniti/) i [korake koje treba poduzeti](/sto-mogu-uciniti/koraci-koje-treba-poduzeti/).
+
 Razumijevanje korisnosti Haške konvencije
 
 **PITANJE:**

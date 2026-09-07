@@ -1,3 +1,7 @@
+If your situation involves Poland, use the links below to move between the main sections of this site.
+
+See [what to do after a child is taken to Poland](/what-should-i-do/), the page on the [Hague Convention](/the-hague-convention/), [child abduction law in Poland](/within-the-law/) and [international child abduction law](/within-the-law/international-laws/).
+
 When you become a parent, you may find yourself facing a situation you had never imagined, or one you never thought you might one day experience: the wrongful removal or wrongful retention of your child in a foreign country, whether by you or by the other parent.
 
 This site provides information you may need if you wish to move abroad with your child, or if you are the victim of the wrongful removal of your child to a foreign territory or the wrongful retention of your child.

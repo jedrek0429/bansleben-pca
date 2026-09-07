@@ -1,3 +1,7 @@
+Cette page rassemble les informations du site sur la **Convention de La Haye du 25 octobre 1980** dans le contexte de l’enlèvement parental impliquant la Pologne.
+
+Pour les contenus associés, consultez [l’enlèvement parental](/enlevement-parental/), [les démarches à entreprendre](/que-puis-je-faire/) et [les étapes à suivre](/que-puis-je-faire/etapes-a-suivre/).
+
 Comprendre l’utilité de la Convention de la Haye
 
 **QUESTION :**

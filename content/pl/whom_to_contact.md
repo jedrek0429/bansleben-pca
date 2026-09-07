@@ -1,3 +1,5 @@
+Ta strona zbiera dane kontaktowe przedstawione w serwisie dla organów i organizacji związanych z międzynarodowymi uprowadzeniami rodzicielskimi. Powiązane materiały znajdziesz na stronach [kroki do podjęcia](/co-moge-zrobic/kroki-do-podjecia/) oraz [Konwencja haska](/konwencja-haska/).
+
 # Europa
 
 W sytuacji bezpośredniego zagrożenia można zadzwonić pod europejski numer alarmowy 112. W wielu państwach działa również bezpłatny numer 116 000, przeznaczony dla rodzin dzieci zaginionych lub uprowadzonych.

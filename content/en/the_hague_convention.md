@@ -1,3 +1,7 @@
+This page contains the site’s information about the **Hague Convention of 25 October 1980** in the context of parental child abduction involving Poland.
+
+For related material, see [parental child abduction](/parental-child-abduction/), [what you can do](/what-should-i-do/) and [steps to follow](/what-should-i-do/steps-to-follow/).
+
 Understanding the usefulness of the Hague Convention
 
 **QUESTION:**
