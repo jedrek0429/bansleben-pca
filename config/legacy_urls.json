@@ -11,7 +11,7 @@
   ],
   "gone_patterns_by_lang": {
     "en": [
-      "^2026/04/09(?:/|$)"
+      "^(?:2023|2026)(?:/|$)"
     ],
     "fr": [
       "^(?:offerte-libri-inglese|shop|assistenza|audiolibri-inglese|contattaci|convenzioni|ebook-inglese|eventi|franchising-feltrinelli|registrati|search-advanced|vinili)(?:/|$)",
