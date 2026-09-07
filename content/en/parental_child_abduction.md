@@ -1,3 +1,7 @@
+A parental child abduction case involving Poland may concern a child who has been taken to Poland without the agreement of another holder of custody rights, kept in Poland after an agreed stay, or removed from Poland in circumstances that may amount to wrongful removal or retention. The legal assessment depends on the child’s habitual residence, the custody rights in force and the facts of the move or retention.
+
+If the child is currently in Poland, see [what to do after a child is taken to Poland](/what-should-i-do/) and the page on [Hague Convention child return proceedings](/the-hague-convention/). The sections on [child abduction law in Poland](/within-the-law/) and [international child abduction law](/within-the-law/international-laws/) provide further background.
+
 When you become a parent, you may find yourself facing a situation you had never imagined, or one you never thought you might one day experience: the wrongful removal or wrongful retention of your child in a foreign country, whether by you or by the other parent.
 
 This site provides information you may need if you wish to move abroad with your child, or if you are the victim of the wrongful removal of your child to a foreign territory or the wrongful retention of your child.
@@ -17,11 +21,11 @@ The rights of custody mentioned in sub-paragraph a) above may arise in particula
 
 More simply, the removal or retention is wrongful where you hold rights of custody and you have not given your consent to that removal, with your child then being in another State without your consent.
 
-Such removal or retention is wrongful even if you are the parent exercising rights of custody jointly and you decide to leave abroad with your child. It is necessary to obtain the consent of the other parent or of the judge in order to travel with your child.
+Such removal or retention may be wrongful even where the parent who moved with the child also exercises custody rights. Whether consent from the other parent or authorisation from a court is required depends on the custody rights and law applicable to the individual case.
 
-The mere fact that you have custody does not make the removal or retention lawful, especially where that removal deprives the other parent of their rights.
+The mere fact that one parent has day-to-day care of the child does not by itself determine whether an international removal or retention is lawful.
 
-If you recognise your situation in this text, or if you know someone who may recognise themselves in it, then under the Hague Convention you or one of your loved ones is probably the victim of the wrongful removal or retention of your child.
+If your situation may fall within these rules, the next question is usually whether the Hague Convention applies and what procedure is available in the states concerned.
 
 ---
 
