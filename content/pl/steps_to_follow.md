@@ -1,3 +1,5 @@
+Poniżej znajdują się praktyczne kroki opisane przez autorkę. Powiązane materiały znajdziesz na stronach [Konwencja haska](/konwencja-haska/) oraz [z kim się skontaktować?](/z-kim-sie-skontaktowac/).
+
 1. Jeżeli dziecko zaginęło, skontaktuj się z najbliższą rodziną, osobami z jego otoczenia, szkołą oraz innymi osobami lub instytucjami, które mogą wiedzieć, gdzie się znajduje. Jeżeli dowiesz się, że drugi rodzic zabiera dziecko, planuje wyjazd albo jest już w drodze do innego państwa bez wymaganej zgody, działaj niezwłocznie.
 
 2. Jeżeli miejsce pobytu dziecka pozostaje nieznane, zgłoś jego zaginięcie właściwym służbom w swoim państwie i skorzystaj z pomocy prawnej.
