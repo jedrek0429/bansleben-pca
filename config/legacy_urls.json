@@ -15,13 +15,17 @@
     ],
     "fr": [
       "^(?:offerte-libri-inglese|shop|assistenza|audiolibri-inglese|contattaci|convenzioni|ebook-inglese|eventi|franchising-feltrinelli|registrati|search-advanced|vinili)(?:/|$)",
-      "^(?:film|giochi-giocattoli|libri)(?:/|$)"
+      "^(?:film|giochi-giocattoli|libri)(?:/|$)",
+      "^.+-[0-9]{5,}(?:/|$)"
     ],
     "hr": [],
     "pl": []
   },
   "gone_query_patterns": [
     "^p=\\d+(?:&.*)?$"
+  ],
+  "strip_query_patterns": [
+    "(?:^|&)inventoryId=[^&]*"
   ],
   "redirects": {
     "en": {
