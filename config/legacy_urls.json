@@ -9,8 +9,27 @@
     "^(?:author|tag|category)(?:/|$)",
     "^(?:feed|comments/feed)(?:/|$)"
   ],
+  "gone_patterns_by_lang": {
+    "en": [
+      "^2026/04/09(?:/|$)"
+    ],
+    "fr": [
+      "^(?:offerte-libri-inglese|shop|assistenza|audiolibri-inglese|contattaci|convenzioni|ebook-inglese|eventi|franchising-feltrinelli|registrati|search-advanced|vinili)(?:/|$)",
+      "^(?:film|giochi-giocattoli|libri)(?:/|$)"
+    ],
+    "hr": [],
+    "pl": []
+  },
+  "gone_query_patterns": [
+    "^p=\\d+(?:&.*)?$"
+  ],
   "redirects": {
-    "en": {},
+    "en": {
+      "formulaire": "https://enlevementparentalpologne.pl/formulaire/",
+      "polityka-prywatnosci": "https://uprowadzenierodzicielskie.pl/polityka-prywatnosci/",
+      "qui-contacter": "https://enlevementparentalpologne.pl/qui-contacter/",
+      "qui-sommes-nous": "https://enlevementparentalpologne.pl/qui-sommes-nous/"
+    },
     "fr": {},
     "hr": {},
     "pl": {}
