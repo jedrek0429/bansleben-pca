@@ -1,3 +1,5 @@
+This page collects contact details already provided by the site for authorities and organisations relevant to international parental child abduction. For the practical sequence, see [steps after a child is taken to Poland](/what-should-i-do/steps-to-follow/) and the [Hague Convention section](/the-hague-convention/).
+
 # Australia
 
 Emergency number: 000
