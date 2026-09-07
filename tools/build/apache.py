@@ -67,6 +67,12 @@ def legacy_query_cleanup_lines(ctx) -> list[str]:
 
 
 def canonical_host_lines(ctx, lang: str) -> list[str]:
+    # Path-scoped PR previews intentionally share one preview origin. Applying the
+    # production host canonicalisation there would redirect /pr-N/<lang>/ to a
+    # non-existent path on the production domain.
+    if getattr(ctx, "lang_in_url", False):
+        return []
+
     site = ctx.site_configs.get(lang, {}) if isinstance(ctx.site_configs, dict) else {}
     canonical_url = str(site.get("url") or "") if isinstance(site, dict) else ""
     host = urlsplit(canonical_url).hostname or ""
