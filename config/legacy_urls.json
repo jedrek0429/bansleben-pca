@@ -1,0 +1,18 @@
+{
+  "gone_patterns": [
+    "^wp-admin(?:/|$)",
+    "^wp-login\\.php$",
+    "^wp-content(?:/|$)",
+    "^wp-includes(?:/|$)",
+    "^xmlrpc\\.php$",
+    "^wp-json(?:/|$)",
+    "^(?:author|tag|category)(?:/|$)",
+    "^(?:feed|comments/feed)(?:/|$)"
+  ],
+  "redirects": {
+    "en": {},
+    "fr": {},
+    "hr": {},
+    "pl": {}
+  }
+}
