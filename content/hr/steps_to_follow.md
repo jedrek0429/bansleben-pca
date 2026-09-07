@@ -1,3 +1,5 @@
+U nastavku su praktični koraci koje je opisala autorica. Za povezane sadržaje pogledajte [Hašku konvenciju](/haska-konvencija/) i [kome se obratiti?](/kome-se-obratiti/).
+
 1. Ako vaše dijete nestane, obratite se najbližim članovima obitelji, kao i osobama iz vašeg kruga prijatelja te iz kruga prijatelja vašeg djeteta. Kontaktirajte školu djeteta i svaku drugu ustanovu povezanu s djetetom kako biste provjerili raspolažu li informacijama koje bi mogle biti korisne. Ako saznate da vaš supružnik, bivši supružnik ili drugi roditelj vodi dijete, namjerava ga odvesti ili se s djetetom već nalazi na putu u drugu državu bez vaše suglasnosti, potrebno je odmah poduzeti radnje i slijediti gore navedene postupke.
 
 2. Ako mjesto boravka djeteta i dalje nije poznato, prijavite nestanak nadležnim tijelima u svojoj državi i zatražite pravnu pomoć.
