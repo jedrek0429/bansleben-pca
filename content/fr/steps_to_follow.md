@@ -1,3 +1,5 @@
+Ces étapes reprennent les démarches pratiques décrites par l’auteure. Pour les contenus associés, consultez la [Convention de La Haye](/mieux-connaitre-la-convention-de-la-haye/) et [qui contacter](/qui-contacter/).
+
 <p align="center">
     <img src="/assets/uploads/2021/03/Etapes.png" alt="Étapes à suivre en cas de disparition d’un enfant" style="align: center" height=400>
 </p>
