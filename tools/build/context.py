@@ -54,6 +54,7 @@ class BuildContext:
     site_configs: dict[str, dict[str, Any]] = field(default_factory=dict)
     cards_config: dict[str, Any] = field(default_factory=dict)
     seo_config: dict[str, Any] = field(default_factory=dict)
+    legacy_urls: dict[str, Any] = field(default_factory=dict)
     hero_images: dict[str, Any] = field(default_factory=dict)
     image_manifest: dict[str, dict[str, Any]] = field(default_factory=dict)
 
@@ -112,6 +113,7 @@ class BuildContext:
         cards_path = self.root / "config" / "cards.json"
         self.cards_config = load_json(cards_path) if cards_path.exists() else {}
         self.seo_config = load_optional_json(self.root / "config" / "seo.json")
+        self.legacy_urls = load_optional_json(self.root / "config" / "legacy_urls.json")
         self.hero_images = load_optional_json(self.root / "config" / "hero_images.json")
         self.image_manifest = {}
         self.clear_caches()
