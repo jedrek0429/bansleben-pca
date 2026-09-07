@@ -1,3 +1,7 @@
+Si un enfant a été déplacé ou retenu illicitement en Pologne, la **Convention de La Haye du 25 octobre 1980** peut, selon les pays concernés et les circonstances de l’affaire, offrir une voie pour demander son retour. Cette page présente la Convention dans le contexte d’un enlèvement parental impliquant la Pologne.
+
+Pour la définition de base, consultez [l’enlèvement parental vers ou depuis la Pologne](/enlevement-parental/). Pour les démarches pratiques, voyez [que faire si l’enfant est emmené en Pologne](/que-puis-je-faire/) et [les étapes à suivre](/que-puis-je-faire/etapes-a-suivre/).
+
 Comprendre l’utilité de la Convention de la Haye
 
 **QUESTION :**
