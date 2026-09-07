@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for SEO recovery of legacy WordPress URLs."""
+"""Regression checks for SEO recovery of legacy WordPress URLs."""
 
 from __future__ import annotations
 
@@ -32,19 +32,22 @@ def main() -> None:
         require(rendered, "RewriteRule ^wp-login\\.php$ - [G,L,NC]", f"{lang}: WordPress login URL is not explicitly retired")
         require(rendered, "RewriteRule ^wp-content(?:/|$) - [G,L,NC]", f"{lang}: WordPress content tree is not explicitly retired")
         require(rendered, "RewriteCond %{QUERY_STRING} ^p=\\d+(?:&.*)?$ [NC]", f"{lang}: WordPress ?p= post URLs are not explicitly retired")
+        require(rendered, "RewriteCond %{QUERY_STRING} (?:^|&)inventoryId=[^&]* [NC]", f"{lang}: compromised inventoryId variants are not canonicalised")
 
         for source, target in (legacy.get("redirects", {}).get(lang, {}) or {}).items():
-            expected = f"Redirect 301 /{source.strip('/')} {target}"
-            require(rendered, expected, f"{lang}: missing configured legacy redirect {source!r}")
+            escaped = source.strip("/").replace(".", "\\.")
+            expected = f"RedirectMatch 301 ^/{escaped}/?$ {target}"
+            require(rendered, expected, f"{lang}: missing exact configured legacy redirect {source!r}")
 
     en = rendered_by_lang["en"]
-    require(en, "RewriteRule ^2026/04/09(?:/|$) - [G,L,NC]", "en: compromised dated spam tree is not retired")
-    require(en, "Redirect 301 /qui-sommes-nous https://enlevementparentalpologne.pl/qui-sommes-nous/", "en: old French about page is not redirected to the French domain")
-    require(en, "Redirect 301 /polityka-prywatnosci https://uprowadzenierodzicielskie.pl/polityka-prywatnosci/", "en: old Polish privacy page is not redirected to the Polish domain")
+    require(en, "RewriteRule ^(?:2023|2026)(?:/|$) - [G,L,NC]", "en: obsolete dated URL trees are not retired")
+    require(en, "RedirectMatch 301 ^/qui-sommes-nous/?$ https://enlevementparentalpologne.pl/qui-sommes-nous/", "en: old French about page is not redirected to the French domain")
+    require(en, "RedirectMatch 301 ^/polityka-prywatnosci/?$ https://uprowadzenierodzicielskie.pl/polityka-prywatnosci/", "en: old Polish privacy page is not redirected to the Polish domain")
 
     fr = rendered_by_lang["fr"]
     require(fr, "RewriteRule ^(?:film|giochi-giocattoli|libri)(?:/|$) - [G,L,NC]", "fr: compromised Italian catalogue trees are not retired")
     require(fr, "RewriteRule ^(?:offerte-libri-inglese|shop|assistenza|audiolibri-inglese|contattaci|convenzioni|ebook-inglese|eventi|franchising-feltrinelli|registrati|search-advanced|vinili)(?:/|$) - [G,L,NC]", "fr: compromised Italian spam routes are not retired")
+    require(fr, "RewriteRule ^.+-[0-9]{5,}(?:/|$) - [G,L,NC]", "fr: compromised product-ID slug family is not retired")
 
     print("Legacy URL recovery rules passed for: " + ", ".join(ctx.langs))
 
