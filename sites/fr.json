@@ -4,26 +4,21 @@
   "og_locale": "fr_FR",
   "social_image": "/assets/social/og-fr.jpg",
   "legal_practice_url": "https://bansleben.pl/fr/",
+  "title_overrides": {
+    "introduction": "Enlèvement parental en Pologne",
+    "parental_child_abduction": "Enlèvement parental vers ou depuis la Pologne",
+    "within_the_law": "Droit applicable à l’enlèvement parental",
+    "international_laws": "Droit international de l’enlèvement d’enfants",
+    "what_should_i_do": "Que faire si mon enfant est emmené en Pologne ?",
+    "steps_to_follow": "Démarches après un enlèvement d’enfant en Pologne",
+    "the_hague_convention": "Convention de La Haye et retour de l’enfant",
+    "jurisprudence": "Jurisprudence sur l’enlèvement international d’enfants",
+    "whom_to_contact": "Qui contacter après un enlèvement d’enfant en Pologne ?"
+  },
   "extra_pages": [
-    {
-      "key": "national_law_france",
-      "parent": "individual_national_laws",
-      "template": "content"
-    },
-    {
-      "key": "national_law_belgium",
-      "parent": "individual_national_laws",
-      "template": "content"
-    },
-    {
-      "key": "national_law_canada",
-      "parent": "individual_national_laws",
-      "template": "content"
-    },
-    {
-      "key": "national_law_poland",
-      "parent": "individual_national_laws",
-      "template": "content"
-    }
+    {"key": "national_law_france", "parent": "individual_national_laws", "template": "content"},
+    {"key": "national_law_belgium", "parent": "individual_national_laws", "template": "content"},
+    {"key": "national_law_canada", "parent": "individual_national_laws", "template": "content"},
+    {"key": "national_law_poland", "parent": "individual_national_laws", "template": "content"}
   ]
 }
