@@ -133,6 +133,11 @@ def render_localized_page(ctx, locales, lang: str, page: dict, templates) -> Non
 
     pieces = []
     if template_name == "home":
+        # Home used to render cards only, which left the strongest URL with almost
+        # no explanatory text. Keep the visual card navigation, but allow a short
+        # language-specific introduction to establish topic and search intent.
+        if content_html.strip():
+            pieces.append(render_partial(ctx, "introduction", lang, locales, state, templates))
         if page_ctx["cards"]:
             pieces.append(page_ctx["cards"])
     elif template_name == "contact":
