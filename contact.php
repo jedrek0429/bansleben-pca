@@ -204,7 +204,9 @@ function verify_turnstile(array $cfg): void {
     ]]);
     $result = @file_get_contents('https://challenges.cloudflare.com/turnstile/v0/siteverify', false, $context);
     $data = $result === false ? null : json_decode($result, true);
-    if (!is_array($data) || ($data['success'] ?? false) !== true) {
+    $hostname = strtolower((string)($data['hostname'] ?? ''));
+    $allowedHosts = ['polandchildabduction.pl', 'www.polandchildabduction.pl', 'preview.polandchildabduction.pl'];
+    if (!is_array($data) || ($data['success'] ?? false) !== true || !in_array($hostname, $allowedHosts, true) || (string)($data['action'] ?? '') !== 'contact') {
         throw new RuntimeException('Turnstile verification failed');
     }
 }
@@ -244,7 +246,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['turnstile_config'])) {
     header('Cache-Control: no-store');
     try {
         $cfg = load_config();
-        $sitekey = trim((string)($cfg['turnstile_site_key'] ?? ''));
+        $sitekey = trim((string)($cfg['turnstile_site_key'] ?? '0x4AAAAAAFRJQ2Yq6MuQJNtH'));
         $enabled = trim((string)($cfg['turnstile_secret_key'] ?? '')) !== '';
         if ($enabled && $sitekey === '') throw new RuntimeException('Turnstile site key missing');
         echo json_encode(['enabled' => $enabled, 'sitekey' => $enabled ? $sitekey : '']);
