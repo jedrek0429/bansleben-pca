@@ -145,6 +145,42 @@
     });
   }
 
+  function initContactTurnstile() {
+    document.querySelectorAll('form.static_contact_form').forEach(function (form) {
+      var placeholder = form.querySelector('[data-turnstile-placeholder]');
+      if (!placeholder) return;
+      var button = form.querySelector('button[type="submit"]');
+      var action = new URL(form.action, window.location.href);
+      action.searchParams.set('turnstile_config', '1');
+      if (button) button.disabled = true;
+      fetch(action.toString(), { credentials: 'same-origin', cache: 'no-store' })
+        .then(function (response) {
+          if (!response.ok) throw new Error('Configuration unavailable');
+          return response.json();
+        })
+        .then(function (cfg) {
+          if (!cfg.enabled) { if (button) button.disabled = false; return; }
+          if (!cfg.sitekey) throw new Error('Missing site key');
+          var script = document.createElement('script');
+          script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+          script.async = true;
+          script.onload = function () {
+            window.turnstile.render(placeholder, {
+              sitekey: cfg.sitekey,
+              callback: function () { if (button) button.disabled = false; },
+              'expired-callback': function () { if (button) button.disabled = true; },
+              'error-callback': function () { if (button) button.disabled = true; }
+            });
+          };
+          script.onerror = function () { placeholder.textContent = 'Verification unavailable. Please reload the page.'; };
+          document.head.appendChild(script);
+        })
+        .catch(function () {
+          placeholder.textContent = 'Contact form temporarily unavailable. Please reload the page.';
+        });
+    });
+  }
+
   function initContactMessages() {
     var sent = new URLSearchParams(location.search).get('sent');
     if (sent !== '1' && sent !== '0') return;
@@ -171,6 +207,7 @@
     initMobileMenu();
     initScrollTop();
     initContactMessages();
+    initContactTurnstile();
     initReveals();
     refresh();
 
