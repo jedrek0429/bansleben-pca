@@ -274,6 +274,15 @@ try {
     if (strlen($name) > 200 || strlen($email) > 254 || strlen($message) > 20000) throw new RuntimeException('Form input too long');
     $config = load_config();
     verify_turnstile($config);
+    // Preview-only verification test. No rate-limit state changes or SMTP traffic.
+    $host = strtolower((string)($_SERVER['HTTP_HOST'] ?? ''));
+    if ($host === 'preview.polandchildabduction.pl' && ($config['turnstile_test_mode'] ?? false) === true) {
+        header('Content-Type: text/plain; charset=UTF-8');
+        header('Cache-Control: no-store');
+        log_line('Turnstile preview verification OK (SMTP skipped)');
+        echo "Turnstile verification OK; no email sent.\n";
+        exit;
+    }
     $guard = contact_guard($config, $email);
     $locale = load_contact_locale();
     log_line('Submitting form from email=' . $email . ' name=' . $name);
