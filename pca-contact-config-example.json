@@ -6,5 +6,8 @@
   "from_email": "contact@polandchildabduction.pl",
   "from_name": "Poland Child Abduction",
   "reply_to_email": "kancelaria@bansleben.pl",
-  "to_email": "example@example.com"
+  "to_email": "example@example.com",
+  "turnstile_site_key": "",
+  "turnstile_secret_key": "",
+  "confirmation_hourly_limit": 20
 }
