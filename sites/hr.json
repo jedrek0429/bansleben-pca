@@ -4,17 +4,20 @@
   "og_locale": "hr_HR",
   "social_image": "/assets/social/og-hr.jpg",
   "legal_practice_url": "https://bansleben.pl/en/",
+  "title_overrides": {
+    "introduction": "Roditeljska otmica djeteta u Poljskoj",
+    "parental_child_abduction": "Roditeljska otmica djeteta u ili iz Poljske",
+    "within_the_law": "Pravo i roditeljska otmica djeteta",
+    "international_laws": "Međunarodno pravo i otmica djeteta",
+    "what_should_i_do": "Što učiniti ako je dijete odvedeno u Poljsku?",
+    "steps_to_follow": "Koraci nakon otmice djeteta u Poljsku",
+    "the_hague_convention": "Haška konvencija i povratak djeteta",
+    "jurisprudence": "Sudska praksa o međunarodnoj otmici djece",
+    "whom_to_contact": "Kome se obratiti nakon otmice djeteta u Poljsku?"
+  },
   "extra_pages": [
-    {
-      "key": "national_law_croatia",
-      "parent": "individual_national_laws",
-      "template": "content"
-    },
-    {
-      "key": "national_law_poland",
-      "parent": "individual_national_laws",
-      "template": "content"
-    }
+    {"key": "national_law_croatia", "parent": "individual_national_laws", "template": "content"},
+    {"key": "national_law_poland", "parent": "individual_national_laws", "template": "content"}
   ],
   "organization_url_language_override": "en"
 }

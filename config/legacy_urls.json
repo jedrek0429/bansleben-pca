@@ -1,0 +1,41 @@
+{
+  "gone_patterns": [
+    "^wp-admin(?:/|$)",
+    "^wp-login\\.php$",
+    "^wp-content(?:/|$)",
+    "^wp-includes(?:/|$)",
+    "^xmlrpc\\.php$",
+    "^wp-json(?:/|$)",
+    "^(?:author|tag|category)(?:/|$)",
+    "^(?:feed|comments/feed)(?:/|$)"
+  ],
+  "gone_patterns_by_lang": {
+    "en": [
+      "^(?:2023|2026)(?:/|$)"
+    ],
+    "fr": [
+      "^(?:offerte-libri-inglese|shop|assistenza|audiolibri-inglese|contattaci|convenzioni|ebook-inglese|eventi|franchising-feltrinelli|registrati|search-advanced|vinili)(?:/|$)",
+      "^(?:film|giochi-giocattoli|libri)(?:/|$)",
+      "^.+-[0-9]{5,}(?:/|$)"
+    ],
+    "hr": [],
+    "pl": []
+  },
+  "gone_query_patterns": [
+    "^p=\\d+(?:&.*)?$"
+  ],
+  "strip_query_patterns": [
+    "(?:^|&)inventoryId=[^&]*"
+  ],
+  "redirects": {
+    "en": {
+      "formulaire": "https://enlevementparentalpologne.pl/formulaire/",
+      "polityka-prywatnosci": "https://uprowadzenierodzicielskie.pl/polityka-prywatnosci/",
+      "qui-contacter": "https://enlevementparentalpologne.pl/qui-contacter/",
+      "qui-sommes-nous": "https://enlevementparentalpologne.pl/qui-sommes-nous/"
+    },
+    "fr": {},
+    "hr": {},
+    "pl": {}
+  }
+}

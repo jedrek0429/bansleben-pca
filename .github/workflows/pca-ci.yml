@@ -86,6 +86,9 @@ jobs:
       - name: Verify PR preview social metadata paths
         run: python tools/test_preview_social_metadata.py
 
+      - name: Verify legacy URL recovery rules
+        run: python tools/test_legacy_url_recovery.py
+
   preview-build:
     name: Preview build
     runs-on: ubuntu-latest

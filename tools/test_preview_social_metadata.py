@@ -63,6 +63,19 @@ def main() -> None:
         if unscoped_image in html:
             raise SystemExit(f"Preview metadata still contains unscoped asset URL: {unscoped_image}")
 
+        htaccess = (destination / "pl" / ".htaccess").read_text(encoding="utf-8")
+        production_hosts = [
+            "polandchildabduction.pl",
+            "enlevementparentalpologne.pl",
+            "uprowadzenierodzicielskie.pl",
+            "roditeljskaotmicapoljska.pl",
+        ]
+        escaped_hosts = [host for host in production_hosts if host in htaccess]
+        if escaped_hosts:
+            raise SystemExit(
+                "Preview .htaccess redirects to production host(s): " + ", ".join(escaped_hosts)
+            )
+
     print("preview social metadata regression test passed")
 
 

@@ -1,3 +1,7 @@
+Si votre situation implique la Pologne, utilisez les liens ci-dessous pour accéder aux principales sections du site.
+
+Consultez [les démarches à entreprendre](/que-puis-je-faire/), la page consacrée à la [Convention de La Haye](/mieux-connaitre-la-convention-de-la-haye/), les informations sur le [droit applicable](/que-dit-la-loi/) et le [droit international](/que-dit-la-loi/legislation-internationale/).
+
 Lorsque vous devenez parent, il peut vous arriver de devoir faire face à une situation que vous n’aviez jamais envisagée ou dont vous ne pensiez pas être un jour victime: le déplacement illicite ou le non-retour illicite de votre enfant dans un pays étranger, par vous-même ou par l’autre parent.
 
 Vous trouverez sur ce site les informations dont vous pourriez avoir besoin si vous voulez partir vivre à l’étranger avec votre enfant, ou si vous êtes victime d’un déplacement illicite de votre enfant sur un territoire étranger ou d’un non-retour illicite de votre enfant.

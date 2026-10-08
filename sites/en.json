@@ -4,26 +4,21 @@
   "og_locale": "en_GB",
   "social_image": "/assets/social/og-en.jpg",
   "legal_practice_url": "https://bansleben.pl/en/",
+  "title_overrides": {
+    "introduction": "Parental Child Abduction in Poland",
+    "parental_child_abduction": "Parental Child Abduction to or from Poland",
+    "within_the_law": "Child Abduction Law in Poland",
+    "international_laws": "International Child Abduction Law",
+    "what_should_i_do": "What to Do if Your Child Is Taken to Poland",
+    "steps_to_follow": "Steps After a Child Is Taken to Poland",
+    "the_hague_convention": "Hague Convention Child Return Proceedings",
+    "jurisprudence": "Hague Convention Child Abduction Case Law",
+    "whom_to_contact": "Who to Contact After Child Abduction to Poland"
+  },
   "extra_pages": [
-    {
-      "key": "national_law_uk",
-      "parent": "individual_national_laws",
-      "template": "content"
-    },
-    {
-      "key": "national_law_us",
-      "parent": "individual_national_laws",
-      "template": "content"
-    },
-    {
-      "key": "national_law_canada",
-      "parent": "individual_national_laws",
-      "template": "content"
-    },
-    {
-      "key": "national_law_poland",
-      "parent": "individual_national_laws",
-      "template": "content"
-    }
+    {"key": "national_law_uk", "parent": "individual_national_laws", "template": "content"},
+    {"key": "national_law_us", "parent": "individual_national_laws", "template": "content"},
+    {"key": "national_law_canada", "parent": "individual_national_laws", "template": "content"},
+    {"key": "national_law_poland", "parent": "individual_national_laws", "template": "content"}
   ]
 }

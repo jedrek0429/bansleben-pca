@@ -49,6 +49,10 @@ def is_enabled(*args) -> bool:
 
 
 def page_title(ctx: BuildContext, locales, lang: str, key: str) -> str:
+    site = ctx.site_configs.get(lang, {}) if isinstance(ctx.site_configs, dict) else {}
+    overrides = site.get("title_overrides", {}) if isinstance(site, dict) else {}
+    if isinstance(overrides, dict) and overrides.get(key):
+        return str(overrides[key])
     title = localized_page(locales, lang, key).get("title")
     if title:
         return str(title)

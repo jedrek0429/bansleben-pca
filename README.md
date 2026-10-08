@@ -7,6 +7,7 @@ Public sites:
 - English: <https://polandchildabduction.pl/>
 - French: <https://enlevementparentalpologne.pl/>
 - Croatian: <https://roditeljskaotmicapoljska.pl/>
+- Polish: <https://uprowadzenierodzicielskie.pl/>
 
 ## What this repo does
 
@@ -20,7 +21,7 @@ Production and pull request previews are deployed by a pull-based server worker.
 | --- | --- |
 | `content/<lang>/` | Markdown page content. |
 | `locales/<lang>.json` | Translated labels, menus, cards, and shared copy. |
-| `config/` | Page routing, cards, SEO, images, and site URLs. |
+| `config/` | Page routing, cards, SEO, legacy URL recovery, images, and site URLs. |
 | `templates/` | HTML page structure and partials. |
 | `assets/` | CSS, JavaScript, images, and static files copied into the site. |
 | `tools/build.py` | Builder app entrypoint. |
@@ -78,6 +79,10 @@ python tools/build.py site --root . --dry
 
 When `check` fails in an interactive terminal, it asks whether to run `utils autofix-locales`.
 
+## Legacy URL recovery
+
+`config/legacy_urls.json` controls search-index cleanup after the previous WordPress installation. Known obsolete WordPress endpoint families should return `410 Gone`. Valuable historical content URLs should instead be added to the language-specific `redirects` table only when there is a clear current replacement. Do not redirect unrelated or spam URLs to the homepage.
+
 ## Production deploy command
 
 Production deploys should use:
@@ -111,7 +116,7 @@ The short version is:
 
 1. Clone this repo to `~/site-src` or another stable source directory.
 2. Create a Python virtual environment and install `requirements.txt`.
-3. Create `../public_html/preview/.private/` with deploy queues, logs, config, and the GitHub App key.
+3. Create `../public_html/preview/.private/` with deploy queues, logs, config, and app key.
 4. Copy `server/github-webhook.php` to `../public_html/preview/github-webhook.php`.
 5. Configure the GitHub App webhook to call `https://preview.polandchildabduction.pl/github-webhook.php`.
 6. Add a cron job that runs `tools/webhook_deploy_worker.py` from the repo checkout.
@@ -121,7 +126,7 @@ The short version is:
 
 1. Edit Markdown in `content/<lang>/`.
 2. Edit translated labels and shared copy in `locales/<lang>.json`.
-3. Edit page routing, URLs, cards, SEO, or images in `config/`.
+3. Edit page routing, URLs, cards, SEO, legacy URL recovery, or images in `config/`.
 4. Run `python tools/build.py check --root .`.
 5. Run `python tools/build.py site --root .`.
 6. Open a PR and let the preview deploy verify the rendered site.

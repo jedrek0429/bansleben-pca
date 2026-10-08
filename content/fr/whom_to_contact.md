@@ -1,3 +1,5 @@
+Cette page rassemble les coordonnées déjà présentées par le site pour les autorités et organismes liés aux enlèvements parentaux internationaux. Pour le déroulement pratique, consultez [les étapes à suivre](/que-puis-je-faire/etapes-a-suivre/) et la section consacrée à la [Convention de La Haye](/mieux-connaitre-la-convention-de-la-haye/).
+
 # Europe
 
 Enfants Disparus – 116 000

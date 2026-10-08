@@ -47,7 +47,14 @@ def read_content(ctx, lang: str, key: str) -> str:
     if not markdown:
         return ""
     markdown = resolve_images(markdown, ctx, lang)
-    return markdown_to_html(markdown, ctx.url_prefix)
+    rendered = markdown_to_html(markdown, ctx.url_prefix)
+
+    # Markdown content uses site-root links. In preview mode each language also
+    # has its own path segment, so resolve links through the full page prefix.
+    prefix = page_prefix(ctx, lang)
+    if prefix:
+        rendered = re.sub(r'href="/(?!/)', f'href="{prefix}/', rendered)
+    return rendered
 
 
 def contact_action_url(ctx, lang: str) -> str:

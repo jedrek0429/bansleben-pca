@@ -1,3 +1,7 @@
+Jeżeli sprawa dotyczy Polski, poniższe odnośniki prowadzą do najważniejszych powiązanych części serwisu.
+
+Zobacz [co można zrobić](/co-moge-zrobic/), informacje o [Konwencji haskiej](/konwencja-haska/), sekcję [w świetle prawa](/w-swietle-prawa/) oraz [prawo międzynarodowe](/w-swietle-prawa/prawo-miedzynarodowe/).
+
 Bycie mamą albo tatą może postawić człowieka w sytuacji, której wcześniej w ogóle nie brał pod uwagę. Dziecko może zostać bezprawnie przewiezione do innego państwa albo bezprawnie zatrzymane za granicą przez jednego z rodziców.
 
 Niniejszy serwis ma na celu przedstawienie informacji przydatnych zarówno osobom planującym przeprowadzkę z dzieckiem za granicę, jak i rodzicom, których dziecko zostało bezprawnie wywiezione z państwa jego stałego pobytu lub zatrzymane poza jego granicami.
