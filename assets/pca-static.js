@@ -167,6 +167,7 @@
           script.onload = function () {
             window.turnstile.render(placeholder, {
               sitekey: cfg.sitekey,
+              action: 'contact',
               callback: function () { if (button) button.disabled = false; },
               'expired-callback': function () { if (button) button.disabled = true; },
               'error-callback': function () { if (button) button.disabled = true; }
