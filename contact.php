@@ -166,7 +166,8 @@ function contact_guard(array $cfg, string $email): array {
         $allowConfirmation = !isset($state[$confirmKey]);
         $confirmationCount = 0;
         foreach ($state as $key => $expires) if (str_starts_with($key, 'confirm-global:')) $confirmationCount++;
-        if ($confirmationCount >= 20) $allowConfirmation = false;
+        $confirmationHourlyLimit = max(0, min(20, (int)($cfg['confirmation_hourly_limit'] ?? 20)));
+        if ($confirmationCount >= $confirmationHourlyLimit) $allowConfirmation = false;
         $nonce = bin2hex(random_bytes(12));
         $state['ip:' . $ipHash . ':' . $nonce] = $now + 900;
         $state['global:' . $nonce] = $now + 3600;
@@ -285,13 +286,13 @@ try {
     }
     $guard = contact_guard($config, $email);
     $locale = load_contact_locale();
-    log_line('Submitting form from email=' . $email . ' name=' . $name);
+    log_line('Submitting verified contact form');
     send_smtp($config, $email, $name, $lang, $message);
     log_line('Notification OK');
     if ($guard['confirmation']) {
         try {
             send_confirmation_smtp($config, $locale, $email, $name);
-            log_line('Confirmation OK to=' . $email . ' lang=' . $lang);
+            log_line('Confirmation OK lang=' . $lang);
         } catch (Throwable $confirmationError) {
             log_line('Confirmation failed: ' . $confirmationError->getMessage());
         }
