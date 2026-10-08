@@ -14,6 +14,8 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
 
+from preview_sandbox import run_sandboxed_preview
+
 try:
     import fcntl
 except ImportError:
@@ -403,7 +405,12 @@ def prepare_preview_worktree(config, pr_number: int, log) -> Path:
 def publish_preview_log(config, pr_number: int, source: Path) -> None:
     dest = preview_root(config) / f"pr-{pr_number}"
     dest.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(source, dest / "_deploy.log")
+    log_dest = dest / "_deploy.log"
+    if log_dest.is_symlink() or log_dest.is_file():
+        log_dest.unlink(missing_ok=True)
+    elif log_dest.exists():
+        shutil.rmtree(log_dest)
+    shutil.copy2(source, log_dest)
 
 
 def deploy_preview(config, job: dict[str, Any]) -> None:
@@ -423,8 +430,14 @@ def deploy_preview(config, job: dict[str, Any]) -> None:
             ack_preview_command(config, job, log)
             safe_preview_comment(config, pr_number, sha, url, log_url, "started", "Preview deploy started.", log=log)
             root = prepare_preview_worktree(config, pr_number, log)
-            install_requirements(config, root, log)
-            run_builder(config, root, log, "preview", "--root", str(root), "--to", str(preview_root(config) / f"pr-{pr_number}"), "--prefix", f"pr-{pr_number}")
+            run_sandboxed_preview(
+                config,
+                site_src(config),
+                root,
+                preview_root(config) / f"pr-{pr_number}",
+                f"pr-{pr_number}",
+                log,
+            )
     except Exception as exc:
         if log_path.exists():
             publish_preview_log(config, pr_number, log_path)

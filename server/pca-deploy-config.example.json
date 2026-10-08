@@ -13,5 +13,12 @@
   "private_dir": "/home/platne/serwer88382/public_html/preview/.private",
   "queue_dir": "/home/platne/serwer88382/public_html/preview/.private/deploy-queue",
   "log_dir": "/home/platne/serwer88382/public_html/preview/.private/deploy-logs",
+  "preview_container_runtime": "podman",
+  "preview_container_image": "python:3.13-slim",
+  "preview_memory_limit": "512m",
+  "preview_cpu_limit": "1.0",
+  "preview_pids_limit": "128",
+  "preview_max_files": 10000,
+  "preview_max_bytes": 104857600,
   "allow_preview_from_forks": false
 }
