@@ -133,6 +133,82 @@ function send_confirmation_smtp(array $cfg, array $locale, string $recipientEmai
     return smtp_send_raw($cfg, $fromEmail, $recipientEmail, normalize_raw_message(implode("\r\n", $headers) . "\r\n\r\n" . $body));
 }
 
+
+function contact_guard(array $cfg, string $email): array {
+    $dir = dirname(find_config());
+    $file = $dir . '/pca-contact-limits.json';
+    $fp = fopen($file, 'c+');
+    if (!$fp || !flock($fp, LOCK_EX)) throw new RuntimeException('Contact protection unavailable');
+    try {
+        $raw = stream_get_contents($fp);
+        $state = json_decode($raw ?: '{}', true);
+        if (!is_array($state)) $state = [];
+        $now = time();
+        foreach ($state as $key => $expires) {
+            if (!is_numeric($expires) || (int)$expires <= $now) unset($state[$key]);
+        }
+        $ip = (string)($_SERVER['REMOTE_ADDR'] ?? 'unknown');
+        $secret = (string)($cfg['smtp_pass'] ?? '');
+        $ipHash = hash_hmac('sha256', $ip, $secret);
+        $emailHash = hash_hmac('sha256', strtolower($email), $secret);
+        $ipCount = 0;
+        $globalCount = 0;
+        foreach ($state as $key => $expires) {
+            if (str_starts_with($key, 'ip:' . $ipHash . ':')) $ipCount++;
+            if (str_starts_with($key, 'global:')) $globalCount++;
+        }
+        if ($ipCount >= 5 || $globalCount >= 30) {
+            log_line('Rate limit exceeded');
+            http_response_code(429);
+            throw new RuntimeException('Rate limit exceeded');
+        }
+        $confirmKey = 'confirmation:' . $emailHash;
+        $allowConfirmation = !isset($state[$confirmKey]);
+        $confirmationCount = 0;
+        foreach ($state as $key => $expires) if (str_starts_with($key, 'confirm-global:')) $confirmationCount++;
+        if ($confirmationCount >= 20) $allowConfirmation = false;
+        $nonce = bin2hex(random_bytes(12));
+        $state['ip:' . $ipHash . ':' . $nonce] = $now + 900;
+        $state['global:' . $nonce] = $now + 3600;
+        if ($allowConfirmation) {
+            $state[$confirmKey] = $now + 86400;
+            $state['confirm-global:' . $nonce] = $now + 3600;
+        }
+        rewind($fp);
+        if (!ftruncate($fp, 0) || fwrite($fp, json_encode($state, JSON_THROW_ON_ERROR)) === false || !fflush($fp)) {
+            throw new RuntimeException('Unable to save contact limits');
+        }
+        return ['confirmation' => $allowConfirmation];
+    } finally {
+        flock($fp, LOCK_UN);
+        fclose($fp);
+    }
+}
+
+function verify_turnstile(array $cfg): void {
+    $secret = trim((string)($cfg['turnstile_secret_key'] ?? ''));
+    if ($secret === '') return; // Enable only after configuring Cloudflare.
+    $token = (string)($_POST['cf-turnstile-response'] ?? '');
+    if ($token === '' || strlen($token) > 2048) throw new RuntimeException('Turnstile token missing');
+    $payload = http_build_query([
+        'secret' => $secret,
+        'response' => $token,
+        'remoteip' => (string)($_SERVER['REMOTE_ADDR'] ?? ''),
+    ]);
+    $context = stream_context_create(['http' => [
+        'method' => 'POST',
+        'header' => "Content-Type: application/x-www-form-urlencoded\r\n",
+        'content' => $payload,
+        'timeout' => 8,
+        'ignore_errors' => true,
+    ]]);
+    $result = @file_get_contents('https://challenges.cloudflare.com/turnstile/v0/siteverify', false, $context);
+    $data = $result === false ? null : json_decode($result, true);
+    if (!is_array($data) || ($data['success'] ?? false) !== true) {
+        throw new RuntimeException('Turnstile verification failed');
+    }
+}
+
 function back_url(): string {
     $url = clean_header((string)($_POST['back_url'] ?? $_SERVER['HTTP_REFERER'] ?? '/'));
     if ($url === '') return '/';
@@ -163,6 +239,21 @@ function redirect_with_status(bool $ok): void {
     exit;
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['turnstile_config'])) {
+    header('Content-Type: application/json; charset=UTF-8');
+    header('Cache-Control: no-store');
+    try {
+        $cfg = load_config();
+        $sitekey = trim((string)($cfg['turnstile_site_key'] ?? ''));
+        $enabled = trim((string)($cfg['turnstile_secret_key'] ?? '')) !== '';
+        if ($enabled && $sitekey === '') throw new RuntimeException('Turnstile site key missing');
+        echo json_encode(['enabled' => $enabled, 'sitekey' => $enabled ? $sitekey : '']);
+    } catch (Throwable $e) {
+        http_response_code(503);
+        echo json_encode(['error' => 'Contact configuration unavailable']);
+    }
+    exit;
+}
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     header('Content-Type: text/plain; charset=UTF-8');
@@ -178,13 +269,24 @@ try {
     if (trim((string)($_POST['website'] ?? '')) !== '') { log_line('Honeypot triggered'); redirect_with_status(true); }
     if ($name === '' || $email === '' || $message === '') throw new RuntimeException('Missing required fields');
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) throw new RuntimeException('Invalid email address');
+    if (strlen($name) > 200 || strlen($email) > 254 || strlen($message) > 20000) throw new RuntimeException('Form input too long');
     $config = load_config();
+    verify_turnstile($config);
+    $guard = contact_guard($config, $email);
     $locale = load_contact_locale();
     log_line('Submitting form from email=' . $email . ' name=' . $name);
     send_smtp($config, $email, $name, $lang, $message);
     log_line('Notification OK');
-    send_confirmation_smtp($config, $locale, $email, $name);
-    log_line('Confirmation OK to=' . $email . ' lang=' . $lang);
+    if ($guard['confirmation']) {
+        try {
+            send_confirmation_smtp($config, $locale, $email, $name);
+            log_line('Confirmation OK to=' . $email . ' lang=' . $lang);
+        } catch (Throwable $confirmationError) {
+            log_line('Confirmation failed: ' . $confirmationError->getMessage());
+        }
+    } else {
+        log_line('Confirmation suppressed by limits');
+    }
     redirect_with_status(true);
 } catch (Throwable $e) {
     log_line('ERROR: ' . $e->getMessage());
