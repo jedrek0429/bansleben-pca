@@ -148,6 +148,16 @@ def stage_publish(dist: Path, dest: Path) -> Path:
     return stage
 
 
+def preserve_runtime_contact_configs(stage: Path, dest: Path) -> None:
+    """Keep existing live secrets rather than replacing them with build copies."""
+    for live in [*dest.glob("*/.private/pca-contact-config.json"), dest / ".private/pca-contact-config.json"]:
+        if not live.is_file() or live.is_symlink():
+            continue
+        target = stage / live.relative_to(dest)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(live, target)
+
+
 def activate_staged_publish(stage: Path, dest: Path, preserved_root_items: set[str]) -> None:
     dest.mkdir(parents=True, exist_ok=True)
     backup = Path(tempfile.mkdtemp(prefix=f".{dest.name}.pca-backup-", dir=dest.parent))
@@ -207,5 +217,11 @@ def publish(dist, dest, *, root=None, langs=None, preserve_root_item=None, requi
     # Activation uses same-filesystem renames and restores the previous tree if
     # any activation step fails. Preserved roots never move.
     stage = stage_publish(dist, dest)
-    activate_staged_publish(stage, dest, preserved)
+    try:
+        if require_private_config:
+            preserve_runtime_contact_configs(stage, dest)
+        activate_staged_publish(stage, dest, preserved)
+    finally:
+        if stage.exists():
+            shutil.rmtree(stage, ignore_errors=True)
     print_labeled("OK", CLR_GREEN, "Publish complete.")
