@@ -188,7 +188,7 @@ function contact_guard(array $cfg, string $email): array {
 
 function verify_turnstile(array $cfg): void {
     $secret = trim((string)($cfg['turnstile_secret_key'] ?? ''));
-    if ($secret === '') return; // Enable only after configuring Cloudflare.
+    if ($secret === '') throw new RuntimeException('Turnstile is not configured');
     $token = (string)($_POST['cf-turnstile-response'] ?? '');
     if ($token === '' || strlen($token) > 2048) throw new RuntimeException('Turnstile token missing');
     $payload = http_build_query([
