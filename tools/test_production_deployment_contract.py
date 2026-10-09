@@ -46,6 +46,22 @@ def assert_preserved_items_survive(root: Path, destination: Path) -> None:
 
     run(root, "deploy", "--to", str(destination), "--no-format")
 
+    config_paths = list(destination.glob("*/.private/pca-contact-config.json"))
+    config_paths += list(destination.glob(".private/pca-contact-config.json"))
+    if not config_paths:
+        raise SystemExit("Missing deployed contact configuration")
+    expected = {}
+    for config in config_paths:
+        data = json.loads(config.read_text(encoding="utf-8"))
+        data["turnstile_secret_key"] = "live-only-secret"
+        data["turnstile_site_key"] = "live-only-site-key"
+        config.write_text(json.dumps(data), encoding="utf-8")
+        expected[config] = config.read_bytes()
+    run(root, "deploy", "--to", str(destination), "--no-format")
+    for config, content in expected.items():
+        if not config.is_file() or config.read_bytes() != content:
+            raise SystemExit(f"Deploy overwrote live contact secrets: {config}")
+
     for relative, expected in sentinels.items():
         path = destination / relative
         if not path.is_file():
